@@ -248,7 +248,7 @@ async function play(message, args, client) {
                         .play(
                             ytdl(queue[0].url, {
                                 filter: format => format.contentLength,
-                                /*quality: 'highestaudio',*/
+                                quality: 'highestaudio',
                                 highWaterMark: 1 << 25
                             }))
                         .on('start', async () => {
