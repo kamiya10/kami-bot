@@ -1,0 +1,22 @@
+@import 'form/alert.css';
+@import 'form/button.css';
+@import 'form/outlined-text-field.css';
+
+.setting {
+    color: white;
+    background: rgba(2550,2550,255,0.11);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    padding: 20px;
+    margin: 15px;
+    border-radius: 10px;
+}
+
+.guild_name {
+    color: white;
+    margin: 30px;
+}
+
+.setting .title {
+    margin: 0 0 12px 0;
+}
+

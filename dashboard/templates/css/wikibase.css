@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+.container {
+    position: absolute;
+    left: 18%;
+    height: fit-content;
+    width: 82%;
+}
+#contents {
+    margin: 20px 20px 50px 20px;
+    color: white;
+    text-align: justify;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+hr {
+    border-color: #aaa;
+}
+#contents p {
+    font-weight: 300;
+}
+#contents a {
+    color: rgb(130, 180, 255);
+    margin: 0 4px;
+    text-decoration: none;
+    transition: color ease-out .15s;
+}
+a[href^="https://"] {
+    background: url("../assets/launch.svg") center right no-repeat;
+    background-size: 16px 16px;
+    padding-right: 18px;
+}
+a[href^="http://kamiya.tk"]  {
+    background: none;
+    padding-right: 0;
+}
+a.file  {
+    background: url("../assets/attachment.svg") center left no-repeat;
+    background-size: 20px 20px;
+    padding-left: 20px;
+}
+#contents a:hover {
+    color: rgb(80, 140, 255);
+}
+#contents h2 {
+    margin: 20px 0 6px 0;
+}
+#contents li {
+    font-weight: 300;
+    margin: 4px 0;
+}
+#contents li span {
+    position: relative;
+    left: 5px;
+}
+code {
+    font-family: 'Source Code Pro', monospace;
+    color: lightgray;
+    background-color: #2a2a2a;
+    padding: 1px 4px;
+    margin: 0px 2px;
+    border-radius: 2px;
+    -webkit-touch-callout: text;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+.last_update {
+    margin: 20px 20px 30px 50px;
+    color: #aaa;
+    text-align: justify;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    .container {
+        left: 10px;
+        width: 100%;
+    }
+}

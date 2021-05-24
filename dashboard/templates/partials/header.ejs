@@ -1,0 +1,31 @@
+<html lang="zh_tw">
+<head>
+    <link href="/css/header.css" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7">
+    <title><%= title ?`${title} | ` :""  %>Kamiya bot</title>
+</head>
+<body>
+    <div class="header">
+        <h2 class="name"><a href="http://kamiya.tk">Kamiya bot</a></h2>
+        <div class="nav">
+            <a href="dashboard">管理</a>
+            <a href="doc">文檔</a>
+        </div>
+        <div class="user">
+    <% if (user) { %>
+            <% if (user.avatar) {%>
+                <img class="user_avatar" src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>?size=64" draggable="false">
+            <% } else { %>
+                <img class="user_avatar" src="<%= user.defaultAvatarURL %>" draggable="false">
+            <% } %>
+
+            <p class="user_name" :after><%= user.username %>#<%= user.discriminator %></p>
+            <a class="logout button" href="/logout">登出</a>
+    <% } else { %>
+            <div class="user_avatar"></div>
+            <p class="user_name"></p>
+            <a class="login button" type="button" href="/login">登入</a><br>
+    <% } %>
+        </div>
+    </div>

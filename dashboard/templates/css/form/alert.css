@@ -1,0 +1,16 @@
+.alert {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: var(--material-font, "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system);
+}
+
+.success {
+    color: #155724;
+    background-color: hsla(134, 42%, 80%, .9);
+    border: 2px hsl(134, 41%, 58%) solid;
+}
+
+.success strong {
+    color: #155724;
+}
