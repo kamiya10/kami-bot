@@ -262,7 +262,7 @@ async function play(message, args, client) {
                                 .addField('長度:', queue[0].duration, true)
                                 .setThumbnail(queue[0].thumbnail)
                                 .setFooter(`${queue[0].memberDisplayName} 點的歌 • 音量 ${message.guild.musicData.volume * 100} %`, queue[0].memberAvatar);
-                            if (queue[1]) videoEmbed.addField('\u200B', '\u200B', true).addField('下一首:', `[${queue[1].title}](${queue[1].url})`, true).addField('長度:', queue[1].duration, true);
+                            if (queue[1]) videoEmbed.addField('\u200B', '\u200B', true).addField('下一首:', `[${queue[1].title}](${queue[1].url})`, true).addField('長度:', queue[1].duration, true).addField('\u200B', '\u200B', true);
 
                             // if there's no np message
                             if (!message.guild.musicData.npmsg) {
