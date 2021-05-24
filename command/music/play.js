@@ -258,11 +258,11 @@ async function play(message, args, client) {
                                 .setColor(client.colors.info)
                                 .setAuthor(message.guild.musicData.bindmsg.guild.name, message.guild.musicData.bindmsg.guild.iconURL({ dynamic: true }))
                                 .setDescription(`語音 ${voiceChannel}, 文字 ${message.guild.musicData.bindmsg.channel}`)
-                                .addField('正在播放:', `[${queue[0].title}](${queue[0].url})`)
-                                .addField('長度:', queue[0].duration)
+                                .addField('正在播放:', `[${queue[0].title}](${queue[0].url})`, true)
+                                .addField('長度:', queue[0].duration, true)
                                 .setThumbnail(queue[0].thumbnail)
                                 .setFooter(`${queue[0].memberDisplayName} 點的歌 • 音量 ${message.guild.musicData.volume * 100} %`, queue[0].memberAvatar);
-                            if (queue[1]) videoEmbed.addField('下一首:', queue[1].title);
+                            if (queue[1]) videoEmbed.addField('\u200B', '\u200B', true).addField('下一首:', `[${queue[1].title}](${queue[1].url})`, true).addField('長度:', queue[1].duration, true);
 
                             // if there's no np message
                             if (!message.guild.musicData.npmsg) {
