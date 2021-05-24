@@ -16,8 +16,7 @@ async function voice(message, args, client, settings) {
         functions.log.command(message, client, voice.prop.name);
 
         if (!message.member.permissions.has("MANAGE_CHANNELS"))
-            if (message.author.id != "437158166019702805")
-                return await message.reply(`你沒有權限這麼做！`);
+            return await message.reply(`你沒有權限這麼做！`);
 
         const setting = settings.voice.find(o => o.creator == args[1]);
         const placeholder = {
