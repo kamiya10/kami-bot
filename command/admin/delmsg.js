@@ -49,7 +49,7 @@ async function delmsg(message, args, client) {
                                 .setColor(client.colors.success)
                                 .setTitle(client.embedStat.success)
                                 .setDescription(`已成功刪除 \`${msgtodel.size}\` 則訊息 (機器人 \`${botcount}\` 則, 不包含釘選 \`${pincount}\` 則)`);
-                            const sent = await message.channel.send(embed).then(async m => setTimeout(async () => await m.delete(), 10000));
+                            await message.channel.send(embed).then(async m => setTimeout(async () => await m.delete(), 15000));
                             return;
                         });
                     })
