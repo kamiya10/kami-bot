@@ -61,20 +61,20 @@ async function nowplaying(message, __args, client) {
             });
             const playBackBarLocation = Math.round((passedTimeInMS / totalDurationInMS) * 10);
             let playBack = '';
-            for (let i = 1; i < 21; i++) {
+            for (let i = 1; i < 11; i++) {
                 if (playBackBarLocation == 0) {
-                    playBack = ':radio_button:▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+                    playBack = ':radio_button:　　　　　　　　　';
                     break;
                 } else if (playBackBarLocation == 10) {
-                    playBack = '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬:radio_button:';
+                    playBack = '　　　　　　　　　:radio_button:';
                     break;
-                } else if (i == playBackBarLocation * 2) {
+                } else if (i == playBackBarLocation) {
                     playBack = playBack + ':radio_button:';
                 } else {
-                    playBack = playBack + '▬';
+                    playBack = playBack + '　';
                 }
             }
-            playBack = `${passedTimeFormatted}  ${playBack}  ${totalDurationFormatted}`;
+            playBack = `${passedTimeFormatted}  ~~​${playBack}​~~  ${totalDurationFormatted}`;
             return playBack;
         }
         // prettier-ignore
