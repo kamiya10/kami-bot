@@ -41,8 +41,8 @@ async function delmsg(message, args, client) {
                 await message.delete();
                 await message.channel.messages.fetch({ limit: args[0] })
                     .then(async messages => {
-                        const msgtodel = messages.filter(m => !m.bot).filter(m => !m.pinned);
-                        const botcount = messages.filter(m => m.bot).size;
+                        const msgtodel = messages.filter(m => !m.pinned);
+                        const botcount = messages.filter(m => m.author.bot).size;
                         const pincount = messages.filter(m => m.pinned).size;
                         await message.channel.bulkDelete(msgtodel).then(async () => {
                             const embed = new Discord.MessageEmbed()
