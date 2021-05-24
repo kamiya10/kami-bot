@@ -18,7 +18,7 @@ async function delmsg(message, args, client) {
             .setColor(client.colors.error)
             .setTitle(client.embedStat.error)
 
-        if (args.length) {
+        if (!args.length) {
             error.setDescription("沒有提供數量");
             await message.reply(error);
             return;
