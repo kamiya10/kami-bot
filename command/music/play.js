@@ -266,8 +266,7 @@ async function play(message, args, client) {
 
                             // if there's no np message
                             if (!message.guild.musicData.npmsg) {
-                                message.guild.musicData.npmsg = await message.guild.musicData.bindmsg.channel.send(videoEmbed)
-                                return;
+                                message.guild.musicData.npmsg = await message.guild.musicData.bindmsg.channel.send(videoEmbed);
                             };
 
                             // check if message is the last one in the binded channel
