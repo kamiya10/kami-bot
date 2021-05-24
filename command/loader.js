@@ -10,6 +10,7 @@ module.exports = {
         }
     },
     music: {
+        leave: require('./music/leave'),
         loop: require('./music/loop'),
         nowplaying: require('./music/nowplaying'),
         play: require('./music/play'),

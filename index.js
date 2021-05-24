@@ -126,6 +126,7 @@ client.on("message", async (message) => {
         case "where": return await commands.info.where(message, args, client);
 
         // music
+        case "leave": return await commands.music.leave(message, args, client);
         case "loop": return await commands.music.loop(message, args, client);
         case "nowplaying":
         case "np": return await commands.music.nowplaying(message, args, client);
