@@ -42,13 +42,14 @@ async function delmsg(message, args, client) {
                         const msgtodel = messages.filter(m => !m.bot).filter(m => !m.pinned);
                         const botcount = messages.filter(m => m.bot).size;
                         const pincount = messages.filter(m => m.pinned).size;
-                        await message.channel.bulkDelete(msgtodel);
-                        const embed = new Discord.MessageEmbed()
-                            .setColor(client.colors.success)
-                            .setTitle(client.embedStat.success)
-                            .setDescription(`已成功刪除 \`${msgtodel.size}\` 則訊息 (機器人 \`${botcount}\` 則, 不包含釘選 \`${pincount}\` 則)`);
-                        await message.channel.send(embed).then(async m => await m.delete({ timeout: 10000 }))
-                        return;
+                        await message.channel.bulkDelete(msgtodel).then(async () => {
+                            const embed = new Discord.MessageEmbed()
+                                .setColor(client.colors.success)
+                                .setTitle(client.embedStat.success)
+                                .setDescription(`已成功刪除 \`${msgtodel.size}\` 則訊息 (機器人 \`${botcount}\` 則, 不包含釘選 \`${pincount}\` 則)`);
+                            await message.channel.send(embed).then(async m => setTimeout(await m.delete(), 10000))
+                            return;
+                        });
                     })
                     .catch(console.error);
             }
