@@ -34,7 +34,7 @@ async function nowplaying(message, __args, client) {
             .setTitle(video.title)
             .setURL(video.url)
             .setDescription(description);
-        message.reply({ embed: videoEmbed, allowedMentions: { repliedUser: false } });
+        await message.reply({ embed: videoEmbed, allowedMentions: { repliedUser: false } });
         return;
 
         function playbackBar(message, video) {
