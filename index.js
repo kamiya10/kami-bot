@@ -178,6 +178,7 @@ client.on("message", async (message) => {
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
     // if (newMember.guild.id != "810931443206848544") return;
     try {
+        if (newMember.member.user.bot) return;
         var storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
         if (!storedSettings) {
             const newSettings = new GuildSettings({
