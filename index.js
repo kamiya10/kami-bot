@@ -12,6 +12,7 @@ const functions = require("./function/loader")
 const ogs = require('open-graph-scraper');
 
 const maintenance = false;
+const web = false;
 
 Discord.Structures.extend('Guild', function (Guild) {
     class MusicGuild extends Guild {
@@ -70,7 +71,7 @@ client.on("ready", async () => {
     });
     if (maintenance) console.log(`=============== 維護模式已啟用 ===============`);
     console.log(`\x1b[93mKamiya \x1b[90m» \x1b[0m機器人已就緒 (\x1b[33m${client.guilds.cache.size}\x1b[0m 伺服器 - \x1b[33m${client.channels.cache.size}\x1b[0m 頻道 - \x1b[33m${client.users.cache.size}\x1b[0m 使用者)`);
-    Dashboard(client);
+    if (web) Dashboard(client);
     client.user.setActivity(`k3! | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`)
     setInterval(() => {
         client.user.setActivity(`k3! | ${maintenance ? "MAINTENANCE " : ""}${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`)
