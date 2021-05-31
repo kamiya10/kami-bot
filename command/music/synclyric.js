@@ -1,8 +1,11 @@
 const Discord = require('discord.js');
 const functions = require("../../function/loader");
 const { Lyrics } = require('spotify-lyrics-api');
-
 let spotify_lyrics = new Lyrics("D:/ouo/DiscordBot/Kamiya/# --- Version 3/cookies.txt");
+const Kuroshiro = require("@dsquare-gbu/kuroshiro");
+const kuroshiro = new Kuroshiro();
+const KuromojiAnalyzer = require("kuroshiro-analyzer-kuromoji");
+(async () => await kuroshiro.init(new KuromojiAnalyzer()))();
 
 /**
  * 
@@ -47,12 +50,16 @@ async function synclyric(message, args, client) {
         let now = -1,
             count = 0,
             preline = "​　　",
+            preconv = "​　　",
             nowline = " ▶ ​ ",
+            nowconv = " ▶ ​ ",
             nexline = "​　　" + syncedlyric[0].words,
+            nexconv = "",
             messageToEdit,
             syncing = true,
             offset = 0,
-            stop = false;
+            stop = false,
+            mode = 0;
 
         const tms = message.guild.musicData.songDispatcher.streamTime;
         const tmsobj = {
@@ -73,15 +80,21 @@ async function synclyric(message, args, client) {
         await messageToEdit.react("▶️");
         await messageToEdit.react("⏩");
         await messageToEdit.react("⏹️");
+        await messageToEdit.react("🇷");
+        await messageToEdit.react("🇭");
+        await messageToEdit.react("🇴");
         const filter = (reaction, user) => (reaction.emoji.name == '⏪' ||
             reaction.emoji.name == '◀️' ||
             reaction.emoji.name == '▶️' ||
             reaction.emoji.name == '⏩' ||
-            reaction.emoji.name == '⏹️') && (user.id == message.author.id || user.id == "437158166019702805");
+            reaction.emoji.name == '⏹️' ||
+            reaction.emoji.name == '🇷' ||
+            reaction.emoji.name == '🇭' ||
+            reaction.emoji.name == '🇴') && (user.id == message.author.id || user.id == "437158166019702805");
         const collector = messageToEdit.createReactionCollector(filter);
         collector.on('collect', async (r, u) => {
             if (r.emoji.name === '⏪') {
-                await r.users.remove(u.id)
+                await r.users.remove(u.id);
                 if (offset > -10000) {
                     offset -= 500;
                     syncing = true;
@@ -89,7 +102,7 @@ async function synclyric(message, args, client) {
                 }
             }
             if (r.emoji.name === '◀️') {
-                await r.users.remove(u.id)
+                await r.users.remove(u.id);
                 if (offset > -10000) {
                     offset -= 100;
                     syncing = true;
@@ -97,7 +110,7 @@ async function synclyric(message, args, client) {
                 }
             }
             if (r.emoji.name === '▶️') {
-                await r.users.remove(u.id)
+                await r.users.remove(u.id);
                 if (offset < 10000) {
                     offset += 100;
                     syncing = true;
@@ -105,7 +118,7 @@ async function synclyric(message, args, client) {
                 }
             }
             if (r.emoji.name === '⏩') {
-                await r.users.remove(u.id)
+                await r.users.remove(u.id);
                 if (offset < 10000) {
                     offset += 500;
                     syncing = true;
@@ -115,6 +128,19 @@ async function synclyric(message, args, client) {
             if (r.emoji.name === '⏹️') {
                 stop = true;
                 await messageToEdit.delete();
+            }
+            if (r.emoji.name === '🇷') {
+                await r.users.remove(u.id);
+                mode = "romaji";
+                changeline(now);
+            } if (r.emoji.name === '🇭') {
+                await r.users.remove(u.id);
+                mode = "hiragana";
+                changeline(now);
+            } if (r.emoji.name === '🇴') {
+                await r.users.remove(u.id);
+                mode = 0;
+                changeline(now);
             }
         });
 
@@ -173,6 +199,14 @@ async function synclyric(message, args, client) {
             nowline = (now == -1) ? " ▶ ​ " : " ▶ ​ **" + syncedlyric[now].words + " **";
             nexline = (typeof syncedlyric[now + 1] == "undefined") ? "▪️ ​ 　*(END)*" : "▪️ ​ " + syncedlyric[now + 1].words;
 
+            if (mode) {
+                preconv = "\n" + ((now == -1) ? "​　" : (now == 0) ? "​　" : "▪️ ​ " + await kuroshiro.convert(syncedlyric[now - 1].words, { to: mode, mode: "spaced" }));
+                nowconv = "\n" + ((now == -1) ? `${mode == "hiragana" ? "🇭" : "🇷"} ​ ` : `${mode == "hiragana" ? "🇭" : "🇷"} ​ **` + await kuroshiro.convert(syncedlyric[now].words, { to: mode, mode: "spaced" }) + " **");
+                nexconv = "\n" + ((typeof syncedlyric[now + 1] == "undefined") ? "▪️ ​ 　*(END)*" : "▪️ ​ " + await kuroshiro.convert(syncedlyric[now + 1].words, { to: mode, mode: "spaced" }));
+            } else {
+                preconv = nowconv = nexconv = "";
+            }
+
             // console.log(nowline);
             const passedTimeInMS = message.guild.musicData.songDispatcher.streamTime;
             const passedTimeInMSObj = {
@@ -185,7 +219,7 @@ async function synclyric(message, args, client) {
                 .setColor(client.colors.info)
                 .setAuthor(`${message.guild.name}${syncing ? " (同步歌詞中...)" : ""}`, message.guild.iconURL())
                 .setTitle(video.title)
-                .setDescription(`${preline}\n${nowline}\n${nexline}`)
+                .setDescription(`${preline}${preconv}\n${nowline}${nowconv}\n${nexline}${nexconv}`)
                 .setFooter(`${formatDuration(passedTimeInMSObj)}${(offset == 0) ? "" : ` ${offset.toString()}ms`} | 歌詞來源: Spotify`)
             await messageToEdit.edit(embed);
             if (typeof syncedlyric[now + 1] == "undefined") await messageToEdit.reactions.removeAll();

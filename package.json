@@ -12,6 +12,7 @@
   "dependencies": {
     "@discordjs/form-data": "^3.0.1",
     "@discordjs/opus": "^0.5.0",
+    "@dsquare-gbu/kuroshiro": "^1.1.2-iedev-1",
     "@simonwep/pickr": "^1.8.0",
     "body-parser": "^1.19.0",
     "bufferutil": "^4.0.3",
@@ -26,6 +27,7 @@
     "filesize": "^6.3.0",
     "image-size": "^0.9.7",
     "imgur-upload": "^0.1.2",
+    "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "libsodium-wrappers": "^0.7.9",
     "lodash": "^4.17.21",
     "mee6-levels-api": "^1.3.0",
