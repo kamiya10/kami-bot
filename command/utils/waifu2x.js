@@ -19,13 +19,16 @@ const functions = require("../../function/loader");
 async function waifu2x(message, args, client) {
     try {
         functions.log.command(message, client, waifu2x.prop.name)
-        if (message.attachments.size)
+        if (message.attachments.size) {
             message.attachments.forEach(a => {
                 download(a.attachment, a.name, () => {
                     console.log('done');
                     scale(message, args, a.name);
                 })
             });
+        } else {
+            await message.reply("你沒有提供圖片");
+        }
     } catch (e) {
         await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``)
         return console.error(e)
@@ -75,15 +78,16 @@ var download = function (uri, filename, callback) {
  * @param {*} file 
  */
 async function scale(message, args, file) {
-    const noises = parseInt(args[args.indexOf("-noise") + 1]) ?parseInt(args[args.indexOf("-noise") + 1]) : 0;
-    const scales = parseInt(args[args.indexOf("-scale") + 1]) ?parseInt(args[args.indexOf("-scale") + 1]) : 2;
+    const noises = parseInt(args[args.indexOf("-noise") + 1]) ? parseInt(args[args.indexOf("-noise") + 1]) : 0;
+    const scales = parseInt(args[args.indexOf("-scale") + 1]) ? parseInt(args[args.indexOf("-scale") + 1]) : 2;
+    if (noises > 3 || noises < 0) return await message.channel.send(`${message.author}, 除噪等級只能介於 0 ~ 3`);
+    if (scales <= 0 || scales > 4) return await message.channel.send(`${message.author}, 縮放倍率只能介於 0 ~ 4`);
+
     await waifu.upscaleImage(`./cache/${file}`, `./cache/scaled/${file}`, { scale: scales, noise: noises });
     const dimensions = sizeOf(`./cache/scaled/${file}`);
     const stats = fs.statSync(`./cache/scaled/${file}`);
     const fileSizeInMb = filesize(stats.size);
 
-    if (noises > 3 || noises < 0) return await message.channel.send(`${message.author}, 除噪等級只能介於 0 ~ 3`);
-    if (scales <= 0 || scales > 4) return await message.channel.send(`${message.author}, 縮放倍率只能介於 0 ~ 4`);
     console.log(stats.size, fileSizeInMb);
     if (stats.size < 8388600) {
         const attachment = new Discord.MessageAttachment()
