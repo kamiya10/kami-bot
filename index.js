@@ -174,7 +174,7 @@ client.on("message", async (message) => {
 
 //#region Voice
 
-//#region create
+    //#region create
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
     // if (newMember.guild.id != "810931443206848544") return;
     try {
@@ -223,9 +223,9 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
         console.error(e);
     }
 })
-//#endregion
+    //#endregion
 
-//#region Mute/Deafen handling
+    //#region Mute/Deafen handling
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
     // if (newMember.guild.id != "810931443206848544") return;
     try {
@@ -245,10 +245,8 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
                             deny = v.deny;
                         }
                         permission.push({ id: k, allow: allow, deny: deny });
-                        console.log(v.allow.has("SPEAK"))
                     })
                     if (!oldMember.channel.permissionOverwrites.get(oldMember.member.id)) permission.push({ id: oldMember.member.id, deny: 1n << 21n });
-                    console.log(permission)
                     await oldMember.channel.overwritePermissions(permission);
                     await newMember.setMute(false);
                     await newMember.setChannel(oldMember.channel); // update voice stats so that permission mute would work
@@ -259,9 +257,9 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
         console.error(e);
     }
 })
-//#endregion
+    //#endregion
 
-//#region channel name update
+    //#region channel name update
 client.on("channelUpdate", async (__oldChannel, newChannel) => {
     if (newChannel.type == "voice") {
         if (checkchannel.includes(newChannel.id))
@@ -289,7 +287,7 @@ client.on("channelUpdate", async (__oldChannel, newChannel) => {
             }
     }
 });
-//#endregion
+    //#endregion
 
 //#endregion
 
