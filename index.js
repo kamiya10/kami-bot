@@ -14,6 +14,8 @@ const ogs = require('open-graph-scraper');
 const maintenance = false;
 const web = false;
 
+let cooldowns = new Discord.Collection();
+
 Discord.Structures.extend('Guild', function (Guild) {
     class MusicGuild extends Guild {
         constructor(client, data) {
@@ -174,11 +176,18 @@ client.on("message", async (message) => {
 
 //#region Voice
 
-    //#region create
-client.on("voiceStateUpdate", async (oldMember, newMember) => {
-    // if (newMember.guild.id != "810931443206848544") return;
+//#region create
+client.on("voiceStateUpdate", async (_oldMember, newMember) => {
     try {
         if (newMember.member.user.bot) return;
+        if (!cooldowns.has("autovoice")) {
+            cooldowns.set("autovoice", new Discord.Collection());
+        }
+
+        const now = Date.now();
+        const timestamps = cooldowns.get("autovoice");
+        const cooldownAmount = 10 * 1000;
+
         var storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
         if (!storedSettings) {
             const newSettings = new GuildSettings({
@@ -190,7 +199,6 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
 
         const channel = newMember.channel;
         const setting = storedSettings.voice.find(o => o.creator == channel?.id);
-        const permission = new Discord.Permissions();
         const guildMember = newMember.member;
         const placeholder = {
             "{user.displayName}": guildMember.displayName,
@@ -198,6 +206,24 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
             "{user.tag}": guildMember.user.tag
         }
         if (setting) {
+            if (timestamps.has(newMember.member.id)) {
+                const expirationTime = timestamps.get(newMember.member.id) + cooldownAmount;
+
+                if (now < expirationTime) {
+                    const timeLeft = (expirationTime - now) / 1000;
+
+                    const embed = new Discord.MessageEmbed()
+                        .setColor(client.colors.error)
+                        .setDescription(`你要再等待 \`${timeLeft.toFixed(1)}\` 才能再次使用 \`自動語音頻道功能\` 。`);
+                    await newMember.setChannel(null);
+                    await newMember.member.send(embed).catch(async () => {
+                        if (newMember.guild.id == "760818507628806165")
+                            await newMember.guild.channels.cache.get("824252190424170496").send(newMember.member, { embed: embed });
+                    });
+                    return;
+                }
+            }
+
             let finalName = setting.channelSettings.name ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all) : `${newMember.member.displayName} 的房間`
             if (censor.check(finalName)) finalName = censor.censor(finalName);
             const channelSetting = {
@@ -209,24 +235,31 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
                 .then(async ch => {
                     await newMember.setChannel(ch);
                     checkchannel.push(ch.id);
+                    timestamps.set(newMember.member.id, now);
+                    setTimeout(() => timestamps.delete(newMember.member.id), cooldownAmount);
                 })
         }
-
-        if (checkchannel.length == 0) return;
-        if (oldMember.channelID)
-            if (checkchannel.includes(oldMember.channel.id))
-                if (oldMember.channel.members.size == 0) {
-                    const deleted = await oldMember.channel.delete();
-                    checkchannel.splice(checkchannel.indexOf(deleted.id), 1);
-                };
     }
     catch (e) {
         console.error(e);
     }
 })
-    //#endregion
+//#endregion
 
-    //#region Mute/Deafen handling
+//#region delete
+client.on("voiceStateUpdate", async (oldMember, newMember) => {
+    if (newMember.member.user.bot) return;
+    if (checkchannel.length == 0) return;
+    if (oldMember.channel)
+        if (checkchannel.includes(oldMember.channel.id))
+            if (oldMember.channel.members.size == 0) {
+                const deleted = await oldMember.channel.delete();
+                checkchannel.splice(checkchannel.indexOf(deleted.id), 1);
+            };
+})
+//#endregion
+
+//#region Mute/Deafen handling
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
     // if (newMember.guild.id != "810931443206848544") return;
     try {
@@ -258,9 +291,9 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
         console.error(e);
     }
 })
-    //#endregion
+//#endregion
 
-    //#region channel name update
+//#region channel name update
 client.on("channelUpdate", async (__oldChannel, newChannel) => {
     if (newChannel.type == "voice") {
         if (checkchannel.includes(newChannel.id))
@@ -288,7 +321,7 @@ client.on("channelUpdate", async (__oldChannel, newChannel) => {
             }
     }
 });
-    //#endregion
+//#endregion
 
 //#endregion
 
@@ -305,7 +338,8 @@ client.on("guildCreate", async guild => {
 
 //#region VRChat
 client.on('message', message => {
-    if (message.guild.id != "841677068495486999" || message.channel.id != "841678344970043412" || message.author.bot) return;
+    if (message.author.bot) return;
+    if (message.guild.id != "841677068495486999" || message.channel.id != "841678344970043412") return;
     if (message.mentions.channels.size) {
         message.mentions.channels.forEach(async ch => {
             const guildMember = message.member;
