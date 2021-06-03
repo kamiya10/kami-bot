@@ -240,7 +240,7 @@ async function play(message, args, client) {
                 return;
             };
 
-            queue[0].voiceChannel
+            message.guild.musicData.nowPlaying.voiceChannel
                 .join()
                 .then(async connection => {
                     await connection.voice.setSelfDeaf(true);
@@ -289,7 +289,7 @@ async function play(message, args, client) {
                                     queue.shift()
                                 } else if (message.guild.musicData.loopingMode == 'repeat') { // repeat queue
                                     queue.push(queue.shift())
-                                }; // if not passing, repeat one
+                                }; // if not passing any, repeat one
 
                                 playSong(queue, message);
                                 return;
