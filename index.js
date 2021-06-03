@@ -334,6 +334,9 @@ client.on("message", async (message) => {
 client.on("guildCreate", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已加入伺服器 ${guild.name} (${guild.id})`))
 })
+client.on("guildDelete", async guild => {
+    client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已離開伺服器 ${guild.name} (${guild.id})`))
+})
 //#endregion
 
 //#region VRChat
