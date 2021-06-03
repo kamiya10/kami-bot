@@ -8,9 +8,9 @@ const functions = require("../../function/loader");
  * @param {Discord.Client} client
  * @returns 
  */
-async function delmsg(message, args, client) {
+async function purge(message, args, client) {
     try {
-        functions.log.command(message, client, delmsg.prop.name);
+        functions.log.command(message, client, purge.prop.name);
         if (!message.member.permissions.has("MANAGE_MESSAGES"))
             return await message.reply(`你沒有權限這麼做！`);
 
@@ -58,12 +58,12 @@ async function delmsg(message, args, client) {
         }
     } catch (e) {
         await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``);
-        functions.log.error(message, client, delmsg.prop.name, e);
+        functions.log.error(message, client, purge.prop.name, e);
         return console.error(e);
     }
 }
-delmsg.prop = {
-    name: "delmsg",
+purge.prop = {
+    name: "purge",
     desc: "大量刪除訊息",
     args: [
         {
@@ -76,4 +76,4 @@ delmsg.prop = {
     exam: [''],
     guild: true
 };
-module.exports = delmsg;
+module.exports = purge;

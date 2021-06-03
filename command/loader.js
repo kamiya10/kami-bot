@@ -40,7 +40,7 @@ module.exports = {
         }
     },
     admin: {
-        delmsg: require('./admin/delmsg'),
+        purge: require('./admin/purge'),
         voice: require('./admin/voice'),
         _prop: {
             name: "管理類指令"

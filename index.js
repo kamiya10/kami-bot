@@ -151,7 +151,7 @@ client.on("message", async (message) => {
         case "waifu2x": return await commands.utils.waifu2x(message, args, client);
 
         // admin
-        case "delmsg": return await commands.admin.delmsg(message, args, client)
+        case "purge": return await commands.admin.purge(message, args, client)
         case "voice": return await commands.admin.voice(message, args, client, storedSettings)
     }
 });
