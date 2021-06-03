@@ -184,7 +184,11 @@ async function voice(message, args, client, settings) {
                         category: category.id,
                         channelSettings: {
                             name: "",
-                            bitrate: 64000
+                            bitrate: 64000,
+                            text: {
+                                name: "",
+                                category: category.id
+                            }
                         }
                     });
                     await settings.save().catch(() => { });
