@@ -168,6 +168,7 @@ async function voice(message, args, client, settings) {
                             }
                         };*/
 
+
             async function autoCreate() {
                 try {
                     const autoProgress = new Discord.MessageEmbed()
@@ -187,7 +188,8 @@ async function voice(message, args, client, settings) {
                             bitrate: 64000,
                             text: {
                                 name: "",
-                                category: category.id
+                                category: category.id,
+                                reactmsg: ""
                             }
                         }
                     });
@@ -223,7 +225,7 @@ async function voice(message, args, client, settings) {
                     .setColor(client.colors.error)
                     .setTitle(client.embedStat.error)
                     .setDescription(`\`${args[1]}\` 已經存在`);
-                message.channel.send(embed)
+                await message.channel.send(embed)
                 return;
             } else {
                 settings.voice.push({
@@ -231,7 +233,12 @@ async function voice(message, args, client, settings) {
                     category: "",
                     channelSettings: {
                         name: "",
-                        bitrate: 64000
+                        bitrate: 64000,
+                        text: {
+                            name: "",
+                            category: category.id,
+                            reactmsg: ""
+                        }
                     }
                 });
                 await settings.save().catch(() => { });
@@ -281,7 +288,7 @@ async function voice(message, args, client, settings) {
                             .setColor(client.colors.error)
                             .setTitle(client.embedStat.error)
                             .setDescription("值必須介於 8000 至 96000");
-                        message.channel.send(embed);
+                        await message.channel.send(embed);
                         return;
                     }
                     const old = settings.voice[settings.voice.map(e => e.creator).indexOf(args[1])];
@@ -302,7 +309,7 @@ async function voice(message, args, client, settings) {
                     .setColor(client.colors.error)
                     .setTitle(client.embedStat.error)
                     .setDescription(`\`${args[1]}\` 不存在`);
-                message.channel.send(embed);
+                await message.channel.send(embed);
                 return;
             }
         };
@@ -322,7 +329,7 @@ async function voice(message, args, client, settings) {
                     .setColor(client.colors.error)
                     .setTitle(client.embedStat.error)
                     .setDescription(`\`${args[1]}\` 不存在`);
-                message.channel.send(embed);
+                await message.channel.send(embed);
                 return;
             }
         };
@@ -347,3 +354,15 @@ voice.prop = {
     guild: true
 };
 module.exports = voice;
+
+/*/
+Object.prototype.keyify = (obj, prefix = '') =>
+    Object.keys(obj).reduce((res, el) => {
+        if (Array.isArray(obj[el])) {
+            return res;
+        } else if (typeof obj[el] === 'object' && obj[el] !== null) {
+            return [...res, ...keyify(obj[el], prefix + el + '.')];
+        }
+        return [...res, prefix + el];
+    }, []);
+*/
