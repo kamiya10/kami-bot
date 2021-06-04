@@ -15,9 +15,9 @@ module.exports = async function (message, client) {
     };
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor("＠ 提及")
+        .setAuthor(`＠ 提及 (${message.guild.id})`)
         .setTitle(message.guild ?message.guild.name :message.author.tag)
-        .setDescription(`#️⃣ ${message.channel}\n${message.content}`)
+        .setDescription(`#️⃣ ${message.channel.name} (${message.channel})\n${message.content}`)
         .setTimestamp()
         .setFooter(`${message.author.tag} (${message.author.id})`, message.author.avatarURL({ dynamic: true }));
     if (attachments.length) embed.addField("附件", attachments.join("/n"));

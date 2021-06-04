@@ -15,7 +15,7 @@ module.exports = async function (message, client, command) {
     };
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor("📝 指令")
+        .setAuthor(`📝 指令 (${message.guild.id})`)
         .setTitle(message.author.tag)
         .setDescription(`▶  ${message.guild ?message.guild.name :message.author.tag}\n#️⃣  ${message.channel.name} (${message.channel})\n💬  ${message.content}`)
         .addField("指令", `\`${command}\``)
