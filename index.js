@@ -71,13 +71,28 @@ client.on("ready", async () => {
             });
         }
     });
-    if (maintenance) console.log(`=============== 維護模式已啟用 ===============`);
     console.log(`\x1b[93mKamiya \x1b[90m» \x1b[0m機器人已就緒 (\x1b[33m${client.guilds.cache.size}\x1b[0m 伺服器 - \x1b[33m${client.channels.cache.size}\x1b[0m 頻道 - \x1b[33m${client.users.cache.size}\x1b[0m 使用者)`);
     if (web) Dashboard(client);
     client.user.setActivity(`k3! | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`)
     setInterval(() => {
         client.user.setActivity(`k3! | ${maintenance ? "MAINTENANCE " : ""}${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`)
-    }, 60000)
+    }, 60000);
+
+
+    if (maintenance) {
+        console.log(`\n\u001b[31;1m=============== 維護模式已啟用 ===============\x1b[0m`);
+        console.log(`\n -> \u001b[7m伺服器列表\x1b[0m ${client.guilds.cache.size}`);
+        console.log("\x1b[36m         ID                    名稱\x1b[0m");
+        client.guilds.cache.forEach((v, k) => {
+            console.log(` \x1b[33m${k}\x1b[0m | ${v.name}`);
+        })
+        console.log(`\n -> \u001b[7m自動語音頻道列表\x1b[0m ${checkchannel.length}`);
+        console.log("\x1b[36m         ID                    名稱\x1b[0m");
+        checkchannel.forEach(v => {
+            console.log(` \x1b[33m${client.channels.cache.get(v).id}\x1b[0m | ${client.channels.cache.get(v).name}`);
+            console.log(`  \x1b[90m-> in ${client.channels.cache.get(v).guild.id} ${client.channels.cache.get(v).guild.name}\x1b[0m`);
+        })
+    }
 });
 client.on('shardReady', id => {
     console.log(`\x1b[90mdiscord\x1b[32m.\x1b[36mjs \x1b[90m» \x1b[0mShard with ID \x1b[33m${id}\x1b[0m Ready.`)
