@@ -246,7 +246,7 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
                 bitrate: setting.channelSettings.bitrate
             }
             let category = setting.category ? newMember.guild.channels.cache.get(setting.category) : channel.parent;
-            await newMember.guild.channels.create(channelSetting.channelName, { type: "voice", parent: category, bitrate: channelSetting.bitrate, permissionOverwrites: [{ id: client.user.id, allow: ["MANAGE_CHANNELS"] }, { id: newMember.member.id, allow: ["CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS"] }], reason: "自動創建語音頻道" })
+            await newMember.guild.channels.create(channelSetting.channelName, { type: "voice", parent: category, bitrate: channelSetting.bitrate, permissionOverwrites: [{ id: client.user.id, allow: ["MANAGE_CHANNELS","MANAGE_ROLES"] }, { id: newMember.member.id, allow: ["CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS"] }], reason: "自動創建語音頻道" })
                 .then(async ch => {
                     await newMember.setChannel(ch);
                     checkchannel.push(ch.id);
@@ -263,7 +263,6 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
 
 //#region delete
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
-    if (newMember.member.user.bot) return;
     if (checkchannel.length == 0) return;
     if (oldMember.channel)
         if (checkchannel.includes(oldMember.channel.id))
@@ -353,41 +352,5 @@ client.on("guildDelete", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已離開伺服器 ${guild.name} (${guild.id})`))
 })
 //#endregion
-
-//#region VRChat
-client.on('message', message => {
-    if (message.author.bot) return;
-    if (message.guild.id != "841677068495486999" || message.channel.id != "841678344970043412") return;
-    if (message.mentions.channels.size) {
-        message.mentions.channels.forEach(async ch => {
-            const guildMember = message.member;
-            console.log(message.content);
-            let url = message.content.match(/https?:\/\/(?:www\.)?vrchat\.(?:(?:net)|(?:com))\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
-            url = url ? url[0].replace("*", "").replace(/&instanceId.*/, "") : url;
-
-            if (url) {
-                ogs({ url: url })
-                    .then(async (data) => {
-                        const { result } = data;
-                        console.log(result);
-                        const embed = new Discord.MessageEmbed()
-                            .setColor(guildMember.displayHexColor)
-                            .setAuthor("跳到訊息", undefined, `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-                            .setTitle(result.ogTitle)
-                            .setURL(url)
-                            .setDescription(result.ogDescription)
-                            .setImage(result.ogImage.url)
-                            .setTimestamp()
-                            .setFooter(guildMember.displayName, guildMember.user.avatarURL({ dynamic: true }));
-                        await ch.send(message.content.replace(/(https?:\/\/(?:www\.)?vrchat\.(?:(?:net)|(?:com))\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*))/gi, `<$1>`), { embed: embed });
-                    })
-            } else {
-                await ch.send(message.content);
-            }
-        })
-    }
-})
-//#endregion
-
 
 client.login(config.token);
