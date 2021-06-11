@@ -240,7 +240,7 @@ async function play(message, args, client) {
                 return;
             };
 
-            message.guild.musicData.nowPlaying.voiceChannel
+            (message.guild.musicData.nowPlaying ? message.guild.musicData.nowPlaying.voiceChannel : queue[0].voiceChannel)
                 .join()
                 .then(async connection => {
                     await connection.voice.setSelfDeaf(true);
