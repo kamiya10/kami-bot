@@ -243,6 +243,7 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
             if (censor.check(finalName)) finalName = censor.censor(finalName);
             const channelSetting = {
                 channelName: finalName,
+                limit: setting.channelSettings.limit,
                 bitrate: setting.channelSettings.bitrate
             }
             let category = setting.category ? newMember.guild.channels.cache.get(setting.category) : channel.parent;
