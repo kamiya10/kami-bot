@@ -265,14 +265,16 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
 //#endregion
 
 //#region delete
-client.on("voiceStateUpdate", async (oldMember, newMember) => {
-    if (checkchannel.length == 0) return;
-    if (oldMember.channel)
-        if (checkchannel.includes(oldMember.channel.id))
-            if (oldMember.channel.members.size == 0) {
-                const deleted = await oldMember.channel.delete();
-                checkchannel.splice(checkchannel.indexOf(deleted.id), 1);
-            };
+client.on("voiceStateUpdate", async oldMember => {
+    try {
+        if (checkchannel.length == 0) return;
+        if (oldMember.channel)
+            if (checkchannel.includes(oldMember.channel.id))
+                if (oldMember.channel.members.size == 0) {
+                    const deleted = await oldMember.channel.delete();
+                    checkchannel.splice(checkchannel.indexOf(deleted.id), 1);
+                };
+    } catch { }
 })
 //#endregion
 
