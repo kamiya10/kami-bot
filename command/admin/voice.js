@@ -186,6 +186,7 @@ async function voice(message, args, client, settings) {
                         channelSettings: {
                             name: "",
                             bitrate: 64000,
+                            limit: 0,
                             text: {
                                 name: "",
                                 category: category.id,
@@ -234,6 +235,7 @@ async function voice(message, args, client, settings) {
                     channelSettings: {
                         name: "",
                         bitrate: 64000,
+                        limit: 0,
                         text: {
                             name: "",
                             category: category.id,
@@ -264,6 +266,29 @@ async function voice(message, args, client, settings) {
                         .setColor(client.colors.success)
                         .setTitle(client.embedStat.success)
                         .setDescription(`已變更\`category\`值為\`${args[3]}\``);
+                    await message.channel.send(embed);
+                    return;
+                }
+                if (args[2].toLowerCase() == "limit") {
+                    const limit = parseInt(args[3]);
+                    if (limit < 0 || limit > 99) {
+                        const embed = new Discord.MessageEmbed()
+                            .setColor(client.colors.error)
+                            .setTitle(client.embedStat.error)
+                            .setDescription("值必須介於 0 至 99");
+                        await message.channel.send(embed);
+                        return;
+                    }
+                    const old = settings.voice[settings.voice.map(e => e.creator).indexOf(args[1])];
+                    settings.voice.splice(settings.voice.indexOf(setting), 1);
+                    await settings.save().catch(() => { });
+                    old.channelSettings.limit = limit;
+                    settings.voice.push(old);
+                    await settings.save().catch(() => { });
+                    const embed = new Discord.MessageEmbed()
+                        .setColor(client.colors.success)
+                        .setTitle(client.embedStat.success)
+                        .setDescription(`已變更\`limit\`值為\`${args[3]}\``);
                     await message.channel.send(embed);
                     return;
                 }
