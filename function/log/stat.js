@@ -23,5 +23,5 @@ module.exports = async function (client, status, id = undefined) {
         embed.setColor(client.colors.warn).setDescription(`🟡 Shard #${id} 重新連線`);
     if (status == 12)
         embed.setColor(client.colors.error).setDescription(`🔴 Shard #${id} 已斷線`);
-    channel.send(embed);
+    await channel.send(embed);
 }
