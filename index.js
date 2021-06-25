@@ -359,4 +359,80 @@ client.on("guildDelete", async guild => {
 })
 //#endregion
 
-client.login(config.token);
+
+//#region interaction
+client.on("message", async message => {
+    if (message.author.bot) return;
+    if (message.content.includes("早安")) {
+        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805") {
+            const now = new Date();
+            if (now.getHours() < 12) {
+                let hi = [
+                    "你早r",
+                    "你早r",
+                    "你早r",
+                    "早安r",
+                    "早安r",
+                    "早安r",
+                    "早安阿",
+                    "早安阿",
+                    "早安喵",
+                    "早..喵...... (睡)"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            } else {
+                let hi = [
+                    "早...安？",
+                    "早...安？",
+                    "早...安？",
+                    "都幾點惹還早安",
+                    "你也太晚睡",
+                    "不早惹",
+                    "不早惹",
+                    "不早惹",
+                    "你時鐘484該校正惹",
+                    "下次早點睡"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            }
+            return;
+        }
+    }
+    if (message.content.includes("晚安")) {
+        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805") {
+            const now = new Date();
+            if (message.author.id == "437158166019702805") return await message.reply("一起睡 /(>w<)/");
+            if (now.getHours() < 18 && now.getHours() > 7) {
+                let hi = [
+                    "這個時間...你要睡了？",
+                    "該醒惹",
+                    "天亮了喔",
+                    "天亮了喔",
+                    "你時鐘484該校正惹",
+                    "你也太晚睡",
+                    "下次早點睡"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            } else {
+                let hi = [
+                    ":zzz:",
+                    ":zzz:",
+                    "Zzz",
+                    "Zzz",
+                    "Zzz",
+                    "晚安",
+                    "晚安",
+                    "晚安",
+                    "晚安喵",
+                    "來去睡"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            }
+            return;
+        }
+    }
+})
+
+//#endregion
+
+
