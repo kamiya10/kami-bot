@@ -246,7 +246,10 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
                 bitrate: setting.channelSettings.bitrate
             }
             let category = setting.category ? newMember.guild.channels.cache.get(setting.category) : channel.parent;
-            await newMember.guild.channels.create(channelSetting.channelName, { type: "voice", parent: category, bitrate: channelSetting.bitrate, permissionOverwrites: [{ id: client.user.id, allow: ["MANAGE_CHANNELS","MANAGE_ROLES"] }, { id: newMember.member.id, allow: ["CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS"] }], reason: "自動創建語音頻道" })
+            const muterole = newMember.guild.roles.cache.reduce((a, v) => { if (v.name == "Muted") a.push(v); return a; }, []);
+            const perms = [{ id: client.user.id, allow: ["MANAGE_CHANNELS", "MANAGE_ROLES"] }, { id: newMember.member.id, allow: ["CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS"] }];
+            if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: ["CONNECT", "SPEAK"] })
+            await newMember.guild.channels.create(channelSetting.channelName, { type: "voice", parent: category, bitrate: +channelSetting.bitrate, userLimit: +channelSetting.limit, permissionOverwrites: perms, reason: "自動創建語音頻道" })
                 .then(async ch => {
                     await newMember.setChannel(ch);
                     checkchannel.push(ch.id);
