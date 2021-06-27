@@ -137,7 +137,7 @@ async function play(message, args, client) {
                         .setTitle(client.embedStat.success)
                         .setDescription(`:musical_note: 播放清單 - ${playlist.title} 已加到佇列`)
                     await message.reply(`**已新增**\`\`\`py\n${songs.join("\n")}\n\`\`\``, { embed: embed, allowedMentions: { repliedUser: false } });
-                    await message.suppressEmbeds(true);
+                    await message.suppressEmbeds(true).catch(() => { });
                     return playSong(message.guild.musicData.queue);
                 } else if (message.guild.musicData.isPlaying == true) {
                     const embed = new Discord.MessageEmbed()
@@ -146,7 +146,7 @@ async function play(message, args, client) {
                         .setDescription(`:musical_note: 播放清單 - ${playlist.title} 已加到佇列`)
                         .addField("已新增", songs.join("\n"));
                     await message.reply(`**已新增**\`\`\`py\n${songs.join("\n")}\n\`\`\``, { embed: embed, allowedMentions: { repliedUser: false } });
-                    await message.suppressEmbeds(true);
+                    await message.suppressEmbeds(true).catch(() => { });
                     return;
                 }
             }
@@ -206,7 +206,7 @@ async function play(message, args, client) {
                         .setTitle(client.embedStat.success)
                         .setDescription(`:musical_note: ${video.title} 已加到佇列`);
                     await message.reply({ embed: embed, allowedMentions: { repliedUser: false } });
-                    await message.suppressEmbeds(true);
+                    await message.suppressEmbeds(true).catch(() => { });
                     playSong(message.guild.musicData.queue);
                     return;
                 } else if (message.guild.musicData.isPlaying == true) {
@@ -215,7 +215,7 @@ async function play(message, args, client) {
                         .setTitle(client.embedStat.success)
                         .setDescription(`:musical_note: ${video.title} 已加到佇列`);
                     await message.reply({ embed: embed, allowedMentions: { repliedUser: false } });
-                    await message.suppressEmbeds(true);
+                    await message.suppressEmbeds(true).catch(() => { });
                     return;
                 }
             }
