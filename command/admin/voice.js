@@ -55,7 +55,7 @@ async function voice(message, args, client, settings) {
                         .setTitle(`自動語音頻道設定 (第 ${i + 1} 頁 / 共 ${a.length} 頁)`)
                         .addField("建立語音頻道", `\`${v.creator}\` ${client.channels.cache.get(v.creator)}`)
                         .addField("語音頻道類別", v.category ? `\`${v.category}\` ${client.channels.cache.get(v.category).name}` : "`未設定語音頻道類別`")
-                        .addField("頻道設定", `頻道名稱: ${v.channelSettings.name ? `\`${v.channelSettings.name}\`\n　　預覽: ${v.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)}` : `\`未設定\`\n　　預設: {user.displayName} 的房間\n　　預覽: ${"{user.displayName} 的房間".replace(/{.+}/g, all => placeholder[all] || all)}`}\n位元率: \`${v.channelSettings.bitrate}\`bps`)
+                        .addField("頻道設定", `頻道名稱: ${v.channelSettings.name ? `\`${v.channelSettings.name}\`\n　　預覽: ${v.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)}` : `\`未設定\`\n　　預設: {user.displayName} 的房間\n　　預覽: ${"{user.displayName} 的房間".replace(/{.+}/g, all => placeholder[all] || all)}`}\n　位元率: \`${v.channelSettings.bitrate}\`bps\n人數限制: \`${v.channelSettings.limit ?v.channelSettings.limit :"無限制"}\``)
                         .setFooter(tip[Math.floor(Math.random() * tip.length)])
                         .setTimestamp();
                     if (noPermission.length) embed.setDescription(`** :warning: 這個類別缺少以下權限 ${noPermission.join(", ")}**`)
