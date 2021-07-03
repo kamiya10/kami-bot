@@ -1,4 +1,3 @@
-// We import the modules.
 const Discord = require("discord.js");
 const mongoose = require("mongoose");
 const config = require("./config");
@@ -35,7 +34,6 @@ Discord.Structures.extend('Guild', function (Guild) {
     return MusicGuild;
 });
 
-// We instiate the client and connect to database.
 const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_EMOJIS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS', 'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'] });
 mongoose.connect(config.mongodbUrl, {
     useNewUrlParser: true,
@@ -132,42 +130,44 @@ client.on("message", async (message) => {
 
     switch (command) {
         // bot
-        case "bugreport": return await commands.bot.bug(message, args, client);
-        case "suggest": return await commands.bot.suggest(message, args, client);
+        case "bugreport" : return await commands.bot.bug(message, args, client);
+        case "suggest"   : return await commands.bot.suggest(message, args, client);
 
         // info
-        case "avatar": return await commands.info.avatar(message, args, client);
-        case "help": return await commands.info.help(message, args, client, commands, storedSettings.prefix);
-        case "prefix": return await commands.info.prefix(message, args, client, storedSettings);
-        case "userinfo":
-        case "ui": return await commands.info.userinfo(message, args, client);
-        case "where": return await commands.info.where(message, args, client);
+        case "avatar"    : return await commands.info.avatar(message, args, client);
+        case "help"      : return await commands.info.help(message, args, client, commands, storedSettings.prefix);
+        case "prefix"    : return await commands.info.prefix(message, args, client, storedSettings);
+        case "userinfo"  : 
+        case "ui"        : return await commands.info.userinfo(message, args, client);
+        case "where"     : return await commands.info.where(message, args, client);
 
         // music
-        case "leave": return await commands.music.leave(message, args, client);
-        case "loop": return await commands.music.loop(message, args, client);
-        case "nowplaying":
-        case "np": return await commands.music.nowplaying(message, args, client);
-        case "play":
-        case "p": return await commands.music.play(message, args, client);
-        case "queue": return await commands.music.queue(message, args, client);
-        case "skip":
-        case "s": return await commands.music.skip(message, args, client);
-        case "synclyric":
-        case "sl": return await commands.music.synclyric(message, args, client);
-        case "volume":
-        case "v": return await commands.music.volume(message, args, client);
+        case "leave"     : return await commands.music.leave(message, args, client);
+        case "loop"      : return await commands.music.loop(message, args, client);
+        case "nowplaying": 
+        case "np"        : return await commands.music.nowplaying(message, args, client);
+        case "pause"     : return await commands.music.pause(message, args, client);
+        case "play"      : 
+        case "p"         : return await commands.music.play(message, args, client);
+        case "queue"     : return await commands.music.queue(message, args, client);
+        case "resume"    : return await commands.music.resume(message, args, client);
+        case "skip"      : 
+        case "s"         : return await commands.music.skip(message, args, client);
+        case "synclyric" : 
+        case "sl"        : return await commands.music.synclyric(message, args, client);
+        case "volume"    : 
+        case "v"         : return await commands.music.volume(message, args, client);
 
         // utils
-        case "ping": return await commands.utils.ping(message, client.ws.ping, client);
-        case "poll": return await commands.utils.poll(message, args, client);
-        case "sauce": return await commands.utils.sauce(message, args, client);
-        case "saucenao": return await commands.utils.saucenao(message, args, client);
-        case "waifu2x": return await commands.utils.waifu2x(message, args, client);
+        case "ping"      : return await commands.utils.ping(message, client.ws.ping, client);
+        case "poll"      : return await commands.utils.poll(message, args, client);
+        case "sauce"     : return await commands.utils.sauce(message, args, client);
+        case "saucenao"  : return await commands.utils.saucenao(message, args, client);
+        case "waifu2x"   : return await commands.utils.waifu2x(message, args, client);
 
         // admin
-        case "purge": return await commands.admin.purge(message, args, client)
-        case "voice": return await commands.admin.voice(message, args, client, storedSettings)
+        case "purge"     : return await commands.admin.purge(message, args, client)
+        case "voice"     : return await commands.admin.voice(message, args, client, storedSettings)
     }
 });
 //#endregion
@@ -181,10 +181,10 @@ client.on("message", async (message) => {
     const command = args.shift().toLowerCase();
 
     switch (command) {
-        case "avatar": return await commands.info.avatar(message, args, client);
-        case "ping": return await commands.utils.ping(message, client.ws.ping, client);
+        case "avatar" : return await commands.info.avatar(message, args, client);
+        case "ping"   : return await commands.utils.ping(message, client.ws.ping, client);
         case "waifu2x": return await commands.utils.waifu2x(message, args, client);
-        case "where": return await commands.info.where(message, args, client);
+        case "where"  : return await commands.info.where(message, args, client);
     }
 });
 //#endregion
@@ -361,7 +361,7 @@ client.on("guildDelete", async guild => {
 
 client.login(config.token);
 
-//#region interaction
+//#region chat
 client.on("message", async message => {
     if (message.author.bot) return;
     if (message.content.includes("早安")) {
