@@ -69,6 +69,7 @@ client.on("ready", async () => {
             });
         }
     });
+
     console.log(`\x1b[93mKamiya \x1b[90m» \x1b[0m機器人已就緒 (\x1b[33m${client.guilds.cache.size}\x1b[0m 伺服器 - \x1b[33m${client.channels.cache.size}\x1b[0m 頻道 - \x1b[33m${client.users.cache.size}\x1b[0m 使用者)`);
     if (web) Dashboard(client);
     client.user.setActivity(`k3! | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`)
@@ -436,6 +437,7 @@ client.on("message", async message => {
 
 //#endregion
 
+const scamurl = require('./scamurl');
 
 //#region 詐騙
 client.on("message", async message => {
@@ -443,30 +445,10 @@ client.on("message", async message => {
     if (message.embeds[0].description.includes(""))*/
     const embed = new Discord.MessageEmbed()
         .setColor("#ff0000")
-        .setAuthor(`ban`)/*  | 案 ${(await message.guild.fetchBans()).size + 1} */
+        .setAuthor(`ban | ${(await message.guild.fetchBans()).size + 1}`)/*  | 案 ${(await message.guild.fetchBans()).size + 1} */
         .setDescription(`成員：${message.author}\n原因：近期詐騙網址`);
-    if ((message.content.includes("steancomunnity") || message.content.includes("stearncomminuty")) && message.content.includes("give")) {
-        console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-        console.log(message.content);
-        if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-        await message.member.ban({ days: 7, reason: "近期詐騙網址" }).then(async () => await message.channel.send(":octagonal_sign: 已封鎖成員", { embed: embed })).catch(e => console.log(e));
-        return;
-    }
-    if (message.content.includes("xrolling")) {
-        console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-        console.log(message.content);
-        if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-        await message.member.ban({ days: 7, reason: "近期詐騙網址" }).then(async () => await message.channel.send(":octagonal_sign: 已封鎖成員", { embed: embed })).catch(e => console.log(e));
-        return;
-    }
-    if (message.content.includes("I have become the publisher")) {
-        console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-        console.log(message.content);
-        if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-        await message.member.ban({ days: 7, reason: "近期詐騙網址" }).then(async () => await message.channel.send(":octagonal_sign: 已封鎖成員", { embed: embed })).catch(e => console.log(e));
-        return;
-    }
-    if (message.content.includes("swiningblade.com")) {
+
+    if (scamurl.some(function (v) { return message.content.indexOf(v) >= 0; })) {
         console.log(`message in ${message.channel.name}, ${message.guild.name}`);
         console.log(message.content);
         if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
