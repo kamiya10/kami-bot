@@ -40,11 +40,13 @@ async function skip(message, args, client) {
 
         if (!args.length) {
             await message.guild.musicData.songDispatcher.end();
+            await message.react("👌");
             return;
         } else {
             if (args[0] == "-all") {
                 message.guild.musicData.queue.length = 0;
                 await message.guild.musicData.songDispatcher.end();
+                await message.react("👌");
                 console.log(message.guild.musicData)
                 return;
             }
