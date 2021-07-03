@@ -88,18 +88,18 @@ async function volume(message, args, client) {
                 .setColor(client.colors.success)
                 .setTitle(client.embedStat.success)
                 .setDescription(`音量已設成 \`${wantedVolume}%\``);
-            message.reply({ embed: embed, allowedMentions: { repliedUser: false } })
+            await message.reply({ embed: embed, allowedMentions: { repliedUser: false } });
         } else {
             const embed = new Discord.MessageEmbed()
                 .setColor(client.colors.info)
-                .setDescription(`目前音量為 \`${message.guild.musicData.volume *100}%\``);
+                .setDescription(`目前音量為 \`${message.guild.musicData.volume * 100}%\``);
 
-                message.reply({ embed: embed, allowedMentions: { repliedUser: false } })
+            await message.reply({ embed: embed, allowedMentions: { repliedUser: false } });
         }
     } catch (e) {
         await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``);
         functions.log.error(message, client, volume.prop.name, e);
-        return console.error(e)
+        return console.error(e);
     }
 }
 volume.prop = {
