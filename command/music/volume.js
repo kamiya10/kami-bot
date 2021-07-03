@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const functions = require("../../function/loader");
+var scale = require('scale-number-range');
 
 /**
  * 
@@ -54,9 +55,35 @@ async function volume(message, args, client) {
                 await message.reply(embed);
                 return;
             }
+
             const wantedVolume = +args[0];
-            message.guild.musicData.volume = wantedVolume / 100;
-            message.guild.musicData.songDispatcher.setVolume(message.guild.musicData.volume);
+
+            if (Math.abs(((wantedVolume / 100) - message.guild.musicData.volume) / 10) > 0.02) {
+                let a = message.guild.musicData.volume;                        // 現在的音量 (會變動)
+                let b = Math.ceil(Math.abs(((a * 100) - wantedVolume) / 5));   // 次數
+
+                let times = Math.abs(Math.round(((1000 * scale(b, 0, 40, 0.1, 2) / b) + Number.EPSILON) * 1000) / 1000) * scale(b, 0, 40, 0.2, 2) / 1.5;
+
+                for (i = 1; i <= b; i++) {
+                    if (i == b) {
+                        message.guild.musicData.volume = wantedVolume / 100;
+                        await message.guild.musicData.songDispatcher.setVolume(message.guild.musicData.volume);
+                        break;
+                    } else {
+                        if (message.guild.musicData.volume < (wantedVolume / 100))
+                            a += 0.05;
+                        else
+                            a -= 0.05;
+                        a = Math.round((a + Number.EPSILON) * 100) / 100;
+                        await message.guild.musicData.songDispatcher.setVolume(a);
+                        await delay(times);
+                    };
+                }
+            } else {
+                message.guild.musicData.volume = wantedVolume / 100;
+                await message.guild.musicData.songDispatcher.setVolume(message.guild.musicData.volume);
+            }
+
             const embed = new Discord.MessageEmbed()
                 .setColor(client.colors.success)
                 .setTitle(client.embedStat.success)
@@ -90,3 +117,5 @@ volume.prop = {
     guild: true
 };
 module.exports = volume;
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
