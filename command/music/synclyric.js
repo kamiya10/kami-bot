@@ -237,9 +237,9 @@ async function synclyric(message, args, client) {
         }
 
     } catch (e) {
-        await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``);
-        functions.log.error(message, client, synclyric.prop.name, e);
-        return console.error(e)
+        await message.reply(`找不到歌詞`);
+        // functions.log.error(message, client, synclyric.prop.name, e);
+        return console.error(e);
     }
 }
 synclyric.prop = {
