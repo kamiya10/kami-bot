@@ -41,14 +41,15 @@
     "passport-discord": "^0.1.3",
     "request": "^2.88.2",
     "saucenao": "^0.0.2",
+    "scale-number-range": "^1.0.3",
     "simple-youtube-api": "^5.2.1",
     "socket.io": "^2.2.0",
-    "spotify-lyrics-api": "^0.0.2",
+    "spotify-lyrics-api": "^0.0.3",
     "static-tweets": "^0.5.3",
     "utf-8-validate": "^5.0.5",
     "waifu2x": "^0.7.4",
     "ytdl": "^1.4.1",
-    "ytdl-core": "^4.8.0",
+    "ytdl-core": "^4.8.3",
     "zlib-sync": "^0.1.7"
   }
 }
