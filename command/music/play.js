@@ -250,7 +250,7 @@ async function play(message, args, client) {
                                 filter: format => format.contentLength,
                                 quality: 'highestaudio',
                                 highWaterMark: 1 << 25
-                            }))
+                            }), { highWaterMark: 1 })
                         .on('start', async () => {
                             message.guild.musicData.songDispatcher = dispatcher;
                             dispatcher.setVolume(message.guild.musicData.volume);
