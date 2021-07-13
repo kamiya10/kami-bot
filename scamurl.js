@@ -9,4 +9,5 @@ module.exports = [
     "newlinespoof",
     "bit.ly/Discord-Nitro-Gen-V2",
     "bit.ly/Discord--Nitro-Generator",
+    "bitremex.com"
 ]
