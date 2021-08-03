@@ -392,7 +392,15 @@ client.on("message", async (message) => {
 });
 client.on("guildCreate", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已加入伺服器 ${guild.name} (${guild.id})`))
+    if (guild.systemChannel) {
+        const embed = new Discord.MessageEmbed()
+            .setColor(client.colors.info)
+            .setTitle("感謝邀請我到這個伺服器")
             .setDescription("雖然我能做的事情還不多，不過還是感謝選擇了我\n由於主人很懶，所以沒什麼在管我，出bug也不太修 ;w;\n叫我的時候用 \`k3!\` 當開頭，所有我能做到的事都在 \`k3!help\`\n我還有一個妹妹，可以找看看其他伺服器內有沒有她的蹤影喔\n還是有問題的話可以到 [支援伺服器](https://discord.gg/3VTtVxjtWv) 找我主人喔")
+            .setTimestamp();
+        await guild.systemChannel.send(embed);
+    }
+    return;
 })
 client.on("guildDelete", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已離開伺服器 ${guild.name} (${guild.id})`))
