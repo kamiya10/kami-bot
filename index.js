@@ -414,10 +414,16 @@ client.on("message", async message => {
     }
     if (!storedSettings.chatreply) return;
     if (message.content.includes("早安")) {
-        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805") {
+        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
             const now = new Date();
             if (now.getHours() < 12) {
                 let hi = [
+                    "早",
+                    "早",
+                    "早",
+                    "早",
+                    "早",
+                    "早",
                     "你早r",
                     "你早r",
                     "你早r",
@@ -435,13 +441,46 @@ client.on("message", async message => {
                     "早...安？",
                     "早...安？",
                     "早...安？",
-                    "都幾點惹還早安",
-                    "你也太晚睡",
                     "不早惹",
                     "不早惹",
                     "不早惹",
                     "你時鐘484該校正惹",
-                    "下次早點睡"
+                    "下次早點睡",
+                    "都幾點惹還早安",
+                    "你也太晚睡"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            }
+            return;
+        }
+    }
+    if (message.content.includes("午安")) {
+        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
+            const now = new Date();
+            if (now.getHours() < 11 || now.getHours() > 13) {
+                let hi = [
+                    "午安?"
+                ];
+                await message.reply(hi[Math.floor(Math.random() * hi.length)]);
+            } else {
+                let hi = [
+                    "午安",
+                    "午安",
+                    "午安",
+                    "午安",
+                    "午安",
+                    "午安",
+                    "來去吃午餐/",
+                    "來去吃午餐/",
+                    "來去吃午餐/",
+                    "來去睡午覺/",
+                    "來去睡午覺/",
+                    "來去睡午覺/",
+                    "一起吃午餐 >w<",
+                    "一起睡午覺 >w<",
+                    "🍜",
+                    "🍚",
+                    "🍝"
                 ];
                 await message.reply(hi[Math.floor(Math.random() * hi.length)]);
             }
@@ -449,17 +488,27 @@ client.on("message", async message => {
         }
     }
     if (message.content.includes("晚安")) {
-        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805") {
+        if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
             const now = new Date();
-            if (message.author.id == "437158166019702805") return await message.reply("一起睡 /(>w<)/");
+            if (message.author.id == "437158166019702805") return await message.reply("一起睡 (ﾉ>ω<)ﾉ");
             if (now.getHours() < 18 && now.getHours() > 7) {
                 let hi = [
                     "這個時間...你要睡了？",
+                    "這個時間...你要睡了？",
                     "該醒惹",
+                    "該醒惹",
+                    "該醒惹",
+                    "該醒惹",
+                    "該醒惹",
+                    "天亮了喔",
+                    "天亮了喔",
+                    "天亮了喔",
                     "天亮了喔",
                     "天亮了喔",
                     "你時鐘484該校正惹",
                     "你也太晚睡",
+                    "你也太晚睡",
+                    "下次早點睡",
                     "下次早點睡"
                 ];
                 await message.reply(hi[Math.floor(Math.random() * hi.length)]);
@@ -480,6 +529,55 @@ client.on("message", async message => {
             }
             return;
         }
+    }
+    if (message.content.toLowerCase() == "never gonna") {
+        let response = [
+            "Give u up ~ ♪",
+            "Give u up ~ ♪",
+            "Give u up ~ ♪",
+            "Give u up ~ ♪",
+            "Give u up ~ ♪",
+            "Let u down ~ ♪",
+            "Let u down ~ ♪",
+            "Let u down ~ ♪",
+            "Let u down ~ ♪",
+            "Let u down ~ ♪",
+            "Run around and desert u ~ ♪",
+            "Run around ~ ♪",
+            "Run around ~ ♪",
+            "Run around ~ ♪",
+            "Run around ~ ♪",
+            "Run around ~ ♪",
+            "Desert u ~ ♪",
+            "Desert u ~ ♪",
+            "Desert u ~ ♪",
+            "Desert u ~ ♪",
+            "Desert u ~ ♪",
+            "Say goodbye ~ ♪",
+            "Say goodbye ~ ♪",
+            "Say goodbye ~ ♪",
+            "Say goodbye ~ ♪",
+            "Say goodbye ~ ♪",
+            "Say goodbye <:L_gun:863445879544741908>",
+            "Tell a lie and hurt u ~ ♪",
+            "Tell a lie ~ ♪",
+            "Tell a lie ~ ♪",
+            "Tell a lie ~ ♪",
+            "Tell a lie ~ ♪",
+            "Tell a lie ~ ♪",
+            "Hurt u ~ ♪",
+            "Hurt u ~ ♪",
+            "Hurt u ~ ♪",
+            "Hurt u ~ ♪",
+            "Hurt u ~ ♪",
+            "Hurt u ~ 🔪",
+            "Make u cry ~ ♪",
+            "Make u cry ~ ♪",
+            "Make u cry ~ ♪",
+            "Make u cry ~ ♪",
+            "Make u cry ~ ♪"
+        ];
+        await message.reply(response[Math.floor(Math.random() * response.length)]);
     }
 })
 
