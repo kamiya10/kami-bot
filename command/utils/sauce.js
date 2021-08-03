@@ -1,9 +1,9 @@
+
 const Discord = require('discord.js');
 const functions = require("../../function/loader");
 const Sauce = require('node-sauce')
 let saucenao = new Sauce("05e07f80d5ad365cb7c6c58568c21345f5c145d3")
 saucenao.numres = 5;
-const fetchTweetAst = require('static-tweets').fetchTweetAst;
 const _ = require('lodash');
 
 let results = [];
@@ -28,7 +28,7 @@ async function sauce(message, args = undefined, client) {
         results = [];
         if (args.length) {
             args.forEach(v => {
-                if (v.match(/(?<=https:\/\/discord\.com\/channels.*)\d+$/i).length) {
+                if (v.match(/(?<=https:\/\/discord\.com\/channels.*)\d+$/i)?.length) {
                     message.channel.messages.fetch(v.match(/(?<=https:\/\/discord\.com\/channels.*)\d+$/i)[0])
                         .then(msg => {
                             const lastMessage = msg;
@@ -176,6 +176,7 @@ async function parse_nao(matches, url) {
                     result.author.name = match.creator.join(", ");
                 }
                 // twitter
+                /*
                 if (site_index == 41) {
                     const tweets = await fetchTweetAst(match.tweet_id);
                     if (tweets.length) {
@@ -194,7 +195,7 @@ async function parse_nao(matches, url) {
                         result.author.name = `${tweet.data.name} (${match.twitter_user_handle})`;
                         result.author.id = match.twitter_user_id;
                     } else console.log("unable to fetch tweet")
-                }
+                }*/
                 return result;
             }
         }
