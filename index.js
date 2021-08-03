@@ -489,19 +489,35 @@ const scamurl = require('./scamurl');
 
 //#region 詐騙
 client.on("message", async message => {
-    /*if (message.author.id != "492354896100720670") return; 
-    if (message.embeds[0].description.includes(""))*/
-    const embed = new Discord.MessageEmbed()
-        .setColor("#ff0000")
-        .setAuthor(`ban | ${(await message.guild.fetchBans()).size + 1}`)/*  | 案 ${(await message.guild.fetchBans()).size + 1} */
-        .setDescription(`成員：${message.author}\n原因：近期詐騙網址`);
+    try {
+        if (message.channel.type == 'dm') return;
+        /*if (message.author.id != "492354896100720670") return; 
+        if (message.embeds[0].description.includes(""))*/
+        const guild = client.guilds.cache.get(message.guild.id);
 
-    if (scamurl.some(function (v) { return message.content.indexOf(v) >= 0; })) {
-        console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-        console.log(message.content);
-        if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-        await message.member.ban({ days: 7, reason: "近期詐騙網址" }).then(async () => await message.channel.send(":octagonal_sign: 已封鎖成員", { embed: embed })).catch(e => console.log(e));
+        const embed = new Discord.MessageEmbed()
+            .setColor("#ff0000")
+            .setDescription(`成員：${message.author}\n原因：近期詐騙網址`);
+
+        if (scamurl.some((v) => { return message.content.includes(v); })) {
+            console.log(`message in ${message.channel.name}, ${message.guild.name}`);
+            console.log(message.content);
+            const bans = await guild.fetchBans().catch(e => console.log(e));
+            if (bans)
+                embed.setAuthor(`ban | 案 ${bans.size + 1}`);
+            else
+                embed.setAuthor(`ban`);
+
+            if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
+            if (message.member.bannable) await message.member.ban({ days: 7, reason: "近期詐騙網址" }).then(async () => await message.channel.send(":octagonal_sign: 已封鎖成員", { embed: embed })).catch(e => console.log(e));
+            return;
+        }
         return;
+    } catch (error) {
+        console.error(error);
+    }
+})
+//#endregion
     }
 })
 
