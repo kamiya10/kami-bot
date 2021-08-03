@@ -167,11 +167,11 @@ client.on("message", async (message) => {
         case "waifu2x"   : return await commands.utils.waifu2x(message, args, client);
 
         // admin
-        case "purge"     : return await commands.admin.purge(message, args, client)
-        case "voice"     : return await commands.admin.voice(message, args, client, storedSettings)
         case "chatreply": return await commands.admin.chatreply(message, args, client, storedSettings); 
         case "message":
         case "msg": return await commands.admin.message(message, args, client);
+        case "purge": return await commands.admin.purge(message, args, client);
+        case "voice": return await commands.admin.voice(message, args, client, storedSettings, usettings);
     }
 });
 //#endregion
@@ -216,6 +216,7 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
             storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
         }
 
+                name: "",
         const channel = newMember.channel;
         const setting = storedSettings.voice.find(o => o.creator == channel?.id);
         const guildMember = newMember.member;
@@ -357,6 +358,7 @@ client.on("message", async (message) => {
 });
 client.on("guildCreate", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已加入伺服器 ${guild.name} (${guild.id})`))
+            .setDescription("雖然我能做的事情還不多，不過還是感謝選擇了我\n由於主人很懶，所以沒什麼在管我，出bug也不太修 ;w;\n叫我的時候用 \`k3!\` 當開頭，所有我能做到的事都在 \`k3!help\`\n我還有一個妹妹，可以找看看其他伺服器內有沒有她的蹤影喔\n還是有問題的話可以到 [支援伺服器](https://discord.gg/3VTtVxjtWv) 找我主人喔")
 })
 client.on("guildDelete", async guild => {
     client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已離開伺服器 ${guild.name} (${guild.id})`))
