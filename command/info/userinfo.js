@@ -6,6 +6,7 @@ const Mee6LevelsApi = require("mee6-levels-api");
  * userinfo
  * @param {Discord.Message} message 
  * @param {Array} args
+ * @param {Discord.Client} client 
  * @returns 
  */
 async function userinfo(message, args, client) {
@@ -83,8 +84,16 @@ async function userinfo(message, args, client) {
                     .setTitle(guildMember.user.tag)
                     .addField(`聊天等級 (${system})`, `**${level.level} 等** (排名 #${level.rank})\n**${level.xp.userXp}** / ${level.xp.levelXp} (還差 ${level.xp.levelXp - level.xp.userXp})\n**${level.messageCount}** 訊息`, true)
                     .setThumbnail(guildMember.user.displayAvatarURL({ dynamic: true }));
-                if (guildMember.nickname)
-                    final.setDescription(`又稱為: ${guildMember.nickname}`);
+
+                let nickname = [];
+                client.guilds.cache.forEach(guild => {
+                    if (guild.members.cache.has(guildMember.id)) {
+                        const mem = guild.members.cache.get(guildMember.id)
+                        if (mem.nickname) nickname.push(mem.nickname);
+                    }
+                })
+                if (nickname.length)
+                    final.setDescription(`又稱為: ${nickname.join(", ")}`);
                 if (args.includes("-d")) {
                     final.setTitle(guildMember.user.tag + " 的詳細資料")
                         .addField("上線狀態", online.join("\n"), true)
@@ -105,8 +114,15 @@ async function userinfo(message, args, client) {
                     .setTitle(guildMember.user.tag)
                     .addField("聊天等級", "`未偵測到等級系統`", true)
                     .setThumbnail(guildMember.user.displayAvatarURL({ dynamic: true }));
-                if (guildMember.nickname)
-                    final.setDescription(`又稱為: ${guildMember.nickname}`);
+                    let nickname = [];
+                    client.guilds.cache.forEach(guild => {
+                        if (guild.members.cache.has(guildMember.id)) {
+                            const mem = guild.members.cache.get(guildMember.id)
+                            if (mem.nickname) nickname.push(mem.nickname);
+                        }
+                    })
+                    if (nickname.length)
+                        final.setDescription(`又稱為: ${nickname.join(", ")}`);
                 if (args.includes("-d")) {
                     final.setTitle(guildMember.user.tag + " 的詳細資料")
                         .addField("上線狀態", online.join("\n"), true)
