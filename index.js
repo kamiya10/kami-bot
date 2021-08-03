@@ -1,3 +1,6 @@
+require('console-stamp')(console, { 
+    format: ':date(yyyy/mm/dd HH:MM:ss).dim' 
+});
 const Discord = require("discord.js");
 const mongoose = require("mongoose");
 const config = require("./config");
@@ -370,7 +373,7 @@ client.on("channelUpdate", async (__oldChannel, newChannel) => {
                             .addField("現在的名稱", censor.censor(newChannel.name), true)
                             .setFooter("請不要嘗試使用敏感字詞當作頻道的名稱")
                             .setTimestamp();
-                        await executor.send(embed)
+                        await executor.send(embed);
                     }
                 }
                 await newChannel.setName(censor.censor(newChannel.name), "不雅字詞");
