@@ -170,6 +170,8 @@ client.on("message", async (message) => {
         case "purge"     : return await commands.admin.purge(message, args, client)
         case "voice"     : return await commands.admin.voice(message, args, client, storedSettings)
         case "chatreply": return await commands.admin.chatreply(message, args, client, storedSettings); 
+        case "message":
+        case "msg": return await commands.admin.message(message, args, client);
     }
 });
 //#endregion
