@@ -4,6 +4,7 @@ const config = require("./config");
 const GuildSettings = require("./models/settings");
 const Dashboard = require("./dashboard/dashboard");
 const censor = require('discord-censor');
+const fs = require("fs")
 
 const commands = require("./command/loader")
 const functions = require("./function/loader")
@@ -12,6 +13,9 @@ const ogs = require('open-graph-scraper');
 
 const maintenance = false;
 const web = false;
+
+const settingUser = "./UserSetting.json";
+const usettings = require(settingUser);
 
 let cooldowns = new Discord.Collection();
 
@@ -32,6 +36,24 @@ Discord.Structures.extend('Guild', function (Guild) {
         }
     }
     return MusicGuild;
+});
+
+Discord.Structures.extend("User", User => {
+    class UserSetting extends User {
+        constructor(client, data) {
+            super(client, data);
+            if (Object.keys(usettings).includes(this.id)) {
+                this.setting = {
+                    name: "",
+                    limit: 0,
+                    bitrate: 0
+                };
+            } else {
+                this.setting = null;
+            }
+        }
+    }
+    return UserSetting;
 });
 
 const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_EMOJIS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS', 'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'] });
@@ -216,7 +238,16 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
             storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
         }
 
+        var UserSetting = Object.keys(usettings).includes(newMember.id) ? usettings[newMember.id] : null;
+        if (!UserSetting) {
+            const newSettings = {
                 name: "",
+                limit: 0,
+                bitrate: 0
+            };
+            await saveUser(newMember.member.user, null, newSettings);
+        }
+        UserSetting = usettings[newMember.id];
         const channel = newMember.channel;
         const setting = storedSettings.voice.find(o => o.creator == channel?.id);
         const guildMember = newMember.member;
@@ -244,12 +275,12 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
                 }
             }
 
-            let finalName = setting.channelSettings.name ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all) : `${newMember.member.displayName} 的房間`
+            let finalName = usettings[newMember.id].name ? usettings[newMember.id].name.replace(/{.+}/g, all => placeholder[all] || all) : setting.channelSettings.name ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all) : `${newMember.member.displayName} 的房間`
             if (censor.check(finalName)) finalName = censor.censor(finalName);
             const channelSetting = {
                 channelName: finalName,
-                limit: setting.channelSettings.limit,
-                bitrate: setting.channelSettings.bitrate
+                limit: usettings[newMember.id].limit ? usettings[newMember.id].limit : setting.channelSettings.limit,
+                bitrate: usettings[newMember.id].bitrate ? usettings[newMember.id].bitrate : setting.channelSettings.bitrate
             }
             let category = setting.category ? newMember.guild.channels.cache.get(setting.category) : channel.parent;
             const muterole = newMember.guild.roles.cache.reduce((a, v) => { if (v.name == "Muted") a.push(v); return a; }, []);
@@ -370,6 +401,15 @@ client.login(config.token);
 //#region chat
 client.on("message", async message => {
     if (message.author.bot) return;
+    var storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
+    if (!storedSettings) {
+        const newSettings = new GuildSettings({
+            gid: message.guild.id
+        });
+        await newSettings.save().catch(() => { });
+        storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
+    }
+    if (!storedSettings.chatreply) return;
     if (message.content.includes("早安")) {
         if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805") {
             const now = new Date();
@@ -461,4 +501,22 @@ client.on("message", async message => {
         return;
     }
 })
-//#endregion
+
+function saveUser(user = null, key = null, data = null) {
+    return new Promise(async (resolve) => {
+        if (user) {
+            if (!key) {
+                usettings[user.id] = data;
+            } else {
+                if (!Object.keys(usettings).includes(user.id)) await saveUser(user, null, { name: "", limit: 0, bitrate: 0 });
+                usettings[user.id][key] = data;
+            }
+        }
+        try {
+            fs.writeFileSync(require.resolve(settingUser), JSON.stringify(usettings));
+        } catch (e) {
+            console.error(e);
+        }
+        resolve(true);
+    })
+}

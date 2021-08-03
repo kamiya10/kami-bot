@@ -1,6 +1,11 @@
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const functions = require("../../function/loader");
+const settingUser = "../../UserSetting.json";
+const fs = require("fs");
+const censor = require('discord-censor');
+let userSetting;
+
 
 /**
  * 
@@ -8,15 +13,14 @@ const functions = require("../../function/loader");
  * @param {Array} args
  * @param {Discord.Client} client
  * @param {mongoose.Document<any, {}} settings
+ * @param {object} userSetting
  * @returns 
  */
-async function voice(message, args, client, settings) {
+async function voice(message, args, client, settings, uSetting) {
+    userSetting = uSetting;
     try {
         if (message.channel.type == "dm") return;
         functions.log.command(message, client, voice.prop.name);
-
-        if (!message.member.permissions.has("MANAGE_CHANNELS"))
-            return await message.reply(`你沒有權限這麼做！`);
 
         const setting = settings.voice.find(o => o.creator == args[1]);
         const placeholder = {
@@ -26,6 +30,156 @@ async function voice(message, args, client, settings) {
         }
 
         if (!args.length) {
+            const embed = new Discord.MessageEmbed()
+                .setColor(client.colors.info)
+                .setTitle("指令：voice")
+                .setDescription("在要設定的東西前面加上 \`$\` 號可以設為預設")
+                .addField("頻道相關", "\`name\`\n\`limit\`\n\`bitrate\`", true)
+                .addField("​", "變更頻道名稱\n變更頻道人數上限\n變更頻道位元率", true)
+                .addField("​", "​", true);
+            if (message.member.permissions.has("MANAGE_CHANNELS"))
+                embed
+                    .addField("管理員指令", "\`list\`\n\`setup\`\n\`add\`\n\`set\`", true)
+                    .addField("​", "顯示所有已設定自動語音頻道設定\n設定語音頻道（互動式）\n新增一個頻道為自動語音頻道\n設定自動語音頻道設定", true)
+                    .addField("​", "​", true);
+
+            await message.reply(embed);
+            return;
+        }
+
+        if (args[0] == "name") {
+            let name = censor.censor(args.slice(1).join(" ")), global = false;
+            if (name.startsWith("$")) {
+                name = name.slice(1);
+                global = true;
+            }
+
+            if (message.member.voice.channel) {
+                if (message.member.permissionsIn(message.member.voice.channel.id).has("MANAGE_CHANNELS")) {
+                    const success = new Discord.MessageEmbed()
+                        .setColor(client.colors.success)
+                        .setDescription(`已將頻道名稱設為 ${name.replace(/{.+}/g, all => placeholder[all] || all)}`);
+                    if (global) {
+                        await saveUser(message.author, "name", name);
+                    }
+
+                    await message.member.voice.channel.setName(name.replace(/{.+}/g, all => placeholder[all] || all));
+                    await message.reply(success);
+                    return;
+                } else {
+                    const error = new Discord.MessageEmbed()
+                        .setColor(client.colors.error)
+                        .setDescription(`${message.member}, 你沒有權限這樣做`);
+                    await message.reply(error);
+                    return;
+                }
+            } else {
+                const error = new Discord.MessageEmbed()
+                    .setColor(client.colors.error)
+                    .setDescription(`${message.member}, 你必須在語音頻道內才能這樣做`);
+                await message.reply(error);
+                return;
+            }
+        };
+
+        if (args[0] == "limit") {
+            let limit = args[1], global = false;
+            if (limit.startsWith("$")) {
+                limit = limit.slice(1);
+                global = true;
+            }
+            limit = parseInt(limit);
+            if (limit > 99 || limit < 0) {
+                const error = new Discord.MessageEmbed()
+                    .setColor(client.colors.error)
+                    .setTitle(client.embedStat.error)
+                    .setDescription("人數上限必須介於 0 ~ 99");
+                await message.reply(error);
+                return;
+            };
+
+            if (message.member.voice.channel) {
+                if (message.member.permissionsIn(message.member.voice.channel.id).has("MANAGE_CHANNELS")) {
+                    const success = new Discord.MessageEmbed()
+                        .setColor(client.colors.success)
+                        .setDescription(`已將頻道人數上限設為 \`${limit ? `${limit}\` 人` : "無限制\`"}`);
+
+                    if (global) {
+                        await saveUser(message.author, "limit", limit);
+                    }
+
+                    await message.member.voice.channel.setUserLimit(+limit);
+                    await message.reply(success);
+                    return;
+                } else {
+                    const error = new Discord.MessageEmbed()
+                        .setColor(client.colors.error)
+                        .setDescription(`${message.member}, 你沒有權限這樣做`);
+                    await message.reply(error);
+                    return;
+                }
+            } else {
+                const error = new Discord.MessageEmbed()
+                    .setColor(client.colors.error)
+                    .setDescription(`${message.member}, 你必須在語音頻道內才能這樣做`);
+                await message.reply(error);
+                return;
+            }
+        };
+
+        if (args[0] == "bitrate") {
+            let bitrate = args[1], global = false;
+            if (bitrate.startsWith("$")) {
+                bitrate = bitrate.slice(1);
+                global = true;
+            }
+            bitrate = parseInt(bitrate);
+            var gbr = bitrate;
+            if (message.member.voice.channel) {
+                if (message.member.permissionsIn(message.member.voice.channel.id).has("MANAGE_CHANNELS")) {
+                    let desc = `已將頻道位元率設為 \`${bitrate / 1000}\` kbps`
+                    const success = new Discord.MessageEmbed()
+                        .setColor(client.colors.success)
+
+                    if (bitrate < 8000) {
+                        if (global) desc += `\nℹ️ 由於Discord限制，預設位元率將設為 \`8\` kbps`;
+                        gbr = 8000;
+                        success.setColor(client.colors.warning);
+                    }
+                    if (bitrate > 96000) {
+                        if (global) desc += `\nℹ️ 由於Discord限制，預設位元率將設為 \`96\` kbps`;
+                        gbr = 96000;
+                        success.setColor(client.colors.warning);
+                    }
+                    if (global) {
+                        await saveUser(message.author, "bitrate", gbr);
+                    }
+
+                    success.setDescription(desc);
+
+                    await message.member.voice.channel.setBitrate(bitrate).catch(async () => {
+                        await message.member.voice.channel.setBitrate(gbr);
+                        success.setDescription(desc.replace(bitrate / 1000, gbr / 1000));
+                    });
+                    await message.reply(success);
+                    return;
+                } else {
+                    const error = new Discord.MessageEmbed()
+                        .setColor(client.colors.error)
+                        .setDescription(`${message.member}, 你沒有權限這樣做`);
+                    await message.reply(error);
+                    return;
+                }
+            } else {
+                const error = new Discord.MessageEmbed()
+                    .setColor(client.colors.error)
+                    .setDescription(`${message.member}, 你必須在語音頻道內才能這樣做`);
+                await message.reply(error);
+                return;
+            }
+        };
+
+        if (args[0] == "list") {
             let pages = [], index = 0, control = false;
 
             if (settings.voice.length) {
@@ -55,7 +209,7 @@ async function voice(message, args, client, settings) {
                         .setTitle(`自動語音頻道設定 (第 ${i + 1} 頁 / 共 ${a.length} 頁)`)
                         .addField("建立語音頻道", `\`${v.creator}\` ${client.channels.cache.get(v.creator)}`)
                         .addField("語音頻道類別", v.category ? `\`${v.category}\` ${client.channels.cache.get(v.category).name}` : "`未設定語音頻道類別`")
-                        .addField("頻道設定", `頻道名稱: ${v.channelSettings.name ? `\`${v.channelSettings.name}\`\n　　預覽: ${v.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)}` : `\`未設定\`\n　　預設: {user.displayName} 的房間\n　　預覽: ${"{user.displayName} 的房間".replace(/{.+}/g, all => placeholder[all] || all)}`}\n　位元率: \`${v.channelSettings.bitrate}\`bps\n人數限制: \`${v.channelSettings.limit ?v.channelSettings.limit :"無限制"}\``)
+                        .addField("頻道設定", `頻道名稱: ${v.channelSettings.name ? `\`${v.channelSettings.name}\`\n　　預覽: ${v.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)}` : `\`未設定\`\n　　預設: {user.displayName} 的房間\n　　預覽: ${"{user.displayName} 的房間".replace(/{.+}/g, all => placeholder[all] || all)}`}\n　位元率: \`${v.channelSettings.bitrate}\`bps\n人數限制: \`${v.channelSettings.limit ? v.channelSettings.limit : "無限制"}\``)
                         .setFooter(tip[Math.floor(Math.random() * tip.length)])
                         .setTimestamp();
                     if (noPermission.length) embed.setDescription(`** :warning: 這個類別缺少以下權限 ${noPermission.join(", ")}**`)
@@ -97,6 +251,9 @@ async function voice(message, args, client, settings) {
         };
 
         if (args[0] == "setup") {
+            if (!message.member.permissions.has("MANAGE_CHANNELS"))
+                return await message.reply(`你沒有權限這麼做！`);
+
             const channel = message.channel;
             const phase1 = new Discord.MessageEmbed()
                 .setColor(client.colors.info)
@@ -221,6 +378,9 @@ async function voice(message, args, client, settings) {
         };
 
         if (args[0] == "add") {
+            if (!message.member.permissions.has("MANAGE_CHANNELS"))
+                return await message.reply(`你沒有權限這麼做！`);
+
             if (setting) {
                 const embed = new Discord.MessageEmbed()
                     .setColor(client.colors.error)
@@ -238,7 +398,7 @@ async function voice(message, args, client, settings) {
                         limit: 0,
                         text: {
                             name: "",
-                            category: category.id,
+                            category: "",
                             reactmsg: ""
                         }
                     }
@@ -254,6 +414,9 @@ async function voice(message, args, client, settings) {
         };
 
         if (args[0] == "set") {
+            if (!message.member.permissions.has("MANAGE_CHANNELS"))
+                return await message.reply(`你沒有權限這麼做！`);
+
             if (setting) {
                 if (args[2].toLowerCase() == "category") {
                     const old = settings.voice[settings.voice.map(e => e.creator).indexOf(args[1])];
@@ -340,6 +503,9 @@ async function voice(message, args, client, settings) {
         };
 
         if (args[0] == "remove") {
+            if (!message.member.permissions.has("MANAGE_CHANNELS"))
+                return await message.reply(`你沒有權限這麼做！`);
+
             if (setting) {
                 settings.voice.splice(settings.voice.indexOf(setting), 1);
                 await settings.save().catch(() => { });
@@ -369,9 +535,9 @@ voice.prop = {
     desc: "顯示自動語音頻道設定",
     args: [
         {
-            name: "setup|add|set|remove",
+            name: "list|setup|add|set|remove",
             type: "",
-            desc: "setup: 開始快速設定\nadd: 將一個頻道新增為自動語音頻道\nset: 設定自動語音頻道設定\nremove: 將一個頻道從自動語音頻道中刪除",
+            desc: "list: 顯示已設定頻道\nsetup: 開始快速設定\nadd: 將一個頻道新增為自動語音頻道\nset: 設定自動語音頻道設定\nremove: 將一個頻道從自動語音頻道中刪除",
             option: true
         }
     ],
@@ -380,14 +546,21 @@ voice.prop = {
 };
 module.exports = voice;
 
-/*/
-Object.prototype.keyify = (obj, prefix = '') =>
-    Object.keys(obj).reduce((res, el) => {
-        if (Array.isArray(obj[el])) {
-            return res;
-        } else if (typeof obj[el] === 'object' && obj[el] !== null) {
-            return [...res, ...keyify(obj[el], prefix + el + '.')];
+function saveUser(user = null, key = null, data = null) {
+    return new Promise(async (resolve) => {
+        if (user) {
+            if (!key) {
+                userSetting[user.id] = data;
+            } else {
+                if (!Object.keys(userSetting).includes(user.id)) await saveUser(user, null, { name: "", limit: 0, bitrate: 0 });
+                userSetting[user.id][key] = data;
+            }
         }
-        return [...res, prefix + el];
-    }, []);
-*/
+        try {
+            fs.writeFileSync(require.resolve(settingUser), JSON.stringify(userSetting));
+        } catch (e) {
+            console.error(e);
+        }
+        resolve(true);
+    })
+}
