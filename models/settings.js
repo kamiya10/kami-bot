@@ -5,6 +5,7 @@ const { Schema, model } = require("mongoose");
 const guildSettingSchema = new Schema({
     gid: { type: String },
     prefix: { type: String, default: "k3!" },
+    chatreply: { type: Boolean, default: false },
     voice: { type: Array, default: [] }
 });
 

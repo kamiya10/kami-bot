@@ -42,6 +42,7 @@ module.exports = {
         }
     },
     admin: {
+        chatreply: require('./admin/chatreply'),
         purge: require('./admin/purge'),
         voice: require('./admin/voice'),
         _prop: {
