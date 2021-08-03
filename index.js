@@ -234,7 +234,7 @@ client.on("voiceStateUpdate", async (_oldMember, newMember) => {
 
                     const embed = new Discord.MessageEmbed()
                         .setColor(client.colors.error)
-                        .setDescription(`你要再等待 \`${timeLeft.toFixed(1)}\` 秒才能再次使用 \`自動語音頻道功能\` 。`);
+                        .setDescription(`你正在冷卻！\n你要再等待 \`${timeLeft.toFixed(1)}\` 秒才能再次使用 \`自動語音頻道\` 功能。`);
                     await newMember.setChannel(null);
                     await newMember.member.send(embed).catch(async () => {
                         if (newMember.guild.id == "760818507628806165")
