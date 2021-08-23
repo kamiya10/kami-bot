@@ -1,10 +1,9 @@
-
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 const functions = require("../../function/loader");
-const Sauce = require('node-sauce')
-let saucenao = new Sauce("05e07f80d5ad365cb7c6c58568c21345f5c145d3")
+const Sauce = require("node-sauce");
+const saucenao = new Sauce("05e07f80d5ad365cb7c6c58568c21345f5c145d3");
 saucenao.numres = 5;
-const _ = require('lodash');
+const _ = require("lodash");
 
 let results = [];
 /**
@@ -18,13 +17,13 @@ let c;
 
 /**
  * sauce
- * @param {Discord.Message} message 
+ * @param {Discord.Message} message
  * @param {Array} args
- * @returns 
+ * @returns
  */
 async function sauce(message, args = undefined, client) {
     try {
-        functions.log.command(message, client, sauce.prop.name)
+        functions.log.command(message, client, sauce.prop.name);
         results = [];
         if (args.length) {
             args.forEach(v => {
@@ -34,31 +33,34 @@ async function sauce(message, args = undefined, client) {
                             const lastMessage = msg;
                             lastMessage.attachments.forEach(async attachment => {
                                 const url = attachment.url;
-                                await get_nao(url)
-                            })
+                                await get_nao(url);
+                            });
                             m = message;
                             c = lastMessage.attachments.size;
                         });
-                } else if (v.match(/(https?:\/\/.*\.(?:png|jpe?g))/i)) {
+                }
+                else if (v.match(/(https?:\/\/.*\.(?:png|jpe?g))/i)) {
                     return;
                 }
-            })
-        } else {
+            });
+        }
+        else {
             message.channel.messages.fetch().then((messages) => {
                 const lastMessage = messages.sort((a, b) => b.createdTimestamp - a.createdTimestamp).filter((m) => m.attachments.size > 0).first();
                 lastMessage.attachments.forEach(async attachment => {
                     const url = attachment.url;
-                    await get_nao(url)
-                })
+                    await get_nao(url);
+                });
                 m = message;
                 c = lastMessage.attachments.size;
-            })
+            });
         }
-    } catch (e) {
-        await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``)
-        return console.error(e)
     }
-};
+    catch (e) {
+        await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``);
+        return console.error(e);
+    }
+}
 sauce.prop = {
     name: "sauce",
     desc: "*(beta)* 查尋圖源",
@@ -70,26 +72,26 @@ sauce.prop = {
             option: true
         }
     ],
-    exam: [''],
+    exam: [""],
     guild: true
 };
 module.exports = sauce;
 
 async function get_nao(url) {
     await saucenao(url).then(async matches => {
-        console.log(matches)
+        console.log(matches);
         const obj = await parse_nao(matches, url);
         return pushresult(obj, matches);
-    })
+    });
 }
 
 /**
- * 
- * @param {array} matches 
- * @param {string} url 
+ *
+ * @param {array} matches
+ * @param {string} url
  */
-async function parse_nao(matches, url) {
-    const sites = new Array(999)
+function parse_nao(matches, url) {
+    const sites = new Array(999);
     sites[5] = "pixiv";
     sites[9] = "Danbooru";
     sites[12] = "Yande.re";
@@ -100,15 +102,15 @@ async function parse_nao(matches, url) {
     sites[41] = "Twitter";
     sites[999] = "ALL";
     if (matches.length) {
-        for (i = 0; i < matches.length; i++) {
+        for (let i = 0; i < matches.length; i++) {
             const match = matches[i];
             const site_index = match.index_id;
             const site = sites[site_index];
             if (site) {
                 const similarity = match.similarity;
                 const thumbnail = match.thumbnail;
-                const urls = _.flattenDeep(matches.map(a => "source" in a ?a.source ? [a.source, a.ext_urls] :a.ext_urls : a.ext_urls));
-                let result = {
+                const urls = _.flattenDeep(matches.map(a => "source" in a ? a.source ? [a.source, a.ext_urls] : a.ext_urls : a.ext_urls));
+                const result = {
                     found: site ? true : false,
                     origin: url,
                     request: `https://saucenao.com/search.php?db=999&url=${url}`,
@@ -125,7 +127,7 @@ async function parse_nao(matches, url) {
                         id: null
                     },
                     ext_url: urls
-                }
+                };
                 // pixiv
                 if (site_index == 5) {
                     result.title = match.title;
@@ -199,7 +201,8 @@ async function parse_nao(matches, url) {
                 return result;
             }
         }
-    } else {
+    }
+    else {
         return undefined;
     }
 }
@@ -207,7 +210,7 @@ async function parse_nao(matches, url) {
  * @param {{request: string, similarity: string, thumbnail: string, site: string, ext_url: string|string[], title: string, artwork: {name: string, id?: string, url?: string}, author: {name: string, id?: string}}} obj
  */
 function pushresult(obj, matches) {
-    console.log(obj)
+    console.log(obj);
     if (obj.found)
         results.push({ name: `${obj.site} | ${obj.title}`, value: `相似度: ${obj.similarity}%\n作者: ${obj.author.name}${obj.author.id ? ` (${obj.author.id})` : ""}\n連結: ${obj.ext_url.length == 1 ? `[SauceNAO](${obj.request}) | [${obj.site}](${obj.ext_url[0]})` : `[SauceNAO](${obj.request}) | ${formatURL(matches).join(" | ")}`}` });
     if (results.length == c) {
@@ -235,23 +238,23 @@ function pushresult(obj, matches) {
 }
 
 function formatURL(matches) {
-    let final = [];
+    const final = [];
     matches.forEach(v => {
         if (parseFloat(v.similarity) >= matches[0].similarity - 10) {
             if ("ext_urls" in v) {
                 if ("source" in v) {
                     if (v.source) {
-                        const domain = v.source.replace("www.", "").match(/[-a-zA-Z0-9@:%_\+~#=]{1,256}(?=\.)/).length ? v.source.replace("www.", "").match(/[-a-zA-Z0-9@:%_\+~#=]{1,256}(?=\.)/)[0] : undefined;
-                        if (domain) final.push(`[${domain}](${v.source})`)
+                        const domain = v.source.replace("www.", "").match(/[-a-zA-Z0-9@:%_+~#=]{1,256}(?=\.)/).length ? v.source.replace("www.", "").match(/[-a-zA-Z0-9@:%_+~#=]{1,256}(?=\.)/)[0] : undefined;
+                        if (domain) final.push(`[${domain}](${v.source})`);
                     }
-                    }
+                }
                 v.ext_urls.forEach(val => {
-                    const domain = val.replace("www.", "").match(/[-a-zA-Z0-9@:%_\+~#=]{1,256}(?=\.)/).length ? val.replace("www.", "").match(/[-a-zA-Z0-9@:%_\+~#=]{1,256}(?=\.)/)[0] : undefined;
-                    if (domain) final.push(`[${domain}](${val})`)
-                })
+                    const domain = val.replace("www.", "").match(/[-a-zA-Z0-9@:%_+~#=]{1,256}(?=\.)/).length ? val.replace("www.", "").match(/[-a-zA-Z0-9@:%_+~#=]{1,256}(?=\.)/)[0] : undefined;
+                    if (domain) final.push(`[${domain}](${val})`);
+                });
             }
-        };
-    })
+        }
+    });
     console.log(final);
     return final;
 }

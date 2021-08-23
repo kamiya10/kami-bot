@@ -1,3 +1,3 @@
 # kamiya-bot
 
-使用 discord.js v13 commit [`1ecda83da7953052977e6297143b82f89adf1058`](https://github.com/discordjs/discord.js/commit/1ecda83da7953052977e6297143b82f89adf1058)
+使用 discord.js v13 commit [`a3cbcca13da1af416c219bd64a0a6e84bb87a057`](https://github.com/discordjs/discord.js/commit/a3cbcca13da1af416c219bd64a0a6e84bb87a057)

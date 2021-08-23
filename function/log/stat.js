@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 
 /**
  * @param {Discord.Client} client
@@ -10,7 +10,7 @@ module.exports = async function (client, status, id = undefined) {
 
     const embed = new Discord.MessageEmbed()
         .setAuthor("⚙️ 狀態")
-        .setTimestamp()
+        .setTimestamp();
     if (status == 0)
         embed.setColor(client.colors.success).setDescription("🟢 機器人已上線");
     if (status == 1)
@@ -24,4 +24,4 @@ module.exports = async function (client, status, id = undefined) {
     if (status == 12)
         embed.setColor(client.colors.error).setDescription(`🔴 Shard #${id} 已斷線`);
     await channel.send(embed);
-}
+};

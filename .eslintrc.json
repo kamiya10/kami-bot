@@ -1,0 +1,48 @@
+{
+	"extends": "eslint:recommended",
+	"env": {
+		"node": true,
+		"es6": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 2021,
+        "sourceType": "module"
+	},
+	"rules": {
+        "array-bracket-spacing": ["warn", "always", { "singleValue": false }],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "comma-spacing": ["warn", { "before": false, "after": true }],
+        "curly": ["warn", "multi"],
+		"dot-location": ["error", "property"],
+        "eol-last": ["error", "never"],
+		"indent": ["warn", "tab"],
+        "key-spacing": ["warn", {
+            "beforeColon": false,
+            "afterColon": true,
+            "mode": "strict",
+            "align": {
+                "beforeColon": true,
+                "afterColon": true,
+                "on": "colon"
+            }
+        }],
+		"max-nested-callbacks": ["error", { "max": 4 }],
+		"max-statements-per-line": ["error", { "max": 2 }],
+		"no-multi-spaces": "warn",
+		"no-multiple-empty-lines": ["warn", { "max": 1, "maxBOF": 0 }],
+		"no-trailing-spaces": "warn",
+		"no-unused-vars": "warn",
+        "no-useless-escape": "warn",
+		"no-var": "error",
+        "object-curly-spacing": ["warn", "always"],
+        "object-property-newline": ["warn", { "allowAllPropertiesOnSameLine": true }],
+		"prefer-const": "warn",
+        "quotes": ["warn", "double"],
+        "require-await": "warn",
+		"semi": ["warn", "always"]
+	},
+    "globals": {
+        "config": true,
+        "Discord": false
+    }
+}

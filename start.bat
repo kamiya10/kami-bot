@@ -1,6 +1,6 @@
 @echo off
 :start
-node index.js
+node --experimental-modules index.js
 echo.
 echo.
 echo.

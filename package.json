@@ -55,5 +55,8 @@
     "ytdl": "^1.4.1",
     "ytdl-core": "^4.8.3",
     "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
   }
 }

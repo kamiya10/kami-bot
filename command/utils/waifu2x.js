@@ -1,37 +1,39 @@
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 const waifu = require("waifu2x").default;
-const fs = require('fs');
-const request = require('request');
-const sizeOf = require('image-size');
+const fs = require("fs");
+const request = require("request");
+const sizeOf = require("image-size");
 const filesize = require("filesize");
-const imgur = require('imgur-upload');
+const imgur = require("imgur-upload");
 imgur.setClientID("e7c7974aa20c63c");
 
 const functions = require("../../function/loader");
 
 /**
- * 
- * @param {Discord.Message} message 
+ *
+ * @param {Discord.Message} message
  * @param {Array} args
  * @param {Discord.Client} client
- * @returns 
+ * @returns
  */
 async function waifu2x(message, args, client) {
     try {
-        functions.log.command(message, client, waifu2x.prop.name)
+        functions.log.command(message, client, waifu2x.prop.name);
         if (message.attachments.size) {
             message.attachments.forEach(a => {
                 download(a.attachment, a.name, () => {
-                    console.log('done');
+                    console.log("done");
                     scale(message, args, a.name);
-                })
+                });
             });
-        } else {
+        }
+ else {
             await message.reply("你沒有提供圖片");
         }
-    } catch (e) {
-        await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``)
-        return console.error(e)
+    }
+ catch (e) {
+        await message.reply(`發生了預料外的錯誤 \`${e.toString()}\``);
+        return console.error(e);
     }
 }
 waifu2x.prop = {
@@ -57,25 +59,25 @@ waifu2x.prop = {
             option: true
         }
     ],
-    exam: [''],
+    exam: [""],
     guild: true
 };
 module.exports = waifu2x;
 
-var download = function (uri, filename, callback) {
-    request.head(uri, function (__err, res, __body) {
-        console.log('content-type:', res.headers['content-type']);
-        console.log('content-length:', res.headers['content-length']);
+const download = function (uri, filename, callback) {
+    request.head(uri, function (__err, res, ) {
+        console.log("content-type:", res.headers["content-type"]);
+        console.log("content-length:", res.headers["content-length"]);
 
-        request(uri).pipe(fs.createWriteStream(`./cache/${filename}`)).on('close', callback);
+        request(uri).pipe(fs.createWriteStream(`./cache/${filename}`)).on("close", callback);
     });
 };
 
 /**
- * 
- * @param {Discord.Message} message 
- * @param {*} args 
- * @param {*} file 
+ *
+ * @param {Discord.Message} message
+ * @param {*} args
+ * @param {*} file
  */
 async function scale(message, args, file) {
     const noises = parseInt(args[args.indexOf("-noise") + 1]) ? parseInt(args[args.indexOf("-noise") + 1]) : 0;
@@ -91,10 +93,11 @@ async function scale(message, args, file) {
     console.log(stats.size, fileSizeInMb);
     if (stats.size < 8388600) {
         const attachment = new Discord.MessageAttachment()
-            .setFile(`./cache/scaled/${file}`)
+            .setFile(`./cache/scaled/${file}`);
         await message.reply(`你要的 ${scales} 倍大 :P \n${file} | ${dimensions.width}x${dimensions.height} | ${fileSizeInMb}`, { files: [attachment] });
         return;
-    } else {
+    }
+ else {
         imgur.upload(`./cache/scaled/${file}`, async (err, res) => {
             console.log(res.data.link); //log the imgur url
             await message.reply(`你要的 ${scales} 倍大 :P \n${file} | ${dimensions.width}x${dimensions.height} | ${fileSizeInMb}\n${res.data.link}`);
