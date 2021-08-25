@@ -621,6 +621,7 @@ client.on("message", async message => {
             || (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("skin")) && !message.content.startsWith("LOL")
             || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("skin"))
             || (message.content.toLowerCase().includes("give") && message.content.toLowerCase().includes("trade") && message.content.toLowerCase().includes("send"))
+            || (message.content.toLowerCase().includes("skin") && message.content.toLowerCase().includes("trade"))
 		) {
 			console.log(`message in ${message.channel.name}, ${message.guild.name}`);
 			console.log(message.content);

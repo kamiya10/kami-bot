@@ -47,5 +47,7 @@ module.exports = [
 	"stleamcormmynity.ru",
 	"sway-game.com",
 	"discord-gift.online",
-	"discorcl.click"
+	"discorcl.click",
+	"discord-partner.com",
+	"steamcommrnunity.com"
 ];
