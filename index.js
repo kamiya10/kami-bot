@@ -635,7 +635,7 @@ client.on("message", async message => {
 					embed.setAuthor("kick");
 
 				await message.member.kick({ days: 7, reason: zh ? "近期詐騙網址" : "Sending recent scam urls." }).then(async () => {
-					await message.channel.send(`:octagonal_sign: ${zh ? "已踢出成員" : "Member Kicked"}`, { embed: embed });
+					await message.channel.send(`:octagonal_sign: ${zh ? "已踢出成員" : "Member Kicked"}`, { embed: embed }).then(ms => setTimeout(async () => await ms.delete(), 60000));
 				}).catch(e => console.log(e));
 			}
 			return;
