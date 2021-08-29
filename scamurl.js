@@ -49,5 +49,19 @@ module.exports = [
 	"discord-gift.online",
 	"discorcl.click",
 	"discord-partner.com",
-	"steamcommrnunity.com"
+	"steamcommrnunity.com",
+	"bit.ly/3B8bmYP",
+	"bit.ly/3yn66yQ",
+	"bit.ly/3mrGKNQ",
+	"bit.ly/3zgCCUr",
+	"bit.ly/3ziH8Sq",
+	"hope-nitro.com",
+	"gave-nitro.com",
+	"discord-steam.ru",
+	"stearncommunity.link",
+	"dliscord-glft.ru.com",
+	"dliscord-glft.ru",
+	"dliscord-glft.com",
+	"discord-airdrop.com",
+	"dlscord-nitro.link"
 ];

@@ -609,7 +609,7 @@ client.on("message", async message => {
 		const zh = message.guild.preferredLocale == "zh-TW";
 
 		const embed = new Discord.MessageEmbed()
-			.setColor("#ff0000")
+			.setColor("#ffa500")
 			.setDescription(zh ? `成員：${message.author}\n原因：近期詐騙網址` : `Member：${message.author}\nReason：Sending recent scam urls.`);
 
 		if (
@@ -622,6 +622,7 @@ client.on("message", async message => {
             || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("skin"))
             || (message.content.toLowerCase().includes("give") && message.content.toLowerCase().includes("trade") && message.content.toLowerCase().includes("send"))
             || (message.content.toLowerCase().includes("skin") && message.content.toLowerCase().includes("trade"))
+			|| (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("hack"))
 		) {
 			console.log(`message in ${message.channel.name}, ${message.guild.name}`);
 			console.log(message.content);
