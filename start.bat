@@ -1,15 +1,5 @@
-@echo off
 :start
-node --experimental-modules index.js
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
+
+node .
 
 goto start

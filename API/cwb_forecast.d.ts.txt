@@ -1,0 +1,31 @@
+interface BaseRequestOptions {
+    limit?: number;
+    offset?: number;
+    format?: "JSON" | "XMAL";
+    sort?: "time";
+}
+
+interface ForecastRequestOptions extends BaseRequestOptions {
+    elementName?: [ "Wx" | "PoP" | "CI" | "MinT" | "MaxT" ];
+    startTime?: Date;
+    timeFrom?: Date;
+    timeTo?: Date;
+}
+
+interface TownForecastRequestOptions extends ForecastRequestOptions {
+    elementName?: [ "Wx" | "PoP12h" | "AT" | "T" | "RH" | "CI" | "WeatherDescription" | "PoP6h" | "WS" |"WD" | "Td" ];
+}
+
+interface Forecast {
+
+}
+
+declare module "CWB_Forecast" {
+    export class CWB_Forcast {
+        constructor(apikey: string)
+        static #baseurl = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/";
+        async forecast(options?: BaseRequestOptions): Forecast
+        async forecast_county(options?: BaseRequestOptions): CountyForecast
+
+    }
+}

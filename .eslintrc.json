@@ -5,18 +5,21 @@
 		"es6": true
 	},
 	"parserOptions": {
-		"ecmaVersion": 2021,
-        "sourceType": "module"
+		"ecmaVersion": "latest"
 	},
+	"plugins": ["require-sort"],
 	"rules": {
-        "array-bracket-spacing": ["warn", "always", { "singleValue": false }],
-        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-        "comma-spacing": ["warn", { "before": false, "after": true }],
-        "curly": ["warn", "multi"],
+		"require-sort/require-sort": "warn",
+		"arrow-spacing": ["warn", { "before": true, "after": true }],
+		"brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+		"comma-dangle": ["error", "always-multiline"],
+		"comma-spacing": "error",
+		"comma-style": "error",
+		"curly": ["error", "multi"],
 		"dot-location": ["error", "property"],
-        "eol-last": ["error", "never"],
-		"indent": ["warn", "tab"],
-        "key-spacing": ["warn", {
+		"handle-callback-err": "off",
+		"indent": ["error", "tab", { "SwitchCase": 1}],
+		"key-spacing": ["warn", {
             "beforeColon": false,
             "afterColon": true,
             "mode": "strict",
@@ -26,23 +29,36 @@
                 "on": "colon"
             }
         }],
+		"keyword-spacing": "error",
 		"max-nested-callbacks": ["error", { "max": 4 }],
 		"max-statements-per-line": ["error", { "max": 2 }],
-		"no-multi-spaces": "warn",
-		"no-multiple-empty-lines": ["warn", { "max": 1, "maxBOF": 0 }],
-		"no-trailing-spaces": "warn",
-		"no-unused-vars": "warn",
-        "no-useless-escape": "warn",
+		"no-console": "off",
+		"no-constant-condition": ["error", { "checkLoops": false }],
+		"no-empty-function": "error",
+		"no-floating-decimal": "error",
+		"no-inline-comments": "error",
+		"no-irregular-whitespace": ["warn", { "skipTemplates": true }],
+		"no-lonely-if": "error",
+		"no-multi-spaces": "error",
+		"no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
+		"no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
+		"no-trailing-spaces": ["error"],
+		"no-unused-vars": ["warn"],
 		"no-var": "error",
-        "object-curly-spacing": ["warn", "always"],
-        "object-property-newline": ["warn", { "allowAllPropertiesOnSameLine": true }],
-		"prefer-const": "warn",
-        "quotes": ["warn", "double"],
-        "require-await": "warn",
-		"semi": ["warn", "always"]
-	},
-    "globals": {
-        "config": true,
-        "Discord": false
-    }
+		"object-curly-spacing": ["error", "always"],
+		"prefer-const": "error",
+		"quotes": ["error", "double"],
+		"semi": ["error", "always"],
+		"space-before-blocks": "error",
+		"space-before-function-paren": ["error", {
+			"anonymous": "never",
+			"named": "never",
+			"asyncArrow": "always"
+		}],
+		"space-in-parens": "error",
+		"space-infix-ops": "error",
+		"space-unary-ops": "error",
+		"spaced-comment": "error",
+		"yoda": "error"
+	}
 }
