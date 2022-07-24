@@ -1,7 +1,3 @@
-# Cache
-cache
-cookies.txt
-
 # Logs
 logs
 *.log
@@ -78,5 +74,4 @@ typings/
 
 # FuseBox cache
 .fusebox/
-test.js
-UserSetting.json
+db.json

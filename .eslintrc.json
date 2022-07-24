@@ -10,12 +10,13 @@
 	},
 	"rules": {
         "array-bracket-spacing": ["warn", "always", { "singleValue": false }],
+        "arrow-spacing": ["warn"],
         "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
         "comma-spacing": ["warn", { "before": false, "after": true }],
         "curly": ["warn", "multi"],
 		"dot-location": ["error", "property"],
         "eol-last": ["error", "never"],
-		"indent": ["warn", "tab"],
+		"indent": ["warn", "tab", { "SwitchCase": 1 }],
         "key-spacing": ["warn", {
             "beforeColon": false,
             "afterColon": true,
@@ -39,10 +40,15 @@
 		"prefer-const": "warn",
         "quotes": ["warn", "double"],
         "require-await": "warn",
-		"semi": ["warn", "always"]
+		"semi": ["warn", "always"],
+        "space-before-blocks": ["warn", "always"],
+        "space-infix-ops": "warn"
 	},
     "globals": {
         "config": true,
-        "Discord": false
+        "configMusic": true,
+        "Discord": false,
+        "DiscordVoice": false,
+        "Youtube": false
     }
 }

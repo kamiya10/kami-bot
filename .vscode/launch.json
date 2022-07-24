@@ -1,10 +1,9 @@
 {
-    // 使用 IntelliSense 以得知可用的屬性。
-    // 暫留以檢視現有屬性的描述。
-    // 如需詳細資訊，請瀏覽: https://go.microsoft.com/fwlink/?linkid=830387
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    
         {
             "type": "pwa-node",
             "request": "launch",
@@ -12,12 +11,16 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\index.js",
-            "sourceMaps": true,
-            "resolveSourceMapLocations": [
-                "${workspaceFolder}/**",
-                "!**/node_modules/**"
-            ]
+            "program": "${workspaceFolder}\\index.js"
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Launch Current",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${file}"
         }
     ]
 }

@@ -1,336 +1,522 @@
+/* eslint-disable no-prototype-builtins */
+require("dotenv").config();
 require("console-stamp")(console, {
-	format: ":date(yyyy/mm/dd HH:MM:ss).dim"
+	format : ":date(yyyy/mm/dd HH:MM:ss).dim :_label",
+	tokens : {
+		_label: (arg) => {
+			const { method, defaultTokens } = arg;
+			let label = defaultTokens.label(arg);
+			if (method === "error") label = chalk`{red ${label}}`;
+			if (method === "debug") label = chalk`{yellow ${label}}`;
+			return label;
+		}
+	}
 });
-const Discord = require("discord.js");
-const mongoose = require("mongoose");
-const config = require("./config");
-const GuildSettings = require("./models/settings");
-const Dashboard = require("./dashboard/dashboard");
+const chalk = require("chalk");
 const censor = require("discord-censor");
+const { DiscordTogether } = require("discord-together");
+global.Discord = require("discord.js");
+//const Discord = require("discord.js");
+const WebhookLogger = new Discord.WebhookClient({ url: "https://discord.com/api/webhooks/887472531001446401/gHIHIGs7wuiVEJQKlT0iUZDHpIJ4dzWqjKvllMWqThxr0LPZX2zcyoaEpGv96UtZ-H3L" });
+
+const Client = new Discord.Client({
+	intents         : [ "GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_MESSAGE_REACTIONS", "GUILD_PRESENCES", "GUILD_VOICE_STATES" ],
+	allowedMentions : { repliedUser: false }
+});
+Client.together = new DiscordTogether(Client);
+const util = require("util");
 const fs = require("fs");
+const { StopWatch } = require("stopwatch-node");
+const sw = new StopWatch("CM");
+const Class = require("./Classes/ClassLoader");
 
-const commands = require("./command/loader");
-const functions = require("./function/loader");
-
-const maintenance = false;
-const web = false;
-
-const settingUser = "./UserSetting.json";
-const usettings = require(settingUser);
-
-const cooldowns = new Discord.Collection();
-
-Discord.Structures.extend("Guild", function (Guild) {
-	class MusicGuild extends Guild {
-		constructor(client, data) {
-			super(client, data);
-			this.musicData = {
-				queue          : [],
-				loopingMode    : "none",
-				isPlaying      : false,
-				nowPlaying     : null,
-				songDispatcher : null,
-				volume         : 0.4,
-				bindmsg        : null,
-				npmsg          : null
-			};
-		}
-	}
-	return MusicGuild;
+const { join } = require("path");
+const file = join(__dirname, "db.json");
+import("lowdb").then(module => {
+	const adapter = new module.JSONFile(file);
+	global.config = new module.Low(adapter);
 });
 
-Discord.Structures.extend("User", User => {
-	class UserSetting extends User {
-		constructor(client, data) {
-			super(client, data);
-			if (Object.keys(usettings).includes(this.id))
-				this.setting = {
-					name    : "",
-					limit   : 0,
-					bitrate : 0
-				};
-
-			else
-				this.setting = null;
-
-		}
-	}
-	return UserSetting;
-});
-
-const client = new Discord.Client({ intents: [ "GUILDS", "GUILD_MEMBERS", "GUILD_EMOJIS", "GUILD_VOICE_STATES", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "DIRECT_MESSAGES", "DIRECT_MESSAGE_REACTIONS" ] });
-mongoose.connect(config.mongodbUrl, {
-	useNewUrlParser    : true,
-	useUnifiedTopology : true
-});
-client.config = config;
-client.colors = {
-	info    : "#89cff0",
-	success : "#77ff77",
-	warn    : "#fdfd96",
-	error   : "#ff9691"
+// Client.locale = new Class.LocaleManager("./Locales/", "zh_TW");
+Client.aliases = new Discord.Collection();
+Client.cooldowns = new Discord.Collection();
+Client.commands = new Discord.Collection();
+Client.music = new Discord.Collection();
+Client.colors = {
+	info    : "#88c0d0", // "#89cff0"
+	success : "#a3be8c", // "#77ff77"
+	warn    : "#eBcb8b", // "#fdfd96"
+	error   : "bf616a#" // "#ff9691"
 };
-client.embedStat = {
+Client.embedStat = {
 	info    : "ℹ️ 資訊",
 	success : "✅ 成功",
 	warn    : "⚠️ 警告",
 	error   : "❌ 錯誤"
 };
-const checkchannel = [];
+Client.checkvoice = [];
+Client.init = true;
+Client.webhookLogger = WebhookLogger;
+Client.webhookLoggerString = [];
 
-console.clear();
+const loggerinterval = setInterval(async () => {
+	try {
+		if (!Client.webhookLoggerString.length) return;
+		await Client.webhookLogger.send(Client.webhookLoggerString.join("\n"));
+		Client.webhookLoggerString = [];
+	} catch (e) {
+		console.log(chalk`{redBright Webhook Logger stopped due to an error occurred}`);
+		console.error(e);
+		clearInterval(loggerinterval);
+		return;
+	}
+}, 5000);
 
-//#region  Status
-client.on("ready", async () => {
-	(await GuildSettings.find()).forEach(v => {
-		if (v.voice.length != 0)
-			v.voice.forEach(val => {
-				if (val.category) // if category setting exists
-					if (client.channels.cache.get(val.category)) // if category exists
-						client.channels.cache.get(val.category).children.forEach(ch => {
-							if (ch.type == "voice")
-								if (ch.id != val.creator) checkchannel.push(ch.id);
-						});
+const loggers = {
+	log : console.log,
+	AN  : {
+		log: (str) => {
+			console.log(chalk.cyanBright("[AutoNews] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[AutoNews]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.cyanBright("[AutoNews] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[AutoNews]** ❌ " + err);
+		}
+	},
+	Bot: {
+		log: (str) => {
+			console.log(chalk.yellowBright("[Bot] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[Bot]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.yellowBright("[Bot] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[Bot]** ❌ " + err);
+		}
+	},
+	CH: {
+		log: (str) => {
+			console.log(chalk.cyan("[CommandHandler] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[CommandHandler]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.cyan("[CommandHandler] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[CommandHandler]** ❌ " + err);
+		}
+	},
+	CM: {
+		log: (str) => {
+			console.log(chalk.yellow("[CommandManager] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[CommandManager]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.yellow("[CommandManager] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[CommandManager]** ❌ " + err);
+		}
+	},
+	Shard: {
+		log: (str) => {
+			console.log(chalk.green("[Shard] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[Shard]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.green("[Shard] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[Shard]** ❌ " + err);
+		}
+	},
+	VM: {
+		log: (str) => {
+			console.log(chalk.blueBright("[VoiceChannelManager] ") + str);
+			Client.webhookLoggerString.push("4️⃣ **[VoiceChannelManager]** " + str);
+		},
+		error: (err) => {
+			console.error(chalk.blueBright("[VoiceChannelManager] ") + err);
+			Client.webhookLoggerString.push("4️⃣ **[VoiceChannelManager]** ❌ " + err);
+		}
+	},
+};
 
-			});
+const sc = [];
+sw.start("CMLoad");
+fs.readdirSync("./Commands/").forEach(dir => {
+	fs.readdir(`./Commands/${dir}`, (err, files) => {
+		if (err) throw err;
+		const js = files.filter(f => f.split(".").pop() == "js");
+		if (js.length < 1) return console.error(new ReferenceError("找不到指令"));
 
+		js.forEach(file => {
+			const fileget = require(`./Commands/${dir}/${file}`);
+			loggers.CM.log(`已讀取: ${file}`);
+
+			try {
+				if (!fileget.help.name.match(/^[a-z]+/)) throw new RangeError("指令名稱不符合正規表達式: ^[a-z]+");
+				fileget.help.category = dir;
+				Client.commands.set(fileget.help.name, fileget);
+				loggers.CM.log(`已註冊指令: ${fileget.help.name}`);
+
+				if (fileget.help.aliases?.length) fileget.help.aliases.forEach(alias => {
+					if (!alias.match(/^[a-z]+/)) throw new RangeError("指令縮寫不符合正規表達式: ^[a-z]+");
+					Client.aliases.set(alias, fileget.help.name);
+					loggers.CM.log(`已註冊 ${fileget.help.name} 的指令縮寫: ${alias}`);
+				});
+
+				sc.push({
+					name              : fileget.help.name,
+					description       : fileget.help.desc,
+					options           : fileget.help.options,
+					defaultPermission : (fileget.help.hasOwnProperty("defaultPermission")) ? fileget.help.defaultPermission : true
+				});
+			} catch (e) {
+				e.stack.split("\n").forEach(v => loggers.CM.error(v));
+			}
+		});
+		Client.sc = sc;
+	});
+});
+
+process.stdout.write(`${String.fromCharCode(27)}]0;Kami v4${String.fromCharCode(7)}`);
+// console.clear();
+
+//#region Status
+Client.on("shardDisconnect", (e, id) => {
+	loggers.Shard.log(`Shard ${id} 斷開連線: ${e}`);
+});
+Client.on("shardError", (e, id) => {
+	loggers.Shard.error(`Shard ${id} 錯誤: ${e}`);
+	e.stack.split("\n").forEach(v => loggers.Shard.error(v));
+});
+Client.on("shardReady", (id) => {
+	loggers.Shard.log(`Shard ${id} 就緒`);
+});
+Client.on("shardReconnecting", (id) => {
+	loggers.Shard.log(`Shard ${id} 重新連線中...`);
+});
+Client.on("ready", async () => {
+	Client.guilds.cache.forEach(async guild => {
+		if (guild.available)
+			if (guild.members.cache.filter(v => v.user.bot).size > (guild.members.cache.size / 2)) {
+				console.log(guild.name);
+				await guild.leave();
+			}
 	});
 
-	console.log(`\x1b[93mKamiya \x1b[90m» \x1b[0m機器人已就緒 (\x1b[33m${client.guilds.cache.size}\x1b[0m 伺服器 - \x1b[33m${client.channels.cache.size}\x1b[0m 頻道 - \x1b[33m${client.users.cache.size}\x1b[0m 使用者)`);
-	if (web) Dashboard(client);
-	client.user.setActivity(`k3! | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`);
-	setInterval(() => {
-		client.user.setActivity(`k3! | ${maintenance ? "MAINTENANCE " : ""}${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`);
-	}, 60000);
+	/* 清raid
+	// Client.guilds.cache.forEach(g => {
+	Client.guilds.cache.get("760818507628806165").members.cache.forEach(async v => {
+		if (v.displayName.startsWith("支持")) {
+			console.log(v.user.tag);
+			await v.ban({ days: 7, reason: "Bot" });
+			console.log(chalk`Banned {dim ${v.user.tag}} for {green Bot} in {dim ${v.guild.name}}`);
+		}
+	});
+	*/
 
-	if (maintenance) {
-		console.log("\n\u001b[31;1m=============== 維護模式已啟用 ===============\x1b[0m");
-		console.log(`\n -> \u001b[7m伺服器列表\x1b[0m ${client.guilds.cache.size}`);
-		console.log("\x1b[36m         ID                    名稱\x1b[0m");
-		client.guilds.cache.forEach((v, k) => {
-			console.log(` \x1b[33m${k}\x1b[0m | ${v.name}`);
+	//#region 管理員身分組
+	await config.read();
+	config.data ||= { guild: {}, user: {} };
+	Client.guilds.cache.forEach(g => {
+		config.data.guild[g.id] ||= {};
+		config.data.guild[g.id].adminRoles = [];
+		g.roles.cache.forEach(r => {
+			if (r.permissions.has("ADMINISTRATOR") && !r.managed) config.data.guild[g.id].adminRoles.push(r.id);
 		});
-		console.log(`\n -> \u001b[7m自動語音頻道列表\x1b[0m ${checkchannel.length}`);
-		console.log("\x1b[36m         ID                    名稱\x1b[0m");
-		checkchannel.forEach(v => {
-			console.log(` \x1b[33m${client.channels.cache.get(v).id}\x1b[0m | ${client.channels.cache.get(v).name}`);
-			console.log(`  \x1b[90m-> in ${client.channels.cache.get(v).guild.id} ${client.channels.cache.get(v).guild.name}\x1b[0m`);
-		});
-	}
+	});
+	await config.write();
+	//#endregion
+
+	//#region 斜線指令
+	loggers.CM.log("更新斜線指令中...");
+	Object.keys(config.data.guild).forEach(async v => {
+		if (Client.guilds.cache.get(v)) {
+			const cp = [];
+			if (config.data.guild[v]?.slashcommand)
+				(await Client.guilds.cache.get(v).commands.set(sc).catch(() => { })).forEach(c => {
+					if (!c.defaultPermission)
+						if (c?.wip)
+							cp.push({
+								id          : c.id,
+								permissions : [
+									{
+										id         : "437158166019702805",
+										type       : "USER",
+										permission : true
+									}
+								]
+							});
+						else {
+							const p = [];
+							config.data.guild[v].adminRoles.forEach(rid => p.push(
+								{
+									id         : rid,
+									type       : "ROLE",
+									permission : true,
+								}
+							));
+							p.push({
+								id         : "437158166019702805",
+								type       : "USER",
+								permission : true
+							});
+							cp.push({ id: c.id, permissions: p });
+						}
+				});
+			await Client.guilds.cache.get(v).commands.permissions.set({ fullPermissions: cp }).catch(() => { });
+		}
+	});
+	sw.stop();
+	loggers.CM.log(`耗時 ${sw.getTask("CMLoad").timeMills / 1000}s`);
+	//#endregion
+
+	//#region 自動語音頻道
+	Object.keys(config.data.guild).forEach(v => {
+		v = config.data.guild[v];
+		if (v?.voice && v.voice.length != 0)
+			v.voice.forEach(val => {
+				if (val.category) // if category setting exists
+					if (Client.channels.cache.get(val.category)) // if category exists
+						Client.channels.cache.get(val.category).children.forEach(ch => {
+							if (ch.type == "GUILD_VOICE")
+								if (ch.id != val.creator)
+									Client.checkvoice.push(ch.id);
+						});
+			});
+	});
+	//#endregion
+
+	//#region Ready
+	loggers.Bot.log(`機器人已就緒: ${Client.user.tag}`);
+	Client.init = false;
+	setInterval(async () => {
+		await Client.user.setActivity(`v4 | ${Client.guilds.cache.size}伺服 - ${Client.channels.cache.size}頻道 - ${Client.users.cache.size}用戶`);
+	}, 6000);
+	//#endregion
 });
-client.on("shardReady", id => {
-	console.log(`\x1b[90mdiscord\x1b[32m.\x1b[36mjs \x1b[90m» \x1b[0mShard with ID \x1b[33m${id}\x1b[0m Ready.`);
-	functions.log.stat(client, 10, id);
-});
-client.on("shardReconnecting", id => {
-	console.log(`\x1b[90mdiscord\x1b[32m.\x1b[36mjs \x1b[90m» \x1b[0mShard with ID \x1b[33m${id}\x1b[0m reconnected.`);
-	functions.log.stat(client, 11, id);
-});
-client.on("shardDisconnect", id => {
-	console.log(`\x1b[90mdiscord\x1b[32m.\x1b[36mjs \x1b[90m» \x1b[0mShard with ID \x1b[33m${id}\x1b[0m reconnected.`);
-	functions.log.stat(client, 12, id);
-});
-client.on("error", console.error);
-client.on("warn", console.warn);
-//#endregion
-
-//#region Guild
-client.on("message", async (message) => {
-	if (message.channel.type == "dm") return;
-	if (message.author.bot) return;
-	if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
-
-	let storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
-	if (!storedSettings) {
-		const newSettings = new GuildSettings({
-			gid: message.guild.id
-		});
-		await newSettings.save().catch(() => { });
-		storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
-	}
-
-	if (message.content.indexOf(storedSettings.prefix) !== 0) return;
-
-	const args = message.content.slice(storedSettings.prefix.length).trim().match(/('.*?'|".*?"|\S+)/g).map(x => x.replace(/"|'/g, ""));
-	const command = args.shift().toLowerCase();
-
-	switch (command) {
-	// bot
-	case "bugreport": return await commands.bot.bug(message, args, client);
-	case "suggest": return await commands.bot.suggest(message, args, client);
-
-		// info
-	case "avatar": return await commands.info.avatar(message, args, client);
-	case "help": return await commands.info.help(message, args, client, commands, storedSettings.prefix);
-	case "prefix": return await commands.info.prefix(message, args, client, storedSettings);
-	case "userinfo":
-	case "ui": return await commands.info.userinfo(message, args, client);
-	case "where": return await commands.info.where(message, args, client);
-
-		// music
-	case "leave": return await commands.music.leave(message, args, client);
-	case "loop": return await commands.music.loop(message, args, client);
-	case "nowplaying":
-	case "np": return await commands.music.nowplaying(message, args, client);
-	case "pause": return await commands.music.pause(message, args, client);
-	case "play":
-	case "p": return await commands.music.play(message, args, client);
-	case "queue": return await commands.music.queue(message, args, client);
-	case "resume": return await commands.music.resume(message, args, client);
-	case "skip":
-	case "s": return await commands.music.skip(message, args, client);
-	case "synclyric":
-	case "sl": return await commands.music.synclyric(message, args, client);
-	case "volume":
-	case "v": return await commands.music.volume(message, args, client);
-
-		// utils
-	case "ping": return await commands.utils.ping(message, client.ws.ping, client);
-	case "poll": return await commands.utils.poll(message, args, client);
-	case "sauce": return await commands.utils.sauce(message, args, client);
-	case "saucenao": return await commands.utils.saucenao(message, args, client);
-	case "waifu2x": return await commands.utils.waifu2x(message, args, client);
-
-		// admin
-	case "chatreply": return await commands.admin.chatreply(message, args, client, storedSettings);
-	case "message":
-	case "msg": return await commands.admin.message(message, args, client);
-	case "purge": return await commands.admin.purge(message, args, client);
-	case "voice": return await commands.admin.voice(message, args, client, storedSettings, usettings);
-	}
+Client.on("error", (e) => {
+	loggers.Bot.error(e);
+	e.stack.split("\n").forEach(v => loggers.Bot.error(v));
 });
 //#endregion
 
-//#region Direct Message
-client.on("message", async (message) => {
-	if (message.channel.type != "dm") return;
-	if (message.author.bot) return;
+//#region Message Handling
+Client.on("messageCreate", message => {
+	try {
+		if (Client.init) return;
 
-	const args = message.content.trim().match(/('.*?'|".*?"|\S+)/g).map(x => x.replace(/"|'/g, ""));
-	const command = args.shift().toLowerCase();
+		// AutoNews
+		if (config.data.guild[message.guild.id]?.autonews?.channels?.includes(message.channel.id))
+			return AutoNews(message);
 
-	switch (command) {
-	case "avatar": return await commands.info.avatar(message, args, client);
-	case "ping": return await commands.utils.ping(message, client.ws.ping, client);
-	case "waifu2x": return await commands.utils.waifu2x(message, args, client);
-	case "where": return await commands.info.where(message, args, client);
+		if (message.author.bot || message.channel.type == "DM" || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
+		const prefix = config.data.guild[message.guild.id]?.prefix || "k4!";
+		if (message.content.indexOf(prefix) !== 0) return;
+
+		const args = message.content.slice(prefix.length).trim()?.match(/('.*?'|".*?"|\S+)/g)?.map(x => x?.replace(/"|'/g, ""));
+		if (!args) return;
+		const command = args.shift().toLowerCase();
+		message.args = args;
+		CommandHandler(new Class.CommandEvent(command, message.channel, message.member, Client, message));
+	} catch (e) {
+		loggers.CH.error(chalk.redBright("Command Parsing Failure"));
+		e.stack.split("\n").forEach(v => loggers.CH.error(v));
 	}
 });
+
+Client.on("interactionCreate", interaction => {
+	if (Client.init) return;
+	if (interaction.isCommand())
+		CommandHandler(new Class.CommandEvent(interaction.commandName, interaction.channel, interaction.member, Client, interaction));
+});
+
+async function CommandHandler(CommandEvent) {
+	try {
+		const command = Client.commands.get(Client.aliases.get(CommandEvent.command.name) || CommandEvent.command.name);
+		if (command) {
+			if (command.help.slash && !CommandEvent.isInteraction)
+				throw "ERR_SLASH_EXCLUSIVE";
+
+			if (CommandEvent.isInteraction) {
+				await CommandEvent.mi.deferReply();
+				CommandEvent.mi.replied = true;
+			}
+
+			loggers.CH.log(`${CommandEvent.guild.name} 》#${CommandEvent.channel.name} 》${CommandEvent.user.user.tag} \`${CommandEvent.user.user.id}\``);
+			loggers.CH.log(`收到指令: ${CommandEvent.isInteraction ? "/" : "k4!"}${CommandEvent.command.name} ${CommandEvent.isInteraction ? CommandEvent.command.options?.data?.map(v => `\`${v?.name}\`:${v.name == "連結" ? "<" : ""}${v.value}${v.name == "連結" ? ">" : ""}`).join(" ") : ""}`);
+
+			await command.run(CommandEvent);
+		}
+		return;
+	} catch (e) {
+		let embed;
+		if (e == "ERR_SLASH_EXCLUSIVE")
+			embed = new Discord.MessageEmbed()
+				.setColor(Client.colors.error)
+				.setTitle(Client.embedStat.error)
+				.setDescription("這個指令只能使用斜線指令來執行。")
+				.setFooter("ERR_SLASH_EXCLUSIVE");
+
+		if (!embed) {
+			embed = new Discord.MessageEmbed()
+				.setColor(Client.colors.error)
+				.setTitle(Client.embedStat.error)
+				.setDescription(`發生了預料之外的錯誤：\`${e}\``)
+				.setFooter("ERR_UNCAUGHT_EXCEPTION");
+			loggers.CH.error(chalk.redBright("Command Failed"));
+			fs.writeFile(__dirname + `/ErrorLogs/${new Date().toISOString()}.txt`, e.toString() + "\n" + util.inspect(CommandEvent, false, null), (err) => {
+				if (!err)
+					loggers.VM.error(chalk.redBright("Error Log Wrote"));
+			});
+
+			e.stack.split("\n").forEach(v => loggers.CH.error(v));
+		}
+
+		CommandEvent.isInteraction
+			? await CommandEvent.mi.editReply({ embeds: [embed], allowedMentions: { repliedUser: true } }).catch(() => { })
+			: await CommandEvent.mi.reply({ embeds: [embed], allowedMentions: { repliedUser: true } }).catch(() => { });
+		return;
+	}
+}
+
+async function AutoNews(message) {
+	try {
+		if (message.content.startsWith("-")) return;
+		loggers.AN.log("");
+		loggers.AN.log(chalk`Crosspost message in {dim ${message.channel.name}}, {dim ${message.guild.name}}`);
+		loggers.AN.log("");
+		message.content.split("\n").forEach(v => loggers.AN.log("  " + v));
+		loggers.AN.log("");
+		if (message.crosspostable)
+			if (message.guild.me.permissionsIn(message.channel).has("ADD_REACTIONS"))
+				await message.crosspost().then(async () => {
+					await message.react("✅");
+					loggers.AN.log("Message crossposted");
+				});
+			else
+				loggers.AN.log("Message not crossposted due to not able to add reactions");
+		else
+			loggers.AN.log("Message not crossposted due to uncrosspostable");
+
+		loggers.AN.log("");
+	} catch (e) {
+		loggers.VM.error(chalk.redBright("Auto News"));
+		e.stack.split("\n").forEach(v => loggers.AN.error(v));
+	}
+}
 //#endregion
 
 //#region Voice
 
-//#region create
-client.on("voiceStateUpdate", async (_oldMember, newMember) => {
+//	#region Create
+Client.on("voiceStateUpdate", async (oldState, newState) => {
 	try {
-		if (newMember.member.user.bot) return;
-		if (!cooldowns.has("autovoice"))
-			cooldowns.set("autovoice", new Discord.Collection());
+		if (Client.init) return;
+		if (newState.member.user.bot) return;
+		if (!Client.cooldowns.has("autovoice"))
+			Client.cooldowns.set("autovoice", new Discord.Collection());
 
 		const now = Date.now();
-		const timestamps = cooldowns.get("autovoice");
+		const timestamps = Client.cooldowns.get("autovoice");
 		const cooldownAmount = 10 * 1000;
 
-		let storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
-		if (!storedSettings) {
-			const newSettings = new GuildSettings({
-				gid: newMember.guild.id
-			});
-			await newSettings.save().catch(() => { });
-			storedSettings = await GuildSettings.findOne({ gid: newMember.guild.id });
-		}
+		const GuildSettings = config.data.guild[newState.guild.id];
+		const UserSettings = config.data.user[newState.member.id];
+		if (!GuildSettings?.voice) return;
 
-		let UserSetting = Object.keys(usettings).includes(newMember.id) ? usettings[newMember.id] : null;
-		if (!UserSetting) {
-			const newSettings = {
-				name    : "",
-				limit   : 0,
-				bitrate : 0
-			};
-			await saveUser(newMember.member.user, null, newSettings);
-		}
-		UserSetting = usettings[newMember.id];
-		const channel = newMember.channel;
-		const setting = storedSettings.voice.find(o => o.creator == channel?.id);
-		const guildMember = newMember.member;
+		const channel = newState.channel;
+		const setting = GuildSettings.voice.find(o => o.creator == channel?.id);
+		const guildMember = newState.member;
 		const placeholder = {
 			"{user.displayName}" : guildMember.displayName,
 			"{user.name}"        : guildMember.user.username,
 			"{user.tag}"         : guildMember.user.tag
 		};
 		if (setting) {
-			if (timestamps.has(newMember.member.id)) {
-				const expirationTime = timestamps.get(newMember.member.id) + cooldownAmount;
+			if (timestamps.has(newState.member.id)) {
+				const expirationTime = timestamps.get(newState.member.id) + cooldownAmount;
 
 				if (now < expirationTime) {
 					const timeLeft = (expirationTime - now) / 1000;
 
 					const embed = new Discord.MessageEmbed()
-						.setColor(client.colors.error)
-						.setDescription(`你正在冷卻！\n你要再等待 \`${timeLeft.toFixed(1)}\` 秒才能再次使用 \`自動語音頻道\` 功能。`);
-					await newMember.setChannel(null);
-					await newMember.member.send(embed).catch(async () => {
-						if (newMember.guild.id == "760818507628806165")
-							await newMember.guild.channels.cache.get("824252190424170496").send(newMember.member, { embed: embed });
-					});
+						.setColor(Client.colors.error)
+						.setDescription(`你正在冷卻！💦\n你要再等待 \`${timeLeft.toFixed(1)}\` 秒才能再次使用 \`自動語音頻道\` 功能。`);
+					await newState.setChannel(null);
+					await newState.member.send({ embeds: [embed] }).catch(null);
 					return;
 				}
 			}
 
-			let finalName = usettings[newMember.id].name ? usettings[newMember.id].name.replace(/{.+}/g, all => placeholder[all] || all) : setting.channelSettings.name ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all) : `${newMember.member.displayName} 的房間`;
+			let finalName = UserSettings?.voice?.name
+				? UserSettings.voice.name.replace(/{.+}/g, all => placeholder[all] || all)
+				: setting.channelSettings.name
+					? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)
+					: `${newState.member.displayName} 的房間`;
 			if (censor.check(finalName)) finalName = censor.censor(finalName);
 			const channelSetting = {
 				channelName : finalName,
-				limit       : usettings[newMember.id].limit ? usettings[newMember.id].limit : setting.channelSettings.limit,
-				bitrate     : usettings[newMember.id].bitrate ? usettings[newMember.id].bitrate : setting.channelSettings.bitrate
+				limit       : UserSettings?.voice?.limit ? UserSettings.voice.limit : setting.channelSettings.limit,
+				bitrate     : UserSettings?.voice?.bitrate ? UserSettings.voice.bitrate : setting.channelSettings.bitrate
 			};
-			const category = setting.category ? newMember.guild.channels.cache.get(setting.category) : channel.parent;
-			const muterole = newMember.guild.roles.cache.reduce((a, v) => {
-				if (v.name == "Muted") a.push(v); return a;
+			const category = setting.category
+				? newState.guild.channels.cache.get(setting.category)
+				: channel.parent;
+			const muterole = newState.guild.roles.cache.reduce((a, v) => {
+				if (v.name == "Muted") a.push(v);
+				return a;
 			}, []);
-			const perms = [ { id: client.user.id, allow: [ "MANAGE_CHANNELS", "MANAGE_ROLES" ] }, { id: newMember.member.id, allow: [ "CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS" ] } ];
+			const perms = newState.guild.me.permissions.has("ADMINISTRATOR")
+				? [ { id: Client.user.id, allow: [ "MANAGE_CHANNELS", "MANAGE_ROLES" ] }, { id: newState.member.id, allow: [ "CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS" ] } ]
+				: [ { id: Client.user.id, allow: ["MANAGE_CHANNELS"] }, { id: newState.member.id, allow: [ "CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS" ] } ];
 			if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: [ "CONNECT", "SPEAK" ] });
-			await newMember.guild.channels.create(channelSetting.channelName, { type: "voice", parent: category, bitrate: +channelSetting.bitrate, userLimit: +channelSetting.limit, permissionOverwrites: perms, reason: "自動創建語音頻道" })
+			await newState.guild.channels.create(channelSetting.channelName, { type: "GUILD_VOICE", parent: category, bitrate: +channelSetting.bitrate * 1000, userLimit: +channelSetting.limit, permissionOverwrites: perms, reason: "自動創建語音頻道" })
 				.then(async ch => {
-					await newMember.setChannel(ch);
-					checkchannel.push(ch.id);
-					timestamps.set(newMember.member.id, now);
-					setTimeout(() => timestamps.delete(newMember.member.id), cooldownAmount);
+					await newState.setChannel(ch);
+					Client.checkvoice.push(ch.id);
+					timestamps.set(newState.member.id, now);
+					setTimeout(() => timestamps.delete(newState.member.id), cooldownAmount);
 				});
 		}
 	} catch (e) {
-		console.error(e);
+		loggers.VM.error(chalk.redBright("Create handler"));
+		loggers.VM.error(newState.guild.name);
+		e.stack.split("\n").forEach(v => loggers.VM.error(v));
 	}
 });
-//#endregion
+//	#endregion
 
-//#region delete
-client.on("voiceStateUpdate", async oldMember => {
+//	#region Delete
+Client.on("voiceStateUpdate", async oldMember => {
 	try {
-		if (checkchannel.length == 0) return;
+		if (Client.init) return;
+		if (Client.checkvoice.length == 0) return;
 		if (oldMember.channel)
-			if (checkchannel.includes(oldMember.channel.id))
-				if (oldMember.channel.members.size == 0) {
-					const deleted = await oldMember.channel.delete();
-					checkchannel.splice(checkchannel.indexOf(deleted.id), 1);
-				}
+			if (Client.checkvoice.includes(oldMember.channel.id))
+				if (oldMember.channel.members.filter(v => !v.user.bot).size == 0)
+					if (!oldMember.channel.deleted) {
+						const deleted = await oldMember.channel.delete();
+						Client.checkvoice.splice(Client.checkvoice.indexOf(deleted.id), 1);
+					}
 	} catch (e) {
-		console.error(e);
+		if (e.toString() != "DiscordAPIError: Unknown Channel") {
+			loggers.VM.error(chalk.redBright("Delete handler"));
+			loggers.VM.error(oldMember.guild.name);
+			e.stack.split("\n").forEach(v => loggers.VM.error(v));
+		}
 	}
 });
 //#endregion
 
-//#region Mute/Deafen handling
-client.on("voiceStateUpdate", async (oldMember, newMember) => {
+//	#region Mute/Deafen handling
+Client.on("voiceStateUpdate", async (oldMember, newMember) => {
 	// if (newMember.guild.id != "810931443206848544") return;
 	try {
-		if (!oldMember.channelID || !newMember.channelID) return;
+		if (Client.init) return;
+		if (!oldMember.channelId || !newMember.channelId) return;
 		if ((oldMember.serverMute != newMember.serverMute) && newMember.serverMute) {
-			if (checkchannel.length == 0) return;
-			if (oldMember.channelID)
-				if (checkchannel.includes(oldMember.channel.id)) {
+			if (Client.checkvoice.length == 0) return;
+			if (oldMember.channelId)
+				if (Client.checkvoice.includes(oldMember.channel.id)) {
 					const permission = [];
-					oldMember.channel.permissionOverwrites.forEach((v, k) => {
+					oldMember.channel.permissionOverwrites.cache.forEach((v, k) => {
 						let allow, deny;
 						if (k == oldMember.member.id) {
 							if (!v.deny.has("SPEAK")) deny = v.deny.add("SPEAK");
@@ -341,349 +527,235 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
 						}
 						permission.push({ id: k, allow: allow, deny: deny });
 					});
-					if (!oldMember.channel.permissionOverwrites.get(oldMember.member.id)) permission.push({ id: oldMember.member.id, deny: 1n << 21n });
-					await oldMember.channel.overwritePermissions(permission);
+					if (!oldMember.channel.permissionOverwrites.cache.get(oldMember.member.id)) permission.push({ id: oldMember.member.id, deny: 1n << 21n });
+					await oldMember.channel.permissionOverwrites.set(permission);
 					await newMember.setMute(false);
 					await newMember.setChannel(oldMember.channel); // update voice stats so that permission mute would work
 				}
 		}
 	} catch (e) {
-		console.error(e);
+		loggers.VM.error(chalk.redBright("Mute/Deafen handler"));
+		loggers.VM.error(oldMember.guild.name);
+		e.stack.split("\n").forEach(v => loggers.VM.error(v));
 	}
 });
 //#endregion
-
-//#region channel name update
-client.on("channelUpdate", async (__oldChannel, newChannel) => {
-	if (newChannel.type == "voice")
-		if (checkchannel.includes(newChannel.id))
-			if (censor.check(newChannel.name)) {
-				const fetchedLogs = await newChannel.guild.fetchAuditLogs({
-					limit : 1,
-					type  : "CHANNEL_UPDATE",
-				});
-				const updatelog = fetchedLogs.entries.first();
-				if (updatelog) {
-					const { executor, target } = updatelog;
-					if (target.id == newChannel.id) {
-						const embed = new Discord.MessageEmbed()
-							.setColor("#ff2222")
-							.setAuthor(newChannel.guild.name, newChannel.guild.iconURL({ dynamic: true }))
-							.setDescription("由於您的頻道包含敏感字詞，因此我們已自動將它遮屏")
-							.addField("之前的名稱", newChannel.name, true)
-							.addField("現在的名稱", censor.censor(newChannel.name), true)
-							.setFooter("請不要嘗試使用敏感字詞當作頻道的名稱")
-							.setTimestamp();
-						await executor.send(embed);
-					}
-				}
-				await newChannel.setName(censor.censor(newChannel.name), "不雅字詞");
-			}
-
-});
-//#endregion
-
-//#endregion
-
-//#region Logging
-client.on("message", async (message) => {
-	if (message.author.bot) return;
-	if (message.channel.type == "dm") await functions.log.dm(message, client);
-	if (message.mentions.has(client.user, { ignoreEveryone: true })) await functions.log.mention(message, client);
-});
-client.on("guildCreate", async guild => {
-	client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已加入伺服器 ${guild.name} (${guild.id})`));
-	if (guild.systemChannel) {
-		const embed = new Discord.MessageEmbed()
-			.setColor(client.colors.info)
-			.setTitle("感謝邀請我到這個伺服器")
-		// eslint-disable-next-line no-useless-escape
-			.setDescription("雖然我能做的事情還不多，不過還是感謝選擇了我\n由於主人很懶，所以沒什麼在管我，出bug也不太修 ;w;\n叫我的時候用 \`k3!\` 當開頭，所有我能做到的事都在 \`k3!help\`\n我還有一個妹妹，可以找看看其他伺服器內有沒有她的蹤影喔\n還是有問題的話可以到 [支援伺服器](https://discord.gg/3VTtVxjtWv) 找我主人喔")
-			.setTimestamp();
-		await guild.systemChannel.send(embed);
-	}
-	return;
-});
-client.on("guildDelete", async guild => {
-	await client.channels.cache.get("842989906980372500").send(new Discord.MessageEmbed().setDescription(`已離開伺服器 ${guild.name} (${guild.id})`));
-});
-//#endregion
-
-client.login(config.token);
-
-//#region chat
-client.on("message", async message => {
-	if (message.author.bot) return;
-	let storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
-	if (!storedSettings) {
-		const newSettings = new GuildSettings({
-			gid: message.guild.id
-		});
-		await newSettings.save().catch(() => { });
-		storedSettings = await GuildSettings.findOne({ gid: message.guild.id });
-	}
-	if (!storedSettings.chatreply) return;
-	if (message.content.includes("早安"))
-		if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
-			const now = new Date();
-			if (now.getHours() < 12) {
-				const hi = [
-					"早",
-					"早",
-					"早",
-					"早",
-					"早",
-					"早",
-					"你早r",
-					"你早r",
-					"你早r",
-					"早安r",
-					"早安r",
-					"早安r",
-					"早安阿",
-					"早安阿",
-					"早安喵",
-					"早..喵...... (睡)"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			} else {
-				const hi = [
-					"早...安？",
-					"早...安？",
-					"早...安？",
-					"不早惹",
-					"不早惹",
-					"不早惹",
-					"你時鐘484該校正惹",
-					"下次早點睡",
-					"都幾點惹還早安",
-					"你也太晚睡"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			}
-			return;
-		}
-
-	if (message.content.includes("午安"))
-		if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
-			const now = new Date();
-			if (now.getHours() < 11 || now.getHours() > 13) {
-				const hi = [
-					"午安?"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			} else {
-				const hi = [
-					"午安",
-					"午安",
-					"午安",
-					"午安",
-					"午安",
-					"午安",
-					"來去吃午餐/",
-					"來去吃午餐/",
-					"來去吃午餐/",
-					"來去睡午覺/",
-					"來去睡午覺/",
-					"來去睡午覺/",
-					"一起吃午餐 >w<",
-					"一起睡午覺 >w<",
-					"🍜",
-					"🍚",
-					"🍝"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			}
-			return;
-		}
-
-	if (message.content.includes("晚安"))
-		if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
-			const now = new Date();
-			if (message.author.id == "437158166019702805") return await message.reply("一起睡 (ﾉ>ω<)ﾉ");
-			if (now.getHours() < 18 && now.getHours() > 7) {
-				const hi = [
-					"這個時間...你要睡了？",
-					"這個時間...你要睡了？",
-					"該醒惹",
-					"該醒惹",
-					"該醒惹",
-					"該醒惹",
-					"該醒惹",
-					"天亮了喔",
-					"天亮了喔",
-					"天亮了喔",
-					"天亮了喔",
-					"天亮了喔",
-					"你時鐘484該校正惹",
-					"你也太晚睡",
-					"你也太晚睡",
-					"下次早點睡",
-					"下次早點睡"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			} else {
-				const hi = [
-					":zzz:",
-					":zzz:",
-					"Zzz",
-					"Zzz",
-					"Zzz",
-					"晚安",
-					"晚安",
-					"晚安",
-					"晚安喵",
-					"來去睡"
-				];
-				await message.reply(hi[Math.floor(Math.random() * hi.length)]);
-			}
-			return;
-		}
-
-	if (message.content.toLowerCase() == "never gonna") {
-		const response = [
-			"Give u up ~ ♪",
-			"Give u up ~ ♪",
-			"Give u up ~ ♪",
-			"Give u up ~ ♪",
-			"Give u up ~ ♪",
-			"Let u down ~ ♪",
-			"Let u down ~ ♪",
-			"Let u down ~ ♪",
-			"Let u down ~ ♪",
-			"Let u down ~ ♪",
-			"Run around and desert u ~ ♪",
-			"Run around ~ ♪",
-			"Run around ~ ♪",
-			"Run around ~ ♪",
-			"Run around ~ ♪",
-			"Run around ~ ♪",
-			"Desert u ~ ♪",
-			"Desert u ~ ♪",
-			"Desert u ~ ♪",
-			"Desert u ~ ♪",
-			"Desert u ~ ♪",
-			"Say goodbye ~ ♪",
-			"Say goodbye ~ ♪",
-			"Say goodbye ~ ♪",
-			"Say goodbye ~ ♪",
-			"Say goodbye ~ ♪",
-			"Say goodbye <:L_gun:863445879544741908>",
-			"Tell a lie and hurt u ~ ♪",
-			"Tell a lie ~ ♪",
-			"Tell a lie ~ ♪",
-			"Tell a lie ~ ♪",
-			"Tell a lie ~ ♪",
-			"Tell a lie ~ ♪",
-			"Hurt u ~ ♪",
-			"Hurt u ~ ♪",
-			"Hurt u ~ ♪",
-			"Hurt u ~ ♪",
-			"Hurt u ~ ♪",
-			"Hurt u ~ 🔪",
-			"Make u cry ~ ♪",
-			"Make u cry ~ ♪",
-			"Make u cry ~ ♪",
-			"Make u cry ~ ♪",
-			"Make u cry ~ ♪"
-		];
-		await message.reply(response[Math.floor(Math.random() * response.length)]);
-	}
-});
 
 //#endregion
 
 const scamurl = require("./scamurl");
 
-const sendwarn = {};
-
 //#region 詐騙
-client.on("message", async message => {
-	if (message.channel.type == "dm") return;
-	if (message.author.bot) return;
-	if (!Object.keys(sendwarn).includes(message.guild.id)) sendwarn[message.guild.id] = 0;
+Client.on("messageCreate", async message => {
 	try {
-		/*if (message.author.id != "492354896100720670") return;
-        if (message.embeds[0].description.includes(""))*/
-		const guild = client.guilds.cache.get(message.guild.id);
-		const zh = message.guild.preferredLocale == "zh-TW";
-
-		const embed = new Discord.MessageEmbed()
-			.setColor("#ffa500")
-			.setDescription(zh ? `成員：${message.author}\n原因：近期詐騙網址` : `Member：${message.author}\nReason：Sending recent scam urls.`);
+		if (Client.init) return;
+		if (message.channel.type == "dm") return;
+		if (message.author.bot) return;
+		const GuildSettings = config.data.guild[message.guild.id];
+		if (!GuildSettings?.scamdetect) return;
 
 		if (
 			scamurl.some((v) => { return message.content.includes(v); })
-            || message.content.match(/^https?:\/\/str?a?ea?([rn][rnm]{0,3}|m[rnm]{1,3}|[^m]{0,3})(communi|m?co(?<=co)\w{2,10}(?<!communi)(?=[tuy]{2,3}))[tuy]{2,3}\.(com|ru)/gi)
-            || (message.content.toLowerCase().includes("nitro") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("gift") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("skin")) && !message.content.startsWith("LOL")
-            || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("skin"))
-            || (message.content.toLowerCase().includes("give") && message.content.toLowerCase().includes("trade") && message.content.toLowerCase().includes("send"))
-            || (message.content.toLowerCase().includes("skin") && message.content.toLowerCase().includes("trade"))
+			|| message.content.match(/^https?:\/\/d[il][il]?sc?or?(d|cl)?s?-?(-apps?|h[ae]ll?oween|claim|g[ia]ve|steams?|partner|g[il]fts?s?|airdrop|premium|(free)?nitro(app)?s?)\.(net|online|click|link|info|shop|art|com|ru|xyz|org)/gi)
+			|| (message.content.toLowerCase().includes("nitro") && message.content.toLowerCase().includes("free"))
+			|| (message.content.toLowerCase().includes("nitro") && message.content.toLowerCase().includes("steam"))
+			|| (message.content.toLowerCase().includes("gift") && message.content.toLowerCase().includes("free"))
+			|| (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("free"))
+			|| (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("skin")) && !message.content.startsWith("LOL")
+			|| (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("skin"))
+			|| (message.content.toLowerCase().includes("give") && message.content.toLowerCase().includes("trade") && message.content.toLowerCase().includes("send"))
+			|| (message.content.toLowerCase().includes("skin") && message.content.toLowerCase().includes("trade"))
 			|| (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("hack"))
 		) {
-			console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-			console.log(message.content);
+			const guild = message.guild;
+			const member = message.member;
+			const zh = message.guild.preferredLocale == "zh-TW";
+			const reason = zh ? "近期詐騙網址" : "Sending recent scam urls.";
+			const embed = new Discord.MessageEmbed()
+				.setColor("#ffa500")
+				.setDescription(zh ? `成員：${message.author}\n原因：${reason}` : `Member：${message.author}\nReason：${reason}`);
 
-			if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-			if (message?.member?.kickable) {
-				const bans = await guild.fetchBans().catch(e => console.log(e));
-				if (bans)
-					embed.setAuthor(`kick | ${zh ? "案" : "case"} ${bans.size + 1}`);
-				else
-					embed.setAuthor("kick");
+			const alsoins = Client.guilds.cache.filter(g => g.members.cache.has(message?.author?.id));
+			const alsoin = alsoins.map(v => v?.name);
+			console.log("");
+			console.log("Scam url detected");
+			console.log(chalk`Message in {dim #${message.channel.name}}, {dim ${guild.name}}`);
+			console.log("");
+			message.content.split("\n").map(v => console.log("  " + v));
+			console.log("");
+			console.log(chalk`Details for user {dim ${message.author.tag}} in {dim ${guild.name}}`);
+			console.log(chalk`  User ID: {yellow ${member?.id}}`);
+			console.log(chalk`  Bannable: {cyan ${member?.bannable}}`);
+			console.log(chalk`  Kickable: {cyan ${member?.kickable}}`);
+			console.log(chalk`  Joined at: {green ${member?.joinedAt?.toString()}}`);
+			console.log(chalk`  Also in: {green ${alsoin.shift()}}`);
+			alsoin.forEach(v => { if (v != guild.name) console.log(chalk`           {green ${v}}`); });
 
-				await message.member.kick({ days: 7, reason: zh ? "近期詐騙網址" : "Sending recent scam urls." }).then(async () => {
-					await message.channel.send(`:octagonal_sign: ${zh ? "已踢出成員" : "Member Kicked"}`, { embed: embed }).then(ms => setTimeout(async () => await ms.delete(), 60000));
-				}).catch(e => console.log(e));
+			Client.webhookLoggerString.push("**[ScamDetect]** 偵測到詐騙內容");
+			Client.webhookLoggerString.push(`**[ScamDetect]** 在 ${guild.name} 》${message.channel.name} 》${message.author.tag} \`${message.author.id}\``);
+			Client.webhookLoggerString.push(message.content);
+			Client.webhookLoggerString.push("");
+			Client.webhookLoggerString.push(`**[ScamDetect]**  使用者ID: \`${member?.id}\``);
+			Client.webhookLoggerString.push(`**[ScamDetect]**  可停權?: ${member?.bannable}`);
+			Client.webhookLoggerString.push(`**[ScamDetect]**  可踢出?: ${member?.kickable}`);
+			Client.webhookLoggerString.push(`**[ScamDetect]**  加入時間: ${member?.joinedAt?.toString()}`);
+			Client.webhookLoggerString.push(`**[ScamDetect]**  伺服器: ${alsoin.join()}`);
+			Client.webhookLoggerString.push("​");
+
+			// if (!guild.members.cache.has("492354896100720670"))
+			await message.delete().catch(() => { });
+
+			const action = config.data.guild[guild.id]?.scamdetect?.action || "delete";
+
+			const cases = await guild.bans.fetch().catch(e => console.log(e));
+			if (cases)
+				embed.setAuthor(`${action} | ${zh ? "案" : "case"} ${cases.size + 1}`);
+			else
+				embed.setAuthor(`${action}`);
+
+			switch (action) {
+				case "kick":
+					if (member.kickable)
+						await member.kick(reason).then(async () => {
+							console.log("");
+							console.log(chalk`User has benn kicked from {dim ${guild.name}} for reason {green ${reason}}`);
+							await message.channel.send({ content: `:octagonal_sign: ${zh ? `已${action == "kick" ? "踢出" : "停權"}成員` : `Member ${action == "kick" ? "kicked" : "banned"}`}`, embeds: [embed] })
+								.then(ms => setTimeout(async () => await ms.delete(), 60000))
+								.catch(e => console.log(e));
+						});
+					else {
+						console.log("");
+						console.log(chalk`User not kicked due to bot unkickable`);
+					}
+					break;
+
+				case "ban":
+					if (member.bannable)
+						await member.ban({ days: 7, reason: reason }).then(async () => {
+							console.log("");
+							console.log(chalk`User has benn banned from {dim ${guild.name}} for reason {green ${reason}}`);
+							await message.channel.send({ content: `:octagonal_sign: ${zh ? `已${action == "kick" ? "踢出" : "停權"}成員` : `Member ${action == "kick" ? "kicked" : "banned"}`}`, embeds: [embed] })
+								.then(ms => setTimeout(async () => await ms.delete(), 60000))
+								.catch(e => console.log(e));
+						}).catch(e => console.log(e));
+					else {
+						console.log("");
+						console.log(chalk`User not banned due to bot unbannable`);
+					}
+					break;
+
+				case "delete": break;
 			}
+
 			return;
 		}
 		return;
-	} catch (error) {
-		console.error(error);
+	} catch (e) {
+		e.stack.split("\n").forEach(v => loggers.Bot.error(v));
 	}
 });
 //#endregion
 
-client.on("message", async (message) => {
-	if (message.channel.type == "dm") return;
-	if (message.author.bot) return;
-	if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
-	if (message.guild.id != "579292544094044170") return;
+Client.login(process.env.bot_token);
 
-	if (message.content == "k3!archive") {
-		if (!message.member.permissions.has("ADMINISTRATOR")) return;
-		const channel = message.channel;
-		const now = new Date();
-		if (message.channel.parent.id == "862023301391581184") return;
-		await channel.setParent("862023301391581184");
-		await channel.lockPermissions();
-		await channel.setTopic(`已封存 於 ${now.toLocaleString("zh-TW", { hourCycle: "h24" })}\n\n` + channel.topic);
-		await channel.send(`========== 已封存 | ${now.toLocaleString("zh-TW", { hourCycle: "h24" })} ==========`);
-		await message.delete();
-	}
-	return;
+Client.on("guildCreate", async guild => {
+	loggers.Bot.log(chalk`{greenBright {bold +}} 加入伺服器: ${guild.name} {dim (${guild.id})}`);
+
+	if (guild.members.cache.filter(v => v.user.bot).size > (guild.members.cache.size / 2)) return await guild.leave();
+
+	//#region 管理員身分組
+	await config.read();
+	config.data ||= { guild: {}, user: {} };
+
+	config.data.guild[guild.id] ||= {};
+	config.data.guild[guild.id].adminRoles = [];
+	guild.roles.cache.forEach(r => {
+		if (r.permissions.has("ADMINISTRATOR") && !r.managed) config.data.guild[guild.id].adminRoles.push(r.id);
+	});
+	await config.write();
+	//#endregion
+});
+Client.on("guildDelete", guild => {
+	loggers.Bot.log(chalk`{bold {redBright -}} 離開伺服器: ${guild.name} {dim (${guild.id})}`);
 });
 
-function saveUser(user = null, key = null, data = null) {
-	return new Promise((resolve) => {
-		if (user)
-			if (!key)
-				usettings[user.id] = data;
+const banlist = [
+	"882993350142230548",
+	"890170671311753247"
+];
+Client.on("guildMemberAdd", async member => {
+	if (banlist.includes(member.id)) {
+		await member.ban({ days: 7, reason: "Bot" });
+		console.log(chalk`Banned {dim ${member.user.tag}} for {green Bot} in {dim ${member.guild.name}}`);
+	} else if (member.user.username.startsWith("Discord Bot ")
+		|| member.user.username.startsWith("Support Bot ")
+		|| member.user.username.match(/(?:系(?:統|统)|技術)?(?:(?:消|訊|信)息|支(?:持|援))/)) {
+		await member.ban({ days: 7, reason: "Bot" });
+		console.log(chalk`Banned {dim ${member.user.tag}} for {green Bot} in {dim ${member.guild.name}}`);
+		console.debug(chalk`{yellowBright guildMemberAdd}: {dim ${member.user.bot ? "BOT " : ""}}${member.user.username} in {green ${member.guild}} {dim banned}`);
+	} else console.debug(chalk`{yellowBright guildMemberAdd}: {dim ${member.user.bot ? "BOT " : ""}}${member.user.username} in {green ${member.guild}}`);
+});
+Client.on("guildMemberRemove", member => {
+	console.debug(chalk`{redBright guildMemberRemove}: {dim ${member.user.bot ? "BOT " : ""}}${member.user.username} in {green ${member.guild}}`);
+});
 
-			else {
-				if (!Object.keys(usettings).includes(user.id)) saveUser(user, null, { name: "", limit: 0, bitrate: 0 });
-				usettings[user.id][key] = data;
-			}
+process.on("beforeExit", code => {
+	console.log(`Exit: ${code}`);
+});
 
-		try {
-			fs.writeFileSync(require.resolve(settingUser), JSON.stringify(usettings));
-		} catch (e) {
-			console.error(e);
-		}
-		resolve(true);
+const fetch = require("node-fetch");
+const Minesweeper = require("discord.js-minesweeper");
+
+setInterval(() => {
+	const minesweeper = new Minesweeper({
+		columns         : 8,
+		rows            : 6,
+		mines           : 10,
+		spaces          : false,
+		revealFirstCell : true,
+		returnType      : "matrix"
 	});
-}
+	const matrix = minesweeper.start();
+	const output = matrix.map(v => v.join(""));
+	for (const i in output) {
+		if (i == 0) output[i] += "　　 [ 踩地雷 ]";
+		if (i == 2) output[i] += "　　8 × 6 💣 10";
+		if (i == 3) output[i] += "　  每10分鐘更新";
+		if (i == 4) output[i] += "　- Kamiya#4047";
+	}
+
+	const body = {
+		"icon"                      : "e41bd39d7bedbf19c7f501626d4f9659",
+		"name"                      : "Kami v4",
+		"description"               : output.join("\n"),
+		"interactions_endpoint_url" : "",
+		"terms_of_service_url"      : "",
+		"privacy_policy_url"        : ""
+	};
+	fetch("https://discord.com/api/v9/applications/707186246207930398", {
+		"headers": {
+			"accept"             : "*/*",
+			"accept-language"    : "ja,zh-TW;q=0.9,zh;q=0.8,ja-JP;q=0.7,en-US;q=0.6,en;q=0.5",
+			"authorization"      : "mfa.E-U9A-kKpw7-3uxOB1-NZo8X5VluwMSw2hBGU5Lty1NkJHAfQlKlzAc58q9VV6K5YAlgUaG8WX31MbZwf8wB",
+			"content-type"       : "application/json",
+			"sec-ch-ua"          : "\"Google Chrome\";v=\"93\", \" Not;A Brand\";v=\"99\", \"Chromium\";v=\"93\"",
+			"sec-ch-ua-mobile"   : "?0",
+			"sec-ch-ua-platform" : "\"Windows\"",
+			"sec-fetch-dest"     : "empty",
+			"sec-fetch-mode"     : "cors",
+			"sec-fetch-site"     : "same-origin",
+			"x-track"            : "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImphIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzkzLjAuNDU3Ny42MyBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiOTMuMC40NTc3LjYzIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjk5OTksImNsaWVudF9ldmVudF9zb3VyY2UiOm51bGx9",
+			"cookie"             : "__dcfduid=58cc63e8a4e96080746af063b8226700; _ga=GA1.2.1486012713.1624588766; optimizelyEndUserId=lo_dc52de19306f; _gcl_au=1.1.353297938.1625576763; __sdcfduid=152efea0f40411eb9163dd826f9812afe131958eadcb6853e96a6010766e6e7ad84a76de88899ef4977d80e94257cdee; _gid=GA1.2.2014112249.1631278729; OptanonConsent=isIABGlobal=false&datestamp=Sun+Sep+12+2021+11%3A35%3A52+GMT%2B0800+(%E5%8F%B0%E5%8C%97%E6%A8%99%E6%BA%96%E6%99%82%E9%96%93)&version=6.17.0&hosts=&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1&AwaitingReconsent=false; locale=zh-TW"
+		},
+		"referrer"       : "https://discord.com/developers/applications/707186246207930398/information",
+		"referrerPolicy" : "strict-origin-when-cross-origin",
+		"body"           : JSON.stringify(body),
+		"method"         : "PATCH",
+		"mode"           : "cors"
+	}).then(() => {
+		loggers.Bot.log("成功更新踩地雷");
+	}, (e) => {
+		loggers.Bot.error(chalk`{redBright 踩地雷更新失敗}`);
+		e.stack.split("\n").forEach(v => loggers.Bot.error(v));
+	});
+}, 600000);
