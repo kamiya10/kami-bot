@@ -17,6 +17,7 @@
     "@simonwep/pickr": "^1.8.0",
     "body-parser": "^1.19.0",
     "bufferutil": "^4.0.3",
+    "chalk": "^4.1.2",
     "console-stamp": "^3.0.3",
     "discord-censor": "^1.0.9",
     "discord.js": "^12.5.3",
@@ -53,7 +54,7 @@
     "utf-8-validate": "^5.0.5",
     "waifu2x": "^0.7.4",
     "ytdl": "^1.4.1",
-    "ytdl-core": "^4.8.3",
+    "ytdl-core": "^4.9.1",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {

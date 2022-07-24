@@ -2,7 +2,7 @@
 const url = require("url");
 const path = require("path");
 const express = require("express");
-const favicon = require('express-favicon');
+const favicon = require("express-favicon");
 const passport = require("passport");
 const session = require("express-session");
 const Strategy = require("passport-discord").Strategy;
@@ -18,226 +18,221 @@ const MemoryStore = require("memorystore")(session);
 
 // We export the dashboard as a function which we call in ready event.
 module.exports = async (client) => {
-    // We declare absolute paths.
-    const dataDir = path.resolve(`${process.cwd()}${path.sep}dashboard`); // The absolute path of current this directory.
-    const templateDir = path.resolve(`${dataDir}${path.sep}templates`); // Absolute path of ./templates directory.
+	// We declare absolute paths.
+	const dataDir = path.resolve(`${process.cwd()}${path.sep}dashboard`); // The absolute path of current this directory.
+	const templateDir = path.resolve(`${dataDir}${path.sep}templates`); // Absolute path of ./templates directory.
 
-    // Deserializing and serializing users without any additional logic.
-    passport.serializeUser((user, done) => done(null, user));
-    passport.deserializeUser((obj, done) => done(null, obj));
+	// Deserializing and serializing users without any additional logic.
+	passport.serializeUser((user, done) => done(null, user));
+	passport.deserializeUser((obj, done) => done(null, obj));
 
-    // We set the passport to use a new discord strategy, we pass in client id, secret, callback url and the scopes.
-    /** Scopes:
+	// We set the passport to use a new discord strategy, we pass in client id, secret, callback url and the scopes.
+	/** Scopes:
      *  - Identify: Avatar's url, username and discriminator.
      *  - Guilds: A list of partial guilds.
     */
-    passport.use(new Strategy({
-        clientID: config.id,
-        clientSecret: config.clientSecret,
-        callbackURL: `${config.domain}${config.port == 80 ? "" : `:${config.port}`}/callback`,
-        scope: ["identify", "guilds"]
-    },
-        (accessToken, refreshToken, profile, done) => { // eslint-disable-line no-unused-vars
-            // On login we pass in profile with no logic.
-            process.nextTick(() => done(null, profile));
-        }));
+	passport.use(new Strategy({
+		clientID     : config.id,
+		clientSecret : config.clientSecret,
+		callbackURL  : `${config.domain}${config.port == 80 ? "" : `:${config.port}`}/callback`,
+		scope        : [ "identify", "guilds" ]
+	},
+	(accessToken, refreshToken, profile, done) => { // eslint-disable-line no-unused-vars
+		// On login we pass in profile with no logic.
+		process.nextTick(() => done(null, profile));
+	}));
 
-    // We initialize the memorystore middleware with our express app.
-    app.use(session({
-        store: new MemoryStore({ checkPeriod: 86400000 }),
-        secret: "#@%#&^$^$%@$^$&%#$%@#$%$^%&$%^#$%@#$%#E%#%@$FEErfgr3g#%GT%536c53cc6%5%tv%4y4hrgrggrgrgf4n",
-        resave: false,
-        saveUninitialized: false,
-    }));
+	// We initialize the memorystore middleware with our express app.
+	app.use(session({
+		store             : new MemoryStore({ checkPeriod: 86400000 }),
+		secret            : "#@%#&^$^$%@$^$&%#$%@#$%$^%&$%^#$%@#$%#E%#%@$FEErfgr3g#%GT%536c53cc6%5%tv%4y4hrgrggrgrgf4n",
+		resave            : false,
+		saveUninitialized : false,
+	}));
 
-    // We initialize passport middleware.
-    app.use(passport.initialize());
-    app.use(passport.session());
+	// We initialize passport middleware.
+	app.use(passport.initialize());
+	app.use(passport.session());
 
+	// We bind the domain.
+	app.locals.domain = config.domain.split("//")[1];
 
-    // We bind the domain.
-    app.locals.domain = config.domain.split("//")[1];
+	// favicon
+	app.use(favicon(__dirname + "/templates/favicon.ico"));
 
-    // favicon
-    app.use(favicon(__dirname + '/templates/favicon.ico'));
+	// We set out templating engine.
+	app.engine("html", ejs.renderFile);
+	app.set("view engine", "html");
 
-    // We set out templating engine.
-    app.engine("html", ejs.renderFile);
-    app.set("view engine", "html");
+	// We initialize body-parser middleware to be able to read forms.
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({
+		extended: true
+	}));
 
-    // We initialize body-parser middleware to be able to read forms.
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }));
-    
+	app.use(express.static(__dirname + "/templates"));
+	// We declare a renderTemplate function to make rendering of a template in a route as easy as possible.
+	const renderTemplate = (res, req, template, data = {}) => {
+		// Default base data which passed to the ejs template by default.
+		const baseData = {
+			bot  : client,
+			path : req.path,
+			user : req.isAuthenticated() ? req.user : null
+		};
+		// We render template using the absolute path of the template and the merged default data with the additional data provided.
+		res.render(path.resolve(`${templateDir}${path.sep}${template}`), Object.assign(baseData, data));
+	};
 
-    app.use(express.static(__dirname + '/templates'));
-    // We declare a renderTemplate function to make rendering of a template in a route as easy as possible.
-    const renderTemplate = (res, req, template, data = {}) => {
-        // Default base data which passed to the ejs template by default. 
-        const baseData = {
-            bot: client,
-            path: req.path,
-            user: req.isAuthenticated() ? req.user : null
-        };
-        // We render template using the absolute path of the template and the merged default data with the additional data provided.
-        res.render(path.resolve(`${templateDir}${path.sep}${template}`), Object.assign(baseData, data));
-    };
+	// We declare a checkAuth function middleware to check if an user is logged in or not, and if not redirect him.
+	const checkAuth = (req, res, next) => {
+		// If authenticated we forward the request further in the route.
+		if (req.isAuthenticated()) return next();
+		// If not authenticated, we set the url the user is redirected to into the memory.
+		req.session.backURL = req.url;
+		// We redirect user to login endpoint/route.
+		res.redirect("/login");
+	};
 
-    // We declare a checkAuth function middleware to check if an user is logged in or not, and if not redirect him.
-    const checkAuth = (req, res, next) => {
-        // If authenticated we forward the request further in the route.
-        if (req.isAuthenticated()) return next();
-        // If not authenticated, we set the url the user is redirected to into the memory.
-        req.session.backURL = req.url;
-        // We redirect user to login endpoint/route.
-        res.redirect("/login");
-    }
+	// Login endpoint.
+	app.get("/login", (req, res, next) => {
+		// We determine the returning url.
+		if (req.session.backURL)
+			req.session.backURL = req.session.backURL; // eslint-disable-line no-self-assign
+		else if (req.headers.referer) {
+			const parsed = url.parse(req.headers.referer);
+			if (parsed.hostname === app.locals.domain)
+				req.session.backURL = parsed.path;
 
-    // Login endpoint.
-    app.get("/login", (req, res, next) => {
-        // We determine the returning url.
-        if (req.session.backURL) {
-            req.session.backURL = req.session.backURL; // eslint-disable-line no-self-assign
-        } else if (req.headers.referer) {
-            const parsed = url.parse(req.headers.referer);
-            if (parsed.hostname === app.locals.domain) {
-                req.session.backURL = parsed.path;
-            }
-        } else {
-            req.session.backURL = "/";
-        }
-        // Forward the request to the passport middleware.
-        next();
-    },
-        passport.authenticate("discord"));
+		} else
+			req.session.backURL = "/";
 
-    // Callback endpoint.
-    app.get("/callback", passport.authenticate("discord", { failureRedirect: "/" }), /* We authenticate the user, if user canceled we redirect him to index. */(req, res) => {
-        // If user had set a returning url, we redirect him there, otherwise we redirect him to index.
-        if (req.session.backURL) {
-            const url = req.session.backURL;
-            req.session.backURL = null;
-            res.redirect(url);
-        } else {
-            res.redirect("/");
-        }
-    });
+		// Forward the request to the passport middleware.
+		next();
+	},
+	passport.authenticate("discord"));
 
-    // Logout endpoint.
-    app.get("/logout", function (req, res) {
-        // We destroy the session.
-        req.session.destroy(() => {
-            // We logout the user.
-            req.logout();
-            // We redirect user to index.
-            res.redirect("/");
-        });
-    });
+	// Callback endpoint.
+	app.get("/callback", passport.authenticate("discord", { failureRedirect: "/" }), /* We authenticate the user, if user canceled we redirect him to index. */(req, res) => {
+		// If user had set a returning url, we redirect him there, otherwise we redirect him to index.
+		if (req.session.backURL) {
+			const url = req.session.backURL;
+			req.session.backURL = null;
+			res.redirect(url);
+		} else
+			res.redirect("/");
 
-    // Index endpoint.
-    app.get("/", (req, res) => {
-        renderTemplate(res, req, "index.ejs");
-    });
+	});
 
-    // Dashboard endpoint.
-    app.get("/dashboard", checkAuth, (req, res) => {
-        renderTemplate(res, req, "dashboard.ejs", { perms: Discord.Permissions });
-    });
+	// Logout endpoint.
+	app.get("/logout", function (req, res) {
+		// We destroy the session.
+		req.session.destroy(() => {
+			// We logout the user.
+			req.logout();
+			// We redirect user to index.
+			res.redirect("/");
+		});
+	});
 
-    // Settings endpoint.
-    app.get("/dashboard/:guildID", checkAuth, async (req, res) => {
-        // We validate the request, check if guild exists, member is in guild and if member has minimum permissions, if not, we redirect it back.
-        const guild = client.guilds.cache.get(req.params.guildID);
-        if (!guild) return res.redirect("/dashboard");
-        const member = guild.members.cache.get(req.user.id);
-        if (!member) return res.redirect("/dashboard");
-        if (!member.permissions.has("MANAGE_GUILD")) return res.redirect("/dashboard");
+	// Index endpoint.
+	app.get("/", (req, res) => {
+		renderTemplate(res, req, "index.ejs");
+	});
 
-        // We retrive the settings stored for this guild.
-        var storedSettings = await GuildSettings.findOne({ gid: guild.id });
-        if (!storedSettings) {
-            // If there are no settings stored for this guild, we create them and try to retrive them again.
-            const newSettings = new GuildSettings({
-                gid: guild.id
-            });
-            await newSettings.save().catch(() => { });
-            storedSettings = await GuildSettings.findOne({ gid: guild.id });
-        }
+	// Dashboard endpoint.
+	app.get("/dashboard", checkAuth, (req, res) => {
+		renderTemplate(res, req, "dashboard.ejs", { perms: Discord.Permissions });
+	});
 
-        renderTemplate(res, req, "settings.ejs", { guild, settings: storedSettings, alert: null });
-    });
+	// Settings endpoint.
+	app.get("/dashboard/:guildID", checkAuth, async (req, res) => {
+		// We validate the request, check if guild exists, member is in guild and if member has minimum permissions, if not, we redirect it back.
+		const guild = client.guilds.cache.get(req.params.guildID);
+		if (!guild) return res.redirect("/dashboard");
+		const member = guild.members.cache.get(req.user.id);
+		if (!member) return res.redirect("/dashboard");
+		if (!member.permissions.has("MANAGE_GUILD")) return res.redirect("/dashboard");
 
-    // Settings endpoint.
-    app.post("/dashboard/:guildID", checkAuth, async (req, res) => {
-        // We validate the request, check if guild exists, member is in guild and if member has minimum permissions, if not, we redirect it back.
-        const guild = client.guilds.cache.get(req.params.guildID);
-        if (!guild) return res.redirect("/dashboard");
-        const member = guild.members.cache.get(req.user.id);
-        if (!member) return res.redirect("/dashboard");
-        if (!member.permissions.has("MANAGE_GUILD")) return res.redirect("/dashboard");
-        // We retrive the settings stored for this guild.
-        var storedSettings = await GuildSettings.findOne({ gid: guild.id });
-        if (!storedSettings) {
-            // If there are no settings stored for this guild, we create them and try to retrive them again.
-            const newSettings = new GuildSettings({
-                gid: guild.id
-            });
-            await newSettings.save().catch(() => { });
-            storedSettings = await GuildSettings.findOne({ gid: guild.id });
-        }
+		// We retrive the settings stored for this guild.
+		let storedSettings = await GuildSettings.findOne({ gid: guild.id });
+		if (!storedSettings) {
+			// If there are no settings stored for this guild, we create them and try to retrive them again.
+			const newSettings = new GuildSettings({
+				gid: guild.id
+			});
+			await newSettings.save().catch(() => { });
+			storedSettings = await GuildSettings.findOne({ gid: guild.id });
+		}
 
-        // We set the prefix of the server settings to the one that was sent in request from the form.
-        storedSettings.prefix = req.body.prefix;
-        // We save the settings.
-        await storedSettings.save().catch(() => { });
+		renderTemplate(res, req, "settings.ejs", { guild, settings: storedSettings, alert: null });
+	});
 
-        // We render the template with an alert text which confirms that settings have been saved.
-        renderTemplate(res, req, "settings.ejs", { guild, settings: storedSettings, alert: "已儲存設定" });
-    });
+	// Settings endpoint.
+	app.post("/dashboard/:guildID", checkAuth, async (req, res) => {
+		// We validate the request, check if guild exists, member is in guild and if member has minimum permissions, if not, we redirect it back.
+		const guild = client.guilds.cache.get(req.params.guildID);
+		if (!guild) return res.redirect("/dashboard");
+		const member = guild.members.cache.get(req.user.id);
+		if (!member) return res.redirect("/dashboard");
+		if (!member.permissions.has("MANAGE_GUILD")) return res.redirect("/dashboard");
+		// We retrive the settings stored for this guild.
+		let storedSettings = await GuildSettings.findOne({ gid: guild.id });
+		if (!storedSettings) {
+			// If there are no settings stored for this guild, we create them and try to retrive them again.
+			const newSettings = new GuildSettings({
+				gid: guild.id
+			});
+			await newSettings.save().catch(() => { });
+			storedSettings = await GuildSettings.findOne({ gid: guild.id });
+		}
 
+		// We set the prefix of the server settings to the one that was sent in request from the form.
+		storedSettings.prefix = req.body.prefix;
+		// We save the settings.
+		await storedSettings.save().catch(() => { });
 
-    // RLCraft endpoint.
-    app.get("/RLCraft", (req, res) => {
-        renderTemplate(res, req, "RLCraft.ejs");
-    });
-    app.get("/RLCraft/Installation", (req, res) => {
-        renderTemplate(res, req, "/rlc/installation.ejs");
-    });
-    app.get("/RLCraft/Getting_Started", (req, res) => {
-        renderTemplate(res, req, "/rlc/getting_started.ejs");
-    });
-    app.get("/RLCraft/installation/download/RLCraft_v2.1.2.zip", (req, res) => {
-        const file = `${__dirname}/templates/rlc/download/RLCraft_v2.1.2.zip`;
-        res.download(file); // Set disposition and send it.
-    });
-    app.get("/RLCraft/installation/download/additions.zip", (req, res) => {
-        const file = `${__dirname}/templates/rlc/download/additions.zip`;
-        res.download(file); // Set disposition and send it.
-    });
+		// We render the template with an alert text which confirms that settings have been saved.
+		renderTemplate(res, req, "settings.ejs", { guild, settings: storedSettings, alert: "已儲存設定" });
+	});
 
+	// RLCraft endpoint.
+	app.get("/RLCraft", (req, res) => {
+		renderTemplate(res, req, "RLCraft.ejs");
+	});
+	app.get("/RLCraft/Installation", (req, res) => {
+		renderTemplate(res, req, "/rlc/installation.ejs");
+	});
+	app.get("/RLCraft/Getting_Started", (req, res) => {
+		renderTemplate(res, req, "/rlc/getting_started.ejs");
+	});
+	app.get("/RLCraft/installation/download/RLCraft_v2.1.2.zip", (req, res) => {
+		const file = `${__dirname}/templates/rlc/download/RLCraft_v2.1.2.zip`;
+		res.download(file); // Set disposition and send it.
+	});
+	app.get("/RLCraft/installation/download/additions.zip", (req, res) => {
+		const file = `${__dirname}/templates/rlc/download/additions.zip`;
+		res.download(file); // Set disposition and send it.
+	});
 
+	// 404 Endpoint
+	app.use(function(req, res, next) {
+		res.status(404);
 
-    // 404 Endpoint
-    app.use(function(req, res, next) {
-        res.status(404);
-      
-        // respond with html page
-        if (req.accepts('html')) {
-            renderTemplate(res, req, "error/404.ejs", {url: req.url});
-          return;
-        }
-      
-        // respond with json
-        if (req.accepts('json')) {
-          res.json({ error: 'Not found' });
-          return;
-        }
-      
-        // default to plain-text. send()
-        res.type('txt').send('Not found');
-      });
+		// respond with html page
+		if (req.accepts("html")) {
+			renderTemplate(res, req, "error/404.ejs", { url: req.url });
+			return;
+		}
 
-    app.listen(config.port, null, null, () => console.log(`\x1b[96mDashboard \x1b[90m» \x1b[0m網頁已上線在埠 \x1b[33m${config.port}\x1b[0m.`));
+		// respond with json
+		if (req.accepts("json")) {
+			res.json({ error: "Not found" });
+			return;
+		}
+
+		// default to plain-text. send()
+		res.type("txt").send("Not found");
+	});
+
+	app.listen(config.port, null, null, () => console.log(`\x1b[96mDashboard \x1b[90m» \x1b[0m網頁已上線在埠 \x1b[33m${config.port}\x1b[0m.`));
 };

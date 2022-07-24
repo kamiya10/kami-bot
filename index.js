@@ -1,3 +1,5 @@
+console.clear();
+console.log("Loading Dependencies...");
 require("console-stamp")(console, {
 	format: ":date(yyyy/mm/dd HH:MM:ss).dim"
 });
@@ -8,7 +10,7 @@ const GuildSettings = require("./models/settings");
 const Dashboard = require("./dashboard/dashboard");
 const censor = require("discord-censor");
 const fs = require("fs");
-
+const chalk = require("chalk");
 const commands = require("./command/loader");
 const functions = require("./function/loader");
 
@@ -19,6 +21,8 @@ const settingUser = "./UserSetting.json";
 const usettings = require(settingUser);
 
 const cooldowns = new Discord.Collection();
+
+console.log("Extending Structures...");
 
 Discord.Structures.extend("Guild", function (Guild) {
 	class MusicGuild extends Guild {
@@ -58,7 +62,12 @@ Discord.Structures.extend("User", User => {
 	return UserSetting;
 });
 
+console.log("Initializing Client...");
+
 const client = new Discord.Client({ intents: [ "GUILDS", "GUILD_MEMBERS", "GUILD_EMOJIS", "GUILD_VOICE_STATES", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "DIRECT_MESSAGES", "DIRECT_MESSAGE_REACTIONS" ] });
+
+console.log(chalk`Connecting to Database... {dim (MongoDB)}`);
+
 mongoose.connect(config.mongodbUrl, {
 	useNewUrlParser    : true,
 	useUnifiedTopology : true
@@ -77,8 +86,6 @@ client.embedStat = {
 	error   : "❌ 錯誤"
 };
 const checkchannel = [];
-
-console.clear();
 
 //#region  Status
 client.on("ready", async () => {
@@ -397,7 +404,7 @@ client.on("guildCreate", async guild => {
 		const embed = new Discord.MessageEmbed()
 			.setColor(client.colors.info)
 			.setTitle("感謝邀請我到這個伺服器")
-		// eslint-disable-next-line no-useless-escape
+			// eslint-disable-next-line no-useless-escape
 			.setDescription("雖然我能做的事情還不多，不過還是感謝選擇了我\n由於主人很懶，所以沒什麼在管我，出bug也不太修 ;w;\n叫我的時候用 \`k3!\` 當開頭，所有我能做到的事都在 \`k3!help\`\n我還有一個妹妹，可以找看看其他伺服器內有沒有她的蹤影喔\n還是有問題的話可以到 [支援伺服器](https://discord.gg/3VTtVxjtWv) 找我主人喔")
 			.setTimestamp();
 		await guild.systemChannel.send(embed);
@@ -540,6 +547,76 @@ client.on("message", async message => {
 			return;
 		}
 
+	if (message.content.includes("新年快樂"))
+		if (Math.abs((Math.round(Math.random() * 10) / 10) - (Math.round(Math.random() * 10) / 10)) <= 0.1 || message.author.id == "437158166019702805" || message.mentions.users.has("632589168438149120")) {
+			const christmas = [
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 >w<",
+				"新年快樂 🎉",
+				"新年快樂 🎉",
+				"新年快樂 🎉",
+				"新年快樂 🎉",
+				"新年快樂 🎉",
+				"新年快樂 🎆",
+				"新年快樂 🎆",
+				"新年快樂 🎆",
+				"新年快樂 🎆",
+				"新年快樂 🎆",
+				"Happy New Year",
+				"Happy New Year",
+				"Happy New Year",
+				"Happy New Year",
+				"Happy New Year",
+				"Happy New Year",
+				"Happy New Year!",
+				"Happy New Year!",
+				"Happy New Year!",
+				"Happy New Year!",
+				"Happy New Year!",
+				"Happy New Year!",
+			];
+			await message.reply(christmas[Math.floor(Math.random() * christmas.length)]);
+			return;
+		}
+
 	if (message.content.toLowerCase() == "never gonna") {
 		const response = [
 			"Give u up ~ ♪",
@@ -591,61 +668,6 @@ client.on("message", async message => {
 	}
 });
 
-//#endregion
-
-const scamurl = require("./scamurl");
-
-const sendwarn = {};
-
-//#region 詐騙
-client.on("message", async message => {
-	if (message.channel.type == "dm") return;
-	if (message.author.bot) return;
-	if (!Object.keys(sendwarn).includes(message.guild.id)) sendwarn[message.guild.id] = 0;
-	try {
-		/*if (message.author.id != "492354896100720670") return;
-        if (message.embeds[0].description.includes(""))*/
-		const guild = client.guilds.cache.get(message.guild.id);
-		const zh = message.guild.preferredLocale == "zh-TW";
-
-		const embed = new Discord.MessageEmbed()
-			.setColor("#ffa500")
-			.setDescription(zh ? `成員：${message.author}\n原因：近期詐騙網址` : `Member：${message.author}\nReason：Sending recent scam urls.`);
-
-		if (
-			scamurl.some((v) => { return message.content.includes(v); })
-            || message.content.match(/^https?:\/\/str?a?ea?([rn][rnm]{0,3}|m[rnm]{1,3}|[^m]{0,3})(communi|m?co(?<=co)\w{2,10}(?<!communi)(?=[tuy]{2,3}))[tuy]{2,3}\.(com|ru)/gi)
-            || (message.content.toLowerCase().includes("nitro") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("gift") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("free"))
-            || (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("skin")) && !message.content.startsWith("LOL")
-            || (message.content.toLowerCase().includes("giveaway") && message.content.toLowerCase().includes("skin"))
-            || (message.content.toLowerCase().includes("give") && message.content.toLowerCase().includes("trade") && message.content.toLowerCase().includes("send"))
-            || (message.content.toLowerCase().includes("skin") && message.content.toLowerCase().includes("trade"))
-			|| (message.content.toLowerCase().includes("free") && message.content.toLowerCase().includes("hack"))
-		) {
-			console.log(`message in ${message.channel.name}, ${message.guild.name}`);
-			console.log(message.content);
-
-			if (!message.guild.members.cache.has("492354896100720670")) await message.delete();
-			if (message?.member?.kickable) {
-				const bans = await guild.fetchBans().catch(e => console.log(e));
-				if (bans)
-					embed.setAuthor(`kick | ${zh ? "案" : "case"} ${bans.size + 1}`);
-				else
-					embed.setAuthor("kick");
-
-				await message.member.kick({ days: 7, reason: zh ? "近期詐騙網址" : "Sending recent scam urls." }).then(async () => {
-					await message.channel.send(`:octagonal_sign: ${zh ? "已踢出成員" : "Member Kicked"}`, { embed: embed }).then(ms => setTimeout(async () => await ms.delete(), 60000));
-				}).catch(e => console.log(e));
-			}
-			return;
-		}
-		return;
-	} catch (error) {
-		console.error(error);
-	}
-});
 //#endregion
 
 client.on("message", async (message) => {

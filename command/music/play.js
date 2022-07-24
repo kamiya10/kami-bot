@@ -65,6 +65,7 @@ async function play(message, args, client) {
 			const repeatOne = new Discord.MessageEmbed()
 				.setColor(client.colors.info)
 				.setDescription(":repeat_one: 重複模式: 單首重複");
+
 			const loop = args[(args.includes("-loop") ? args.indexOf("-loop") : args.indexOf("-l")) + 1];
 			if (loop == "none") {
 				message.guild.musicData.loopingMode = "none";
