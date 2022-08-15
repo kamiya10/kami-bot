@@ -1,7 +1,7 @@
 const { Collection } = require("discord.js");
 const censor = require("discord-censor");
 const logger = require("../Core/logger");
-const { inspect } = require("node:util");
+
 module.exports = {
 	name  : "voiceCreate",
 	event : "voiceStateUpdate",
