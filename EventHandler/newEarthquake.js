@@ -30,14 +30,14 @@ module.exports = {
 				+ (earthquake.earthquakeInfo.magnitude.magnitudeValue * 10)
 				+ (earthquake.earthquakeNo == 111000 ? "" : earthquake.earthquakeNo.toString().substring(3))
 				+ "_H.png";
-			const checker = async () => {
-				await fetch(cwb_image, { method: "GET" }).then(async res => {
+			const checker = (retryCount = 0) => {
+				fetch(cwb_image, { method: "GET" }).then(async res => {
 					if (res.ok) {
 						const buf = await res.buffer();
 						if (buf.byteLength > 0)
 							resolve(true);
-					} else setTimeout(() => checker(), 8000);
-				}).catch(() => setTimeout(() => checker(), 8000));
+					} else setTimeout(checker, 8000, retryCount + 1);
+				}).catch(() => setTimeout(checker, 8000, retryCount + 1));
 			};
 
 			checker();
