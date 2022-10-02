@@ -1,5 +1,4 @@
-const { MessageActionRow, MessageEmbed, MessageSelectMenu } = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
 function emoji(i, time) {
 	try {
@@ -34,9 +33,9 @@ module.exports = {
      * @param {import("discord.js").CommandInteraction} interaction
      */
 	async execute(interaction) {
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setDescription("請使用下方下拉式選單選取欲查詢天氣地區");
-		let county = new MessageSelectMenu()
+		let county = new SelectMenuBuilder()
 			.setCustomId("county")
 			.setPlaceholder("請選擇縣市")
 			.setOptions(
@@ -46,7 +45,7 @@ module.exports = {
 					description : cwb_Forecast.county_code2[k],
 				})),
 			);
-		let town = new MessageSelectMenu()
+		let town = new SelectMenuBuilder()
 			.setCustomId("town")
 			.setPlaceholder("目前不支援鄉鎮天氣預報查詢")
 			.setDisabled(true)
@@ -62,20 +61,17 @@ module.exports = {
 			{
 				embeds     : [embed],
 				components : [
-					new MessageActionRow({ components: [county] }),
-					new MessageActionRow({ components: [town] }),
+					new ActionRowBuilder({ components: [county] }),
+					new ActionRowBuilder({ components: [town] }),
 				],
 			},
 		);
 		const filter = (i) => i.user.id === interaction.user.id;
 
-		/**
-         * @type {import("discord.js").InteractionCollector<SelectMenuInteraction>}
-         */
-		const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000 });
+		const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 
 		let _county_data, _town_data, _hazards, _hazards_W33, _currentCounty, _currentTown;
-		const loading = new MessageEmbed()
+		const loading = new EmbedBuilder()
 			.setDescription("<a:loading:849794359083270144> 正在獲取資料");
 
 		collector.on("collect", async i => {
@@ -111,8 +107,8 @@ module.exports = {
 							{
 								embeds     : [loading],
 								components : [
-									new MessageActionRow({ components: [county] }),
-									new MessageActionRow({ components: [town] }),
+									new ActionRowBuilder({ components: [county] }),
+									new ActionRowBuilder({ components: [town] }),
 								],
 							},
 						);
@@ -128,7 +124,7 @@ module.exports = {
 					if (_hazards.record.length > 0) {
 						const hazard_list = _hazards.record.filter(h => h?.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1)))?.length > 0);
 						if (hazard_list.length > 0)
-							embeds.push(...hazard_list.map(e => new MessageEmbed()
+							embeds.push(...hazard_list.map(e => new EmbedBuilder()
 								.setColor("RED")
 								.setAuthor({
 									name    : `${e?.hazardConditions?.hazards?.hazard?.info?.phenomena || e?.datasetInfo?.datasetDescription}${e?.hazardConditions?.hazards?.hazard?.info?.significance}`,
@@ -139,7 +135,7 @@ module.exports = {
 					if (_hazards_W33.length > 0) {
 						const hazards_W33_list = _hazards_W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
 						if (hazards_W33_list.length > 0)
-							embeds.push(...hazards_W33_list.map(e => new MessageEmbed()
+							embeds.push(...hazards_W33_list.map(e => new EmbedBuilder()
 								.setColor("RED")
 								.setAuthor({
 									name    : "大雷雨即時訊息",
@@ -151,7 +147,7 @@ module.exports = {
 								.setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}`)));
 					}
 
-					const forecast_embed = new MessageEmbed()
+					const forecast_embed = new EmbedBuilder()
 						.setAuthor({
 							name    : "中央氣象局",
 							iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
@@ -170,11 +166,15 @@ module.exports = {
 							values[weatherElement.elementName] = Object.values(weatherElement.time[index].parameter)[0];
 						});
 
-						forecast_embed.addField("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬", `**${timeperiod(new Date(time.startTime))}** ${timestamp(time.startTime)}`);
-						forecast_embed.addField(`${emoji(values.Wx, timeperiod(new Date(time.startTime)))} 天氣`, values.Wx, true);
-						forecast_embed.addField(":droplet: 降雨機率", `${values.PoP}%`, true);
-						forecast_embed.addField(":thermometer: 氣溫", `${values.MinT}℃ ～ ${values.MaxT}℃`, true);
-						forecast_embed.addField(":smiley: 舒適度", values.CI, true);
+						forecast_embed.addFields(
+							...[
+								{ name: "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬", value: `**${timeperiod(new Date(time.startTime))}** ${timestamp(time.startTime)}` },
+								{ name: `${emoji(values.Wx, timeperiod(new Date(time.startTime)))} 天氣`, value: values.Wx, inline: true },
+								{ name: ":droplet: 降雨機率", value: `${values.PoP}%`, inline: true },
+								{ name: ":thermometer: 氣溫", value: `${values.MinT}℃ ～ ${values.MaxT}℃`, inline: true },
+								{ name: ":smiley: 舒適度", value: values.CI, inline: true },
+							],
+						);
 					});
 					embeds.push(forecast_embed);
 
@@ -185,8 +185,8 @@ module.exports = {
 						{
 							embeds,
 							components: [
-								new MessageActionRow({ components: [county] }),
-								new MessageActionRow({ components: [town] }),
+								new ActionRowBuilder({ components: [county] }),
+								new ActionRowBuilder({ components: [town] }),
 							],
 						},
 					);
@@ -213,8 +213,8 @@ module.exports = {
 							{
 								embeds     : [loading],
 								components : [
-									new MessageActionRow({ components: [county] }),
-									new MessageActionRow({ components: [town] }),
+									new ActionRowBuilder({ components: [county] }),
+									new ActionRowBuilder({ components: [town] }),
 								],
 							},
 						);
@@ -226,7 +226,7 @@ module.exports = {
 					if (_hazards.record.length > 0) {
 						const hazard_list = _hazards.record.filter(h => h.hazardConditions.hazards.hazard.info.affectedAreas.location.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
 						if (hazard_list.length > 0)
-							embeds.push(...hazard_list.map(e => new MessageEmbed()
+							embeds.push(...hazard_list.map(e => new EmbedBuilder()
 								.setColor("RED")
 								.setAuthor({
 									name    : `${e.hazardConditions.hazards.hazard.info.phenomena}${e.hazardConditions.hazards.hazard.info.significance}`,
@@ -235,7 +235,7 @@ module.exports = {
 								.setDescription(e.contents.content.contentText)));
 					}
 
-					const forecast_embed = new MessageEmbed()
+					const forecast_embed = new EmbedBuilder()
 						.setAuthor({
 							name    : "中央氣象局",
 							iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
@@ -252,8 +252,12 @@ module.exports = {
 						values[weatherElement.elementName] = weatherElement;
 					});
 
-					forecast_embed.addField(`:droplet: ${values.PoP6h.description}`, barChart(values.PoP6h.time, "🟦", "%"), true);
-					forecast_embed.addField(`:thermometer: ${values.T.description}`, tempChart(values.T.time, "🟦", "℃", values.AT.time), true);
+					forecast_embed.addFields(
+						...[
+							{ name: `:droplet: ${values.PoP6h.description}`, value: barChart(values.PoP6h.time, "🟦", "%"), inline: true },
+							{ name: `:thermometer: ${values.T.description}`, value: tempChart(values.T.time, "🟦", "℃", values.AT.time), inline: true },
+						],
+					);
 
 					embeds.push(forecast_embed);
 
@@ -264,8 +268,8 @@ module.exports = {
 						{
 							embeds,
 							components: [
-								new MessageActionRow({ components: [county] }),
-								new MessageActionRow({ components: [town] }),
+								new ActionRowBuilder({ components: [county] }),
+								new ActionRowBuilder({ components: [town] }),
 							],
 						},
 					);

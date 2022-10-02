@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { Colors, EmbedBuilder } = require("discord.js");
 const logger = require("../Core/logger");
 let distances;
 const ongoingMsgids = {};
@@ -42,15 +42,19 @@ module.exports = {
 				const depthI = depth.sort((a, b) => a - b).indexOf(data.depth);
 				const magnitudeI = ~~data.magnitude;
 
-				const embed = new MessageEmbed()
-					.setColor("RED")
+				const embed = new EmbedBuilder()
+					.setColor(Colors.Red)
 					.setAuthor({ name: "強震即時警報", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 					.setDescription(`[${data.id}] 第 ${data.no} 報`)
-					.addField("規模", `${magnitudeE[magnitudeI]} 芮氏 **${data.magnitude}** \`(${magnitudeTW[magnitudeI]})\``, true)
-					.addField("深度", `${depthE[depthI]} **${data.depth}** 公里 \`(${depthTW[depthI]})\``, true)
-					.addField("發生時間", `${et.getHours() < 10 ? "0" : ""}${et.getHours()}:${et.getMinutes() < 10 ? "0" : ""}${et.getMinutes()}:${et.getSeconds() < 10 ? "0" : ""}${et.getSeconds()}`, true)
-					.addField("位置", `> 經度 **東經 ${data.lon}**\n> 緯度 **北緯 ${data.lat}**\n> 約位在 **${relPos.g}政府${relPos.b}方 ${Math.round(relPos.d * 100) / 100} 公里**`)
-					.addField("預估震度", `${intensity[0].value >= 6 ? "**> 🏚️ 此地震可能會造成災害，勿驚慌、趴下、掩護、穩住。**" : data.magnitude >= 5.5 ? "**> 🚸 本次搖晃可能較多地區有感，請小心自身周邊安全。**" : ""}\n${intensity.map(v => `${v.pos}　**${v.label}**`).join("\n")}`)
+					.setFields(
+						...[
+							{ name: "規模", value: `${magnitudeE[magnitudeI]} 芮氏 **${data.magnitude}** \`(${magnitudeTW[magnitudeI]})\``, inline: true },
+							{ name: "深度", value: `${depthE[depthI]} **${data.depth}** 公里 \`(${depthTW[depthI]})\``, inline: true },
+							{ name: "發生時間", value: `${et.getHours() < 10 ? "0" : ""}${et.getHours()}:${et.getMinutes() < 10 ? "0" : ""}${et.getMinutes()}:${et.getSeconds() < 10 ? "0" : ""}${et.getSeconds()}`, inline: true },
+							{ name: "位置", value: `> 經度 **東經 ${data.lon}**\n> 緯度 **北緯 ${data.lat}**\n> 約位在 **${relPos.g}政府${relPos.b}方 ${Math.round(relPos.d * 100) / 100} 公里**` },
+							{ name: "預估震度", value: `${intensity[0].value >= 6 ? "**> 🏚️ 此地震可能會造成災害，勿驚慌、趴下、掩護、穩住。**" : data.magnitude >= 5.5 ? "**> 🚸 本次搖晃可能較多地區有感，請小心自身周邊安全。**" : ""}\n${intensity.map(v => `${v.pos}　**${v.label}**`).join("\n")}` },
+						],
+					)
 					.setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" }).setFooter({ text: `發布於 ${pt.getHours() < 10 ? "0" : ""}${pt.getHours()}:${pt.getMinutes() < 10 ? "0" : ""}${pt.getMinutes()}:${pt.getSeconds() < 10 ? "0" : ""}${pt.getSeconds()}` })
 					.setTimestamp();
 
@@ -103,6 +107,7 @@ const pos = {
 	"澎湖縣" : [23.570004104100342, 119.56638097986993],
 	"連江縣" : [26.157798573764861, 119.95192319072953],
 };
+
 function calRelative(lon, lat) {
 	distances = Object.keys(pos).map(k => caldistance(pos[k][0], pos[k][1], lat, lon));
 	const d = Math.min(...distances);

@@ -1,5 +1,4 @@
-const { SlashCommandBuilder, SlashCommandStringOption } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { Colors, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } = require("discord.js");
 const logger = require("../../Core/logger");
 
 const e = [
@@ -31,8 +30,8 @@ module.exports = {
 		const question = interaction.options.getString("問題");
 		const option = interaction.options.getString("選項").split(",");
 
-		const embed = new MessageEmbed()
-			.setColor("BLUE")
+		const embed = new EmbedBuilder()
+			.setColor(Colors.Blue)
 			.setAuthor({ name: interaction.member.displayName, iconURL: interaction.member.displayAvatarURL({ dynamic: true }) })
 			.setTitle(question)
 			.setDescription(option.map((v, i) => `${e[i]} ${v}`).join("\n"))

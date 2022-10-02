@@ -1,9 +1,8 @@
-const { MessageActionRow, MessageEmbed, MessageSelectMenu } = require("discord.js");
-const { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } = require("@discordjs/builders");
-const { ChannelType } = require("discord-api-types/v10");
+const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } = require("discord.js");
 const GuildDatabaseModel = require("../../Model/GuildDatabaseModel");
-const censor = require("discord-censor");
 const UserDatabaseModel = require("../../Model/UserDatabaseModel");
+const censor = require("discord-censor");
+
 const emoji = [
 	"1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣",
 	"6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟",
@@ -122,7 +121,7 @@ module.exports = {
 					.setDescription("覆蓋現有設定")))),
 	defer: true,
 	/**
-     * @param {import("discord.js").CommandInteraction<Interaction>} interaction
+     * @param {import("discord.js").CommandInteraction<import("discord.js").Interaction>} interaction
      */
 	async execute(interaction) {
 		const placeholder = {
@@ -132,7 +131,7 @@ module.exports = {
 		};
 
 		try {
-			const voice = new MessageEmbed();
+			const voice = new EmbedBuilder();
 			const GuildSettings = await interaction.client.database.GuildDatabase.findOne({
 				where: { id: interaction.guild.id },
 			}).catch(() => void 0);
@@ -147,17 +146,17 @@ module.exports = {
 
 			const sc = interaction.options.getSubcommand();
 			if (interaction.options.getSubcommandGroup(false) == "伺服器設定") {
-				if (!interaction.memberPermissions.has("ADMINISTRATOR")) throw { message: "ERR_PERMISSION_DENIED" };
+				if (!interaction.memberPermissions.has("Administrator")) throw { message: "ERR_PERMISSION_DENIED" };
 				switch (sc) {
 					case "資訊": {
 						const pages = [];
 						voice
 							.setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
-							.setColor("BLUE");
+							.setColor(Colors.Blue);
 
 						if (GuildSettings?.voice)
 							GuildSettings?.voice.forEach(
-							/**
+								/**
 								 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
 								 * @param {number} i Index
 								 */
@@ -174,11 +173,15 @@ module.exports = {
 									chsetting.push(`　位元率 │ **${v.channelSettings.bitrate}** kbps`);
 									chsetting.push(`人數上限 │ ${v.channelSettings.limit ? `**${v.channelSettings.limit}** 人` : "`無限制`"}`);
 
-									const embed = new MessageEmbed(voice);
+									const embed = new EmbedBuilder(voice.data);
 									embed
-										.addField("建立語音頻道", `\`${v.creator}\` <#${v.creator}>`)
-										.addField("語音頻道類別", v.category ? `\`${v.category}\` <#${v.category}>` : "`未設定語音頻道類別`")
-										.addField("頻道設定", chsetting.join("\n"))
+										.setFields(
+											...[
+												{ name: "建立語音頻道", value: `\`${v.creator}\` <#${v.creator}>` },
+												{ name: "語音頻道類別", value: v.category ? `\`${v.category}\` <#${v.category}>` : "`未設定語音頻道類別`" },
+												{ name: "頻道設定", value: chsetting.join("\n") },
+											],
+										)
 										.setFooter({ text: `${i + 1} / ${GuildSettings?.voice.length}` })
 										.setTimestamp();
 									pages.push(embed);
@@ -187,11 +190,11 @@ module.exports = {
 							pages.push(voice.setDescription("這個伺服器尚未設定自動語音頻道"));
 
 						if (pages.length > 1) {
-							const ar = new MessageActionRow()
-								.addComponents(new MessageSelectMenu()
+							const ar = new ActionRowBuilder()
+								.addComponents(new SelectMenuBuilder()
 									.addOptions(
 										GuildSettings?.voice.map(
-										/**
+											/**
 											 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
 											 * @param {number} i Index
 											 */
@@ -207,35 +210,30 @@ module.exports = {
 									.setCustomId("kami_voice_paginator"));
 							const sent = await interaction.editReply({ embeds: [pages[0]], components: [ar] });
 							const filter = (i) => i.customId === "kami_voice_paginator" && i.user.id === interaction.user.id;
-							/**
-							 * @type {import("discord.js").InteractionCollector}
-							 */
-							const controller = sent.createMessageComponentCollector({ filter, time: 15_000 });
-							controller.on("collect",
-							/**
-								 * @param {import("discord.js").SelectMenuInteraction} inter
-								 */
-								async inter => {
-									const aru = new MessageActionRow()
-										.addComponents(new MessageSelectMenu()
-											.addOptions(
-												GuildSettings?.voice.map(
+
+							const controller = sent.createMessageComponentCollector({ filter, idle: 15_000, componentType: ComponentType.SelectMenu });
+							controller.on("collect", async inter => {
+								const aru = new ActionRowBuilder()
+									.addComponents(new SelectMenuBuilder()
+										.addOptions(
+											GuildSettings?.voice.map(
 												/**
-											 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
-											 * @param {number} i Index
-											 */
-													(v, i) => (
-														{
-															label       : `#${interaction.guild.channels.cache.get(v.creator).name}`,
-															value       : `${i}`,
-															default     : i == inter.values[0],
-															description : v.creator,
-															emoji       : emoji[i],
-														}),
-												))
-											.setCustomId("kami_voice_paginator"));
-									await inter.update({ embeds: [pages[+inter.values[0]]], components: [aru] });
-								});
+													 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
+													 * @param {number} i Index
+													 */
+												(v, i) => (
+													{
+														label       : `#${interaction.guild.channels.cache.get(v.creator).name}`,
+														value       : `${i}`,
+														default     : i == inter.values[0],
+														description : v.creator,
+														emoji       : emoji[i],
+													}
+												),
+											))
+										.setCustomId("kami_voice_paginator"));
+								await inter.update({ embeds: [pages[+inter.values[0]]], components: [aru] });
+							});
 						} else
 							await interaction.editReply({ embeds: [pages[0]] });
 						break;
@@ -279,7 +277,7 @@ module.exports = {
 							);
 
 						voice
-							.setColor("GREEN")
+							.setColor(Colors.Green)
 							.setTitle("✅ 成功")
 							.setDescription(`已將 ${vch} 新增到自動語音頻道列表`);
 						await interaction.editReply({ embeds: [voice] });
@@ -310,7 +308,7 @@ module.exports = {
 							);
 
 							voice
-								.setColor("GREEN")
+								.setColor(Colors.Green)
 								.setTitle("✅ 成功")
 								.setDescription(`已將 ${vch} 從自動語音頻道列表中刪除`);
 							await interaction.editReply({ embeds: [voice] });
@@ -386,24 +384,31 @@ module.exports = {
 						let muted = interaction.options.getBoolean("狀態");
 						const permission = [];
 
-						interaction.member.voice.channel.permissionOverwrites.cache.forEach((v, id) => {
-							let allow, deny;
-							if (id == member.id) {
-								if (muted == undefined)
-									muted = !v.deny.has("SPEAK");
-								if (muted) {
-									if (!v.deny.has("SPEAK")) deny = v.deny.add("SPEAK");
-									if (v.allow.has("SPEAK")) allow = v.allow.remove("SPEAK");
+						interaction.member.voice.channel.permissionOverwrites.cache.forEach(
+							/**
+							 *
+							 * @param {import("discord.js").PermissionOverwrites} v
+							 * @param {string} id
+							 */
+							(v, id) => {
+								let allow, deny;
+								if (id == member.id) {
+									if (muted == undefined)
+										muted = !v.deny.has("Speak");
+									if (muted) {
+										if (!v.deny.has("Speak")) deny = v.deny.add("Speak");
+										if (v.allow.has("Speak")) allow = v.allow.remove("Speak");
+									} else {
+										if (v.deny.has("Speak")) deny = v.deny.remove("Speak");
+										if (!v.allow.has("Speak")) allow = v.allow.add("Speak");
+									}
 								} else {
-									if (v.deny.has("SPEAK")) deny = v.deny.remove("SPEAK");
-									if (!v.allow.has("SPEAK")) allow = v.allow.add("SPEAK");
+									allow = v.allow;
+									deny = v.deny;
 								}
-							} else {
-								allow = v.allow;
-								deny = v.deny;
-							}
-							permission.push({ id, allow, deny });
-						});
+								permission.push({ id, allow, deny });
+							});
+
 						if (!interaction.member.voice.channel.permissionOverwrites.cache.has(member.id))
 							permission.push({ id: member.id, deny: 1n << 21n });
 
@@ -431,8 +436,8 @@ module.exports = {
 				"ERR_NOT_IMPLEMENTED"       : "功能尚未完成",
 			}[e.message];
 
-			const embed = new MessageEmbed()
-				.setColor("RED")
+			const embed = new EmbedBuilder()
+				.setColor(Colors.Red)
 				.setTitle("❌ 錯誤");
 
 			if (!errCase) {

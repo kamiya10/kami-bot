@@ -17,20 +17,23 @@ module.exports = {
 			v.voice.forEach(val => {
 				if (val.category)
 					if (client.channels.cache.get(val.category))
-						client.channels.cache.get(val.category).children.forEach(async ch => {
-							if (ch.type == "GUILD_VOICE")
-								if (ch.id != val.creator)
-									if (ch.members.size) {
-										const m = ch.permissionOverwrites.cache.filter((p, k) => p.allow.has("MANAGE_CHANNELS") && k != client.user.id);
-										client.watchedChanels.set(ch.id, { master: m?.firstKey() });
-									} else
-										await ch.delete();
-						});
+						client.channels.cache.get(val.category).children.cache.forEach(
+							/**
+							 * @param {import("discord.js").Channel} ch
+							 */
+							async ch => {
+								if (ch.isVoiceBased())
+									if (ch.id != val.creator)
+										if (ch.members.size) {
+											const m = ch.permissionOverwrites.cache.filter((p, k) => p.allow.has("ManageChannels") && k != client.user.id);
+											client.watchedChanels.set(ch.id, { master: m?.firstKey() });
+										} else
+											await ch.delete();
+							});
 			});
 		});
 		setInterval(async () => {
-			await client.user.setActivity(`${client.version} | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`);
+			client.user.setActivity(`${client.version} | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`);
 		}, 60000);
-
 	},
 };

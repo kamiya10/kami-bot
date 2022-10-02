@@ -1,10 +1,10 @@
-const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder } = require("discord.js");
 const { stripIndents } = require("common-tags");
 const colors = {
-	"綠色" : "GREEN",
-	"黃色" : "YELLOW",
-	"橙色" : "ORANGE",
-	"紅色" : "RED",
+	"綠色" : Colors.Green,
+	"黃色" : Colors.Yellow,
+	"橙色" : Colors.Orange,
+	"紅色" : Colors.Red,
 };
 const magnitudeTW = ["極微", "極微", "微小", "微小", "輕微", "中等", "強烈", "重大", "極大"];
 const magnitudeE = ["\\⚫", "\\⚫", "\\⚪", "\\🔵", "\\🟢", "\\🟡", "\\🟠", "\\🔴", "\\🛑"];
@@ -62,15 +62,15 @@ function formatEarthquake(earthquake, style = 0) {
        + (earthquake.earthquakeInfo.magnitude.magnitudeValue * 10)
        + (earthquake.earthquakeNo == 111000 ? "" : earthquake.earthquakeNo.toString().substring(3))
        + "_H.png";
-	const url = new MessageActionRow()
+	const url = new ActionRowBuilder()
 		.addComponents([
-			new MessageButton()
+			new ButtonBuilder()
 				.setLabel("地震報告")
-				.setStyle("LINK")
+				.setStyle(ButtonStyle.Link)
 				.setURL(cwb_url),
-			new MessageButton()
+			new ButtonBuilder()
 				.setLabel("地震測報中心")
-				.setStyle("LINK")
+				.setStyle(ButtonStyle.Link)
 				.setURL(earthquake.web),
 		]);
 	switch (style) {
@@ -81,7 +81,7 @@ function formatEarthquake(earthquake, style = 0) {
 
 		case 1: {
 			const desc = `**[${earthquake.earthquakeNo == 111000 ? "小區域" : earthquake.earthquakeNo}]** <t:${~~(time.getTime() / 1000)}>\n${earthquake.reportContent.substring(11)}`;
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colors[earthquake.reportColor])
 				.setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 				.setThumbnail(cwb_image)
@@ -94,7 +94,7 @@ function formatEarthquake(earthquake, style = 0) {
 
 		case 2: {
 			const desc = `**[${earthquake.earthquakeNo == 111000 ? "小區域" : earthquake.earthquakeNo}]** <t:${~~(time.getTime() / 1000)}>\n${earthquake.reportContent.substring(11)}`;
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colors[earthquake.reportColor])
 				.setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 				.setImage(cwb_image)
@@ -114,7 +114,7 @@ function formatEarthquake(earthquake, style = 0) {
                **深度：**${earthquake.earthquakeInfo.depth.value} 公里
                **規模：**芮氏 ${earthquake.earthquakeInfo.magnitude.magnitudeValue}`;
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colors[earthquake.reportColor])
 				.setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 				.setImage(cwb_image)
@@ -125,7 +125,7 @@ function formatEarthquake(earthquake, style = 0) {
 			earthquake.intensity.shakingArea
 				.filter(v => !v.infoStatus)
 				.sort((a, b) => b.areaIntensity.value - a.areaIntensity.value)
-				.forEach(shakingArea => embed.addField(shakingArea.areaDesc, shakingArea.areaName));
+				.forEach(shakingArea => embed.addFields({ name: shakingArea.areaDesc, value: shakingArea.areaName }));
 
 			return { embeds: [embed], components: [url] };
 		}
@@ -133,24 +133,28 @@ function formatEarthquake(earthquake, style = 0) {
 		case 4: {
 			const desc = `<t:${~~(time.getTime() / 1000)}>\n${earthquake.reportContent.substring(11)}`;
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colors[earthquake.reportColor])
 				.setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 				.setURL(cwb_url)
 				.setImage(cwb_image)
 				.setDescription(desc)
-				.addField("編號", `${earthquake.earthquakeNo == 111000 ? "無（小區域有感地震）" : earthquake.earthquakeNo}`, true)
-				.addField("時間", `<t:${~~(time.getTime() / 1000)}:D><t:${~~(time.getTime() / 1000)}:T>`, true)
-				.addField("深度", `${depthE[depthI]}**${earthquake.earthquakeInfo.depth.value}** 公里 \`(${depthTW[depthI]})\``, true)
-				.addField("規模", `${magnitudeE[magnitudeI]}芮氏 **${earthquake.earthquakeInfo.magnitude.magnitudeValue}** \`(${magnitudeTW[magnitudeI]})\``, true)
-				.addField("震央", `${earthquake.earthquakeInfo.epiCenter.location.replace("(", "（").replace(")", "）").split("（").join("\n（")}`)
+				.setFields(
+					...[
+						{ name: "編號", value: `${earthquake.earthquakeNo == 111000 ? "無（小區域有感地震）" : earthquake.earthquakeNo}`, inline: true },
+						{ name: "時間", value: `<t:${~~(time.getTime() / 1000)}:D><t:${~~(time.getTime() / 1000)}:T>`, inline: true },
+						{ name: "深度", value: `${depthE[depthI]}**${earthquake.earthquakeInfo.depth.value}** 公里 \`(${depthTW[depthI]})\``, inline: true },
+						{ name: "規模", value: `${magnitudeE[magnitudeI]}芮氏 **${earthquake.earthquakeInfo.magnitude.magnitudeValue}** \`(${magnitudeTW[magnitudeI]})\``, inline: true },
+						{ name: "震央", value: `${earthquake.earthquakeInfo.epiCenter.location.replace("(", "（").replace(")", "）").split("（").join("\n（")}` },
+					],
+				)
 				.setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
 				.setTimestamp(time);
 
 			earthquake.intensity.shakingArea
 				.filter(v => !v.infoStatus)
 				.sort((a, b) => b.areaIntensity.value - a.areaIntensity.value)
-				.forEach(shakingArea => embed.addField(shakingArea.areaDesc, shakingArea.areaName));
+				.forEach(shakingArea => embed.addFields({ name: shakingArea.areaDesc, value: shakingArea.areaName }));
 
 			return { embeds: [embed], components: [url] };
 		}
@@ -158,35 +162,39 @@ function formatEarthquake(earthquake, style = 0) {
 		case 5: {
 			const desc = `<t:${~~(time.getTime() / 1000)}>\n${earthquake.reportContent.substring(11)}`;
 			const embeds = [];
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colors[earthquake.reportColor])
 				.setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
 				.setURL(cwb_url)
 				.setImage(cwb_image)
 				.setDescription(desc)
-				.addField("編號", `${earthquake.earthquakeNo == 111000 ? "無（小區域有感地震）" : earthquake.earthquakeNo}`, true)
-				.addField("時間", `<t:${~~(time.getTime() / 1000)}:D>\n<t:${~~(time.getTime() / 1000)}:T>\n<t:${~~(time.getTime() / 1000)}:R>`, true)
-				.addField("震央位置", `${earthquake.earthquakeInfo.epiCenter.location.replace("(", "（").replace(")", "）").split("（").join("\n（")}`, true)
-				.addField("震央經緯", `北緯 **${earthquake.earthquakeInfo.epiCenter.epiCenterLat.value}** 度\n東經 **${earthquake.earthquakeInfo.epiCenter.epiCenterLon.value}**   度`, true)
-				.addField("深度", `${depthE[depthI]} **${earthquake.earthquakeInfo.depth.value}** 公里\n　 ${depthTW[depthI]}`, true)
-				.addField("規模", `${magnitudeE[magnitudeI]} 芮氏 **${earthquake.earthquakeInfo.magnitude.magnitudeValue}**\n　 ${magnitudeTW[magnitudeI]}`, true)
+				.setFields(
+					...[
+						{ name: "編號", value: `${earthquake.earthquakeNo == 111000 ? "無（小區域有感地震）" : earthquake.earthquakeNo}`, inline: true },
+						{ name: "時間", value: `<t:${~~(time.getTime() / 1000)}:D>\n<t:${~~(time.getTime() / 1000)}:T>\n<t:${~~(time.getTime() / 1000)}:R>`, inline: true },
+						{ name: "震央位置", value: `${earthquake.earthquakeInfo.epiCenter.location.replace("(", "（").replace(")", "）").split("（").join("\n（")}`, inline: true },
+						{ name: "震央經緯", value: `北緯 **${earthquake.earthquakeInfo.epiCenter.epiCenterLat.value}** 度\n東經 **${earthquake.earthquakeInfo.epiCenter.epiCenterLon.value}**   度`, inline: true },
+						{ name: "深度", value: `${depthE[depthI]} **${earthquake.earthquakeInfo.depth.value}** 公里\n　 ${depthTW[depthI]}`, inline: true },
+						{ name: "規模", value: `${magnitudeE[magnitudeI]} 芮氏 **${earthquake.earthquakeInfo.magnitude.magnitudeValue}**\n　 ${magnitudeTW[magnitudeI]}`, inline: true },
+					],
+				)
 				.setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
 				.setTimestamp(time);
 
 			earthquake.intensity.shakingArea
 				.filter(v => !v.infoStatus)
 				.sort((a, b) => b.areaIntensity.value - a.areaIntensity.value)
-				.forEach(shakingArea => embed.addField(shakingArea.areaDesc, shakingArea.areaName));
+				.forEach(shakingArea => embed.addFields({ name: shakingArea.areaDesc, value: shakingArea.areaName }));
 
-			const shakemap = new MessageEmbed()
+			const shakemap = new EmbedBuilder()
 				.setURL(cwb_url)
 				.setImage(earthquake.shakemapImageURI);
 
-			const pgvmap = new MessageEmbed()
+			const pgvmap = new EmbedBuilder()
 				.setURL(cwb_url)
 				.setImage(`https://www.cwb.gov.tw/Data/earthquake/zip/${cwb_codeY}/${time.getFullYear()}${earthquake.earthquakeNo.toString().substring(3)}v.png`);
 
-			const pgamap = new MessageEmbed()
+			const pgamap = new EmbedBuilder()
 				.setURL(cwb_url)
 				.setImage(`https://www.cwb.gov.tw/Data/earthquake/zip/${cwb_codeY}/${time.getFullYear()}${earthquake.earthquakeNo.toString().substring(3)}a.png`);
 

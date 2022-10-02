@@ -1,5 +1,4 @@
-const { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { Colors, EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -16,33 +15,34 @@ module.exports = {
      * @param {import("discord.js").CommandInteraction} interaction
      */
 	async execute(interaction) {
-		const member = interaction.options.getMember("成員");
+		const member = interaction.options.getMember("成員") || interaction.member;
 		const displayGuild = interaction.options.getBoolean("伺服器");
 		const avatarURLs = displayGuild == undefined
 			? {
-				png  : interaction.member.displayAvatarURL({ format: "png", size: 4096 }),
-				jpeg : interaction.member.displayAvatarURL({ format: "jpeg", size: 4096 }),
-				webp : interaction.member.displayAvatarURL({ format: "webp", size: 4096 }),
-				gif  : interaction.member.displayAvatarURL({ format: "gif", dynamic: true, size: 4096 }),
+				png  : member.displayAvatarURL({ format: "png", size: 4096 }),
+				jpeg : member.displayAvatarURL({ format: "jpeg", size: 4096 }),
+				webp : member.displayAvatarURL({ format: "webp", size: 4096 }),
+				gif  : member.displayAvatarURL({ format: "gif", dynamic: true, size: 4096 }),
 			}
 			: displayGuild
 				? {
-					png  : interaction.member.avatarURL({ format: "png", size: 4096 }),
-					jpeg : interaction.member.avatarURL({ format: "jpeg", size: 4096 }),
-					webp : interaction.member.avatarURL({ format: "webp", size: 4096 }),
-					gif  : interaction.member.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
+					png  : member.avatarURL({ format: "png", size: 4096 }),
+					jpeg : member.avatarURL({ format: "jpeg", size: 4096 }),
+					webp : member.avatarURL({ format: "webp", size: 4096 }),
+					gif  : member.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
 				}
 				: {
-					png  : interaction.user.avatarURL({ format: "png", size: 4096 }),
-					jpeg : interaction.user.avatarURL({ format: "jpeg", size: 4096 }),
-					webp : interaction.user.avatarURL({ format: "webp", size: 4096 }),
-					gif  : interaction.user.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
+					png  : member.user.avatarURL({ format: "png", size: 4096 }),
+					jpeg : member.user.avatarURL({ format: "jpeg", size: 4096 }),
+					webp : member.user.avatarURL({ format: "webp", size: 4096 }),
+					gif  : member.user.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
 				};
+
 		const avatarURL = displayGuild == undefined
-			? interaction.member.displayAvatarURL({ dynamic: true })
+			? member.displayAvatarURL({ dynamic: true })
 			: displayGuild
-				? interaction.member.avatarURL({ dynamic: true })
-				: interaction.user.avatarURL({ dynamic: true });
+				? member.avatarURL({ dynamic: true })
+				: member.user.avatarURL({ dynamic: true });
 
 		const md = `[PNG](${avatarURLs.png}) | [JPEG](${avatarURLs.jpeg}) | [WEBP](${avatarURLs.webp}) | [GIF](${avatarURLs.gif})`;
 
@@ -52,8 +52,8 @@ module.exports = {
 				: "這個成員沒有頭貼"
 			: undefined;
 
-		const embed = new MessageEmbed()
-			.setColor("BLUE")
+		const embed = new EmbedBuilder()
+			.setColor(Colors.Blue)
 			.setImage(avatarURL)
 			.setTimestamp();
 

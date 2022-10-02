@@ -1,4 +1,4 @@
-const { Collection } = require("discord.js");
+const { ChannelType, Collection } = require("discord.js");
 const censor = require("discord-censor");
 const logger = require("../Core/logger");
 
@@ -8,6 +8,7 @@ module.exports = {
 	once  : false,
 	/**
      *
+     * @param {import("discord.js").Client} client
      * @param {import("discord.js").VoiceState} oldState
      * @param {import("discord.js").VoiceState} newState
      */
@@ -53,19 +54,30 @@ module.exports = {
 					? newState.guild.channels.cache.get(setting.category)
 					: channel.parent;
 
-				const perms = newState.guild.me.permissions.has("ADMINISTRATOR")
-					? [ { id: client.user.id, allow: [ "MANAGE_CHANNELS", "MANAGE_ROLES" ] }, { id: newState.member.id, allow: [ "CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "MANAGE_ROLES", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS" ] } ]
-					: [ { id: client.user.id, allow: ["MANAGE_CHANNELS"] }, { id: newState.member.id, allow: [ "CONNECT", "STREAM", "SPEAK", "MUTE_MEMBERS", "MANAGE_CHANNELS", "USE_VAD", "PRIORITY_SPEAKER", "MOVE_MEMBERS" ] } ];
+				/**
+				 * @type {import("discord.js").OverwriteResolvable[]}
+				 */
+				const perms = newState.guild.members.me.permissions.has("Administrator")
+					? [ { id: client.user.id, allow: [ "ManageChannels", "ManageRoles" ] }, { id: newState.member.id, allow: [ "Connect", "Stream", "Speak", "MuteMembers", "ManageChannels", "ManageRoles", "UseVAD", "PrioritySpeaker", "MoveMembers" ] } ]
+					: [ { id: client.user.id, allow: ["ManageChannels"] }, { id: newState.member.id, allow: [ "Connect", "Stream", "Speak", "MuteMembers", "ManageChannels", "UseVAD", "PrioritySpeaker" ] } ];
 
+				/**
+				 * @type {import("discord.js").Role[]}
+				 */
 				const muterole = newState.guild.roles.cache.reduce((a, v) => {
 					if (v.name == "Muted") a.push(v);
 					return a;
 				}, []);
-				if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: [ "CONNECT", "SPEAK" ] });
+
+				if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: [ "Connect", "Speak" ] });
 				perms.concat(Array.from(channel.parent.permissionOverwrites.cache.values()));
 
+				/**
+				 * @type {import("discord.js").GuildChannelCreateOptions}
+				 */
 				const channelSetting = {
-					type                 : "GUILD_VOICE",
+					name                 : finalName,
+					type                 : ChannelType.GuildVoice,
 					parent               : category,
 					userLimit            : +(UserSettings?.voice?.limit ? UserSettings.voice.limit : setting.channelSettings.limit),
 					bitrate              : +(UserSettings?.voice?.bitrate ? UserSettings.voice.bitrate : setting.channelSettings.bitrate) * 1000,
@@ -73,7 +85,7 @@ module.exports = {
 					reason               : "自動創建語音頻道 | Auto Voice Channel",
 				};
 
-				await newState.guild.channels.create(finalName, channelSetting)
+				await newState.guild.channels.create(channelSetting)
 					.then(async ch => {
 						await newState.setChannel(ch);
 						client.watchedChanels.set(ch.id, { master: newState.member.id, creator: setting.creator });
@@ -83,6 +95,7 @@ module.exports = {
 			}
 		} catch (e) {
 			logger.error(`${this.name} has encountered an error: ${e} in ${oldState.guild.name} (${oldState.guild.id})`);
+			logger.error(e);
 		}
 	},
 };

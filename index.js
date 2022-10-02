@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { Database, GuildDatabase, UserDatabase } = require("./Database/database");
 const { Kami } = require("./Core/client");
+const chalk = require("chalk");
 const config = require("./config");
 const readline = require("node:readline");
 const cwb = new (require("./API/cwb_forecast"))(process.env.CWB_TOKEN);
@@ -14,8 +15,9 @@ Kami.version = process.env.BOT_VERSION;
 // alter
 Kami.login(process.env.KAMI_TOKEN);
 
-// interface
+process.stdout.write(`${String.fromCharCode(27)}]0;Kami ${Kami.version}${String.fromCharCode(7)}`);
 
+// interface
 const rl = readline.createInterface({
 	input  : process.stdin,
 	output : process.stdout,
@@ -23,7 +25,7 @@ const rl = readline.createInterface({
 
 waitForUserInput();
 function waitForUserInput() {
-	rl.question("\u001b[90m>>>\x1b[0m ", function(input) {
+	rl.question(chalk.gray(">>>") + " ", function(input) {
 		try {
 			if (input.startsWith("log")) {
 				const args = input.split(" ").slice(1);
@@ -34,6 +36,9 @@ function waitForUserInput() {
 			} else if (input.startsWith("emit")) {
 				const args = input.split(" ").slice(1);
 				eval(`Kami.emit("${args[0]}", ${args[1]});`);
+			} else if (input == "exit") {
+				console.log("Stopping bot...");
+				process.exit(0);
 			}
 		} catch (error) {
 			console.error(undefined);
@@ -48,8 +53,34 @@ process.stdin.on("keypress", () => {
 	}, 0);
 });
 
+/**
+ * @param {string} stringToWrite
+ */
 rl._writeToOutput = function _writeToOutput(stringToWrite) {
-	rl.output.write(stringToWrite.replace(/\s(log|emit)\s/g, "\u001b[33m$1\x1b[0m"));
+	let args = stringToWrite.match(/(?:[^\s"]+|"[^"]*")+/g);
+	if (args) {
+		args = args.slice(1);
+		switch (args[0]) {
+			case "log": {
+				args[0] = chalk.blueBright(args[0]);
+				if (args[1]) args[1] = args[1].startsWith("\"") ? chalk.greenBright(args[1]) : chalk.yellow(args[1]);
+				break;
+			}
+
+			case "emit": {
+				args[0] = chalk.blueBright(args[0]);
+				if (args[1]) args[1] = chalk.greenBright(args[1]);
+				break;
+			}
+
+			case "exit": {
+				args[0] = chalk.blueBright(args[0]);
+				break;
+			}
+		}
+		rl.output.write("\u001b[90m>>>\x1b[0m " + chalk.blackBright(args.join(" ")));
+	} else
+		rl.output.write("\u001b[90m>>>\x1b[0m " + stringToWrite);
 };
 
 

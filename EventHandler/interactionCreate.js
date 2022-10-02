@@ -7,11 +7,11 @@ module.exports = {
      * @param {import("discord.js").Interaction} interaction The interaction which was created
      */
 	async execute(client, interaction) {
-		if (!(interaction.isCommand() || interaction.isContextMenu())) return;
+		if (!(interaction.isCommand() || interaction.isMessageContextMenuCommand())) return;
 		/**
 		 * @type {{data: import("discord.js").ApplicationCommandData, defer: boolean, execute: Promise}}
 		 */
-		const command = interaction.client[interaction.isContextMenu() ? "context" : "commands"].get(interaction.commandName);
+		const command = interaction.client[interaction.isMessageContextMenuCommand() ? "context" : "commands"].get(interaction.commandName);
 
 		if (!command) return;
 		try {

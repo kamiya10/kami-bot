@@ -1,6 +1,4 @@
-const { MessageActionRow, MessageEmbed, MessageSelectMenu } = require("discord.js");
-const { SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandRoleOption, SlashCommandSubcommandBuilder } = require("@discordjs/builders");
-const { ChannelType } = require("discord-api-types/v10");
+const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandRoleOption, SlashCommandSubcommandBuilder } = require("discord.js");
 const GuildDatabaseModel = require("../../Model/GuildDatabaseModel");
 const formatEarthquake = require("../../Functions/formatEarthquake");
 const styles = [
@@ -58,32 +56,34 @@ module.exports = {
 			.addIntegerOption(new SlashCommandIntegerOption()
 				.setName("樣式")
 				.setDescription("地震報告樣式")
-				.addChoices(...[
-					{
-						name  : "精簡",
-						value : 0,
-					},
-					{
-						name  : "標準",
-						value : 1,
-					},
-					{
-						name  : "標準（大報告圖）",
-						value : 2,
-					},
-					{
-						name  : "詳細",
-						value : 3,
-					},
-					{
-						name  : "詳細（多欄位）",
-						value : 4,
-					},
-					{
-						name  : "進階",
-						value : 5,
-					},
-				]))
+				.addChoices(
+					...[
+						{
+							name  : "精簡",
+							value : 0,
+						},
+						{
+							name  : "標準",
+							value : 1,
+						},
+						{
+							name  : "標準（大報告圖）",
+							value : 2,
+						},
+						{
+							name  : "詳細",
+							value : 3,
+						},
+						{
+							name  : "詳細（多欄位）",
+							value : 4,
+						},
+						{
+							name  : "進階",
+							value : 5,
+						},
+					],
+				))
 			.addBooleanOption(new SlashCommandBooleanOption()
 				.setName("無編號報告")
 				.setDescription("是否推波無編號地震報告")))
@@ -118,8 +118,8 @@ module.exports = {
 					const style = interaction.options.getInteger("樣式") ?? 5;
 
 					if (!interaction.client.eq.quake_data || !interaction.client.eq.quake_data) {
-						await interaction.editReply({ embeds: [new MessageEmbed()
-							.setColor("BLUE")
+						await interaction.editReply({ embeds: [new EmbedBuilder()
+							.setColor(Colors.Blue)
 							.setDescription("<a:loading:849794359083270144> 正在初始化資料，請稍後。（約需 `<一分鐘`）")] });
 						while (true)
 							if (interaction.client.eq.quake_data && interaction.client.eq.quake_data_s)
@@ -127,7 +127,7 @@ module.exports = {
 					}
 
 					let messagedata = formatEarthquake(interaction.client.eq.quake_data_all[0], style);
-					let reports = new MessageSelectMenu()
+					let reports = new SelectMenuBuilder()
 						.setCustomId("report")
 						.setOptions(
 							interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
@@ -137,7 +137,7 @@ module.exports = {
 								default     : index == 0,
 							})),
 						);
-					messagedata.components.push(new MessageActionRow({ components: [reports] }));
+					messagedata.components.push(new ActionRowBuilder({ components: [reports] }));
 
 					/**
 					 * @type {import("discord.js").Message}
@@ -145,10 +145,7 @@ module.exports = {
 					const sent = await interaction.editReply(messagedata);
 					const filter = (i) => i.user.id === interaction.user.id;
 
-					/**
-                 	* @type {import("discord.js").InteractionCollector<SelectMenuInteraction>}
-                 	*/
-					const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000 });
+					const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 					collector.on("collect", async i => {
 						reports = reports.setOptions(
 							interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
@@ -159,7 +156,7 @@ module.exports = {
 							})),
 						);
 						messagedata = formatEarthquake(interaction.client.eq.quake_data_all[i.values[0]], style);
-						messagedata.components.push(new MessageActionRow({ components: [reports] }));
+						messagedata.components.push(new ActionRowBuilder({ components: [reports] }));
 						await i.update(messagedata);
 						return;
 					});
@@ -183,8 +180,8 @@ module.exports = {
 						{ id: interaction.guild.id, quake_channel: channel?.id || null, quake_style: style, quake_small: small },
 						{ where: { id: interaction.guild.id } },
 					);
-					const embed = new MessageEmbed()
-						.setColor("GREEN")
+					const embed = new EmbedBuilder()
+						.setColor(Colors.Green)
 						.setDescription(desc)
 						.setTitle("✅ 成功");
 
@@ -207,8 +204,8 @@ module.exports = {
 						{ where: { id: interaction.guild.id } },
 					);
 
-					const embed = new MessageEmbed()
-						.setColor("GREEN")
+					const embed = new EmbedBuilder()
+						.setColor(Colors.Green)
 						.setDescription(desc)
 						.setTitle("✅ 成功");
 
@@ -221,8 +218,8 @@ module.exports = {
 				"ERR_PERMISSION_DENIED": "你沒有權限這麼做",
 			}[e.message];
 
-			const embed = new MessageEmbed()
-				.setColor("RED")
+			const embed = new EmbedBuilder()
+				.setColor(Colors.Red)
 				.setTitle("❌ 錯誤");
 
 			if (!errCase) {

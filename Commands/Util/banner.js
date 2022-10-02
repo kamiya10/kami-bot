@@ -1,5 +1,4 @@
-const { SlashCommandBuilder, SlashCommandUserOption } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { Colors, EmbedBuilder, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,8 +12,11 @@ module.exports = {
      * @param {import("discord.js").CommandInteraction} interaction
      */
 	async execute(interaction) {
-		const member = interaction.options.getMember("成員");
-		await member.fetch({ force: true });
+		const member = interaction.options.getMember("成員") || interaction.member;
+
+		if (member.partial)
+			await member.fetch({ force: true });
+
 		const bannerURLs = {
 			png  : interaction.user.bannerURL({ format: "png", size: 4096 }),
 			jpeg : interaction.user.bannerURL({ format: "jpeg", size: 4096 }),
@@ -28,8 +30,8 @@ module.exports = {
 			? "這個成員沒有個人檔案橫幅"
 			: undefined;
 
-		const embed = new MessageEmbed()
-			.setColor("BLUE")
+		const embed = new EmbedBuilder()
+			.setColor(Colors.Blue)
 			.setImage(bannerURL)
 			.setTimestamp();
 

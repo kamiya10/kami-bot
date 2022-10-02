@@ -1,6 +1,6 @@
 const { ApplicationCommandType } = require("discord-api-types/v10");
 const { ContextMenuCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
 	data: new ContextMenuCommandBuilder()
@@ -10,10 +10,10 @@ module.exports = {
 		.setDMPermission(false),
 	defer: true,
 	/**
-     * @param {import("discord.js").MessageContextMenuInteraction} interaction
+     * @param {import("discord.js").MessageContextMenuCommandInteraction} interaction
      */
 	async execute(interaction) {
-		const embed = new MessageEmbed();
+		const embed = new EmbedBuilder();
 		const content = interaction.targetMessage.content;
 		if (!content.length) {
 			embed
@@ -28,7 +28,7 @@ module.exports = {
 		embed
 			.setColor(interaction.targetMessage.member.displayHexColor)
 			.setDescription(quote)
-			.addField("樣式碼", "```md\n" + quote + "\n```");
+			.setFields({ name: "樣式碼", value: "```md\n" + quote + "\n```" });
 		await interaction.editReply({ embeds: [embed] });
 		return;
 	},

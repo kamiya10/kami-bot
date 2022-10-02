@@ -1,12 +1,12 @@
-const { Client, Collection, Intents } = require("discord.js");
+const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
 
 const KamiIntents = [
-	Intents.FLAGS.GUILDS,
-	Intents.FLAGS.GUILD_MEMBERS,
-	Intents.FLAGS.GUILD_MESSAGES,
-	Intents.FLAGS.GUILD_VOICE_STATES,
+	GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildMembers,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.GuildVoiceStates,
 ];
 
 const Kami = new Client({ intents: KamiIntents, allowedMentions: { parse: ["roles", "everyone"] } });

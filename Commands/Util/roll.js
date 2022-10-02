@@ -1,5 +1,4 @@
-const { SlashCommandBuilder, SlashCommandIntegerOption } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { Colors, EmbedBuilder, SlashCommandBuilder, SlashCommandIntegerOption } = require("discord.js");
 
 const dice_emoji = [
 	undefined,
@@ -43,8 +42,8 @@ module.exports = {
 			desc.push(`總和 **${result.reduce((acc, v) => acc + v, 0)}**`);
 		}
 
-		const embed = new MessageEmbed()
-			.setColor("BLUE")
+		const embed = new EmbedBuilder()
+			.setColor(Colors.Blue)
 			.setTitle("🎲 骰子")
 			.setDescription(desc.join("\n"));
 
