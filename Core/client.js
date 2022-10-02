@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const KamiIntents = [
+	GatewayIntentBits.MessageContent,
 	GatewayIntentBits.Guilds,
 	GatewayIntentBits.GuildMembers,
 	GatewayIntentBits.GuildMessages,

@@ -1,6 +1,7 @@
 const { Colors, EmbedBuilder } = require("discord.js");
 const logger = require("../Core/logger");
 let distances;
+const pos = require("../locations.json");
 const ongoingMsgids = {};
 const magnitudeTW = ["極微", "極微", "微小", "微小", "輕微", "中等", "強烈", "重大", "極大"];
 const magnitudeE = ["\\⚫", "\\⚫", "\\⚪", "\\🔵", "\\🟢", "\\🟡", "\\🟠", "\\🔴", "\\🛑"];
@@ -16,10 +17,11 @@ module.exports = {
      */
 	async execute(client, message) {
 		if (message.channelId != "948508570138329098") return;
+		if (message.author.id == client.user.id) return;
 		try {
-		/**
-		 * @type {event}
-		 */
+			/**
+			 * @type {event}
+			 */
 			const event = JSON.parse(message.content);
 			if (event.topic != "CWB_EEW") return;
 			logger.debug(`${this.name} triggered`);
@@ -27,15 +29,47 @@ module.exports = {
 			const GuildSetting = await client.database.GuildDatabase.findAll({
 				attributes: ["eew_channel", "eew_mention"],
 			}).catch(() => void 0);
+
 			const eewchannels = GuildSetting.filter(v => v.eew_channel != null).map(v => [v.eew_channel, v.eew_mention]);
-			console.log(eewchannels);
 
 			event.data.forEach(data => {
-
 				const pt = new Date(message.createdTimestamp);
 				const et = new Date(data.originTime);
+
+				const expected = {};
+				for (const city in pos) {
+					expected[city] ??= {};
+					for (const town in pos[city]) {
+						expected[city][town] ??= {};
+						const loc = pos[city][town];
+						const distance = twoSideDistance(
+							caldistance(
+								{ lat: loc[1], lon: loc[2] },
+								{ lat: data.lat, lon: data.lon },
+							),
+							data.depth,
+						);
+						expected[city][town].pga = pga(
+							data.magnitude,
+							distance,
+							loc[3] ?? 1,
+						);
+						expected[city][town].location = `${city} ${town}`;
+						expected[city][town].int = pgaToIntensity(expected[city][town].pga);
+						expected[city][town].intString = intensityToString(expected[city][town].int);
+						expected[city][town].distance = distance;
+					}
+				}
+
+				// console.log(expected);
+
+				const nearest = getNearest(expected);
+				const max = getMaxIntensity(expected);
+				const maxAll = getAllMaxIntensity(expected);
+
+				// console.log("nearest", nearest, "max", max, "maxAll", maxAll);
 				const relPos = calRelative(data.lon, data.lat);
-				const intensity = calIntensity(distances, data.magnitude, data.depth).sort((a, b) => b.pga - a.pga).filter(v => v.value != 0);
+				// const intensity = calIntensity(distances, data.magnitude, data.depth).sort((a, b) => b.pga - a.pga).filter(v => v.value != 0);
 
 				const depth = [30, 70, 300, 700];
 				depth.push(data.depth);
@@ -50,9 +84,11 @@ module.exports = {
 						...[
 							{ name: "規模", value: `${magnitudeE[magnitudeI]} 芮氏 **${data.magnitude}** \`(${magnitudeTW[magnitudeI]})\``, inline: true },
 							{ name: "深度", value: `${depthE[depthI]} **${data.depth}** 公里 \`(${depthTW[depthI]})\``, inline: true },
-							{ name: "發生時間", value: `${et.getHours() < 10 ? "0" : ""}${et.getHours()}:${et.getMinutes() < 10 ? "0" : ""}${et.getMinutes()}:${et.getSeconds() < 10 ? "0" : ""}${et.getSeconds()}`, inline: true },
-							{ name: "位置", value: `> 經度 **東經 ${data.lon}**\n> 緯度 **北緯 ${data.lat}**\n> 約位在 **${relPos.g}政府${relPos.b}方 ${Math.round(relPos.d * 100) / 100} 公里**` },
-							{ name: "預估震度", value: `${intensity[0].value >= 6 ? "**> 🏚️ 此地震可能會造成災害，勿驚慌、趴下、掩護、穩住。**" : data.magnitude >= 5.5 ? "**> 🚸 本次搖晃可能較多地區有感，請小心自身周邊安全。**" : ""}\n${intensity.map(v => `${v.pos}　**${v.label}**`).join("\n")}` },
+							{ name: "發生時間", value: `<t:${~~(et.getTime() / 1000)}:T>（<t:${~~(et.getTime() / 1000)}:R>）`, inline: true },
+							{ name: "最大震度", value: `${max.location} **${max.intString}**`, inline: true },
+							{ name: "最靠近震央", value: `${nearest.location} **${nearest.intString}**`, inline: true },
+							{ name: "震央位置", value: `> 經度 **東經 ${data.lon}**\n> 緯度 **北緯 ${data.lat}**\n> 約位在 **${relPos.g}政府${relPos.b}方 ${Math.round(relPos.d * 100) / 100} 公里**` },
+							{ name: "預估震度", value: `${max.int >= 7 ? "**> 🏚️ 此地震可能會造成災害，勿驚慌、趴下、掩護、穩住。**" : data.magnitude >= 5.5 ? "**> 🚸 本次搖晃可能較多地區有感，請小心自身周邊安全。**" : ""}\n${Object.keys(maxAll).map(k => ({ text: `${k} **${maxAll[k].intString}**`, pga: maxAll[k].pga })).sort((a, b) => b.pga - a.pga).map(v => v.text).join("\n")}` },
 						],
 					)
 					.setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" }).setFooter({ text: `發布於 ${pt.getHours() < 10 ? "0" : ""}${pt.getHours()}:${pt.getMinutes() < 10 ? "0" : ""}${pt.getMinutes()}:${pt.getSeconds() < 10 ? "0" : ""}${pt.getSeconds()}` })
@@ -78,12 +114,13 @@ module.exports = {
 					});
 			});
 		} catch (e) {
-			console.error(e);
+			if (!e.message.startsWith("Unexpected token"))
+				console.error(e);
 		}
 	},
 };
 
-const pos = {
+const gov = {
 	"新北市" : [25.012237110305012, 121.46554242078619],
 	"高雄市" : [22.621174886556354, 120.31179463854724],
 	"臺中市" : [24.161830990964003, 120.64686265021332],
@@ -109,15 +146,15 @@ const pos = {
 };
 
 function calRelative(lon, lat) {
-	distances = Object.keys(pos).map(k => caldistance(pos[k][0], pos[k][1], lat, lon));
+	distances = Object.keys(gov).map(k => caldistance({ lat: gov[k][0], lon: gov[k][1] }, { lat, lon }));
 	const d = Math.min(...distances);
-	const g = Object.keys(pos)[distances.indexOf(d)];
-	const bd = calBearing(pos[g][0], pos[g][1], lat, lon);
+	const g = Object.keys(gov)[distances.indexOf(d)];
+	const bd = calBearing(gov[g][0], gov[g][1], lat, lon);
 	const b = getBearing(bd);
 	return { g, b, d };
 }
 
-function caldistance(lat1, lon1, lat2, lon2) {
+function caldistance({ lat: lat1, lon: lon1 }, { lat: lat2, lon: lon2 }) {
 	const p = 0.017453292519943295;
 	const c = Math.cos;
 	const a = 0.5 - c((lat2 - lat1) * p) / 2 +
@@ -128,21 +165,28 @@ function caldistance(lat1, lon1, lat2, lon2) {
 }
 
 const intenses = [0, 1, 2, 3, 4, 5, 5.5, 6, 6.5, 7];
-const intensesTW = { 0: "\\⚫０級", 1: "\\⚪１級", 2: "\\🔵２級", 3: "\\🟢３級", 4: "\\🟡４級", 5: "\\🟠５弱", 5.5: "\\🟤５強", 6: "\\🔴６弱", 6.5: "\\🟣６強", 7: "\\🛑７級" };
+const intensesTW = ["\\⚫０級", "\\⚪１級", "\\🔵２級", "\\🟢３級", "\\🟡４級", "\\🟠５弱", "\\🟤５強", "\\🔴６弱", "\\🟣６強", "\\🛑７級" ];
+
 /**
  * @param {number[]} distance
  * @param {number} magnitude
  * @param {number} depth
  */
+/*
 function calIntensity(distance, magnitude, depth) {
 	const PGAs = distance.map(v => PGA(magnitude, v, depth));
 	return PGAs.map((v, index) => {
-		let i = [0.8, 2.5, 8.0, 25, 80, 140, 250, 440, 800];
-		i.push(v);
-		i = i.sort((a, b) => a - b);
-		const value = intenses[i.indexOf(v)];
-		return { pos: Object.keys(pos)[index], value, pga: v, label: intensesTW[value] };
+		const value = intenses[0.8, 2.5, 8.0, 25, 80, 140, 250, 440, 800, v].sort((a, b) => a - b).indexOf(v);
+		return { pos: Object.keys(gov)[index], value, pga: v, label: intensesTW[value] };
 	});
+}
+*/
+function pgaToIntensity(pga) {
+	return [0.8, 2.5, 8.0, 25, 80, 140, 250, 440, 800, pga].sort((a, b) => a - b).indexOf(pga);
+}
+
+function intensityToString(intensity) {
+	return intensesTW[intensity];
 }
 
 function calBearing(startLat, startLng, destLat, destLng) {
@@ -230,3 +274,34 @@ function toDegrees(radians) {
 * @property {number} lat
 * @property {number} lon
 */
+
+const getNearest = (expected) => {
+	const all = [];
+	for (const city in expected)
+		for (const town in expected[city])
+			all.push(expected[city][town]);
+	return all.sort((a, b) => a.distance - b.distance)[0];
+};
+
+const getAllMaxIntensity = (expected) => {
+	const all = {};
+	for (const city in expected) {
+		all[city] ??= [];
+		for (const town in expected[city])
+			all[city].push(expected[city][town]);
+		all[city] = all[city].sort((a, b) => b.pga - a.pga)[0];
+	}
+	return all;
+};
+
+const getMaxIntensity = (expected) => {
+	const all = [];
+	for (const city in expected)
+		for (const town in expected[city])
+			all.push(expected[city][town]);
+	return all.sort((a, b) => b.pga - a.pga)[0];
+};
+
+const twoSideDistance = (side1, side2) => (side1 ** 2 + side2 ** 2) ** 0.5;
+
+const pga = (magnitde, distance, siteEffect = 1) => (1.657 * Math.pow(Math.E, (1.533 * magnitde)) * Math.pow(distance, -1.607) * siteEffect).toFixed(3);
