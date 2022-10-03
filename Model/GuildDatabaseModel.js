@@ -5,7 +5,6 @@
  * @param {string|null} logger_message_delete
  */
 module.exports = (
-	guild_id,
 	voice = [],
 	eew_channel = null,
 	eew_mention = null,
@@ -14,7 +13,6 @@ module.exports = (
 	quake_small = false,
 ) => {
 	return {
-		id: guild_id,
 		voice,
 		eew_channel,
 		eew_mention,
@@ -22,4 +20,23 @@ module.exports = (
 		quake_style,
 		quake_small,
 	};
+};
+
+module.exports.typing = {
+	voice: Array(
+		{
+			creator         : String,
+			category        : String,
+			channelSettings : {
+				name    : String,
+				bitrate : Number,
+				limit   : Number,
+			},
+		},
+	),
+	eew_channel   : String,
+	eew_mention   : String,
+	quake_channel : String,
+	quake_style   : Number,
+	quake_small   : Boolean,
 };

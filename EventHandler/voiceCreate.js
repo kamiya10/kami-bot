@@ -25,13 +25,9 @@ module.exports = {
 			const timestamps = client.cooldowns.get("autovoice");
 			const cooldownAmount = 10 * 1000;
 
-			const GuildSettings = await client.database.GuildDatabase.findOne({
-				where: { id: newState.guild.id },
-			}).catch(() => void 0);
-			const UserSettings = await client.database.UserDatabase.findOne({
-				where: { id: newState.member.id },
-			}).catch(() => void 0);
-			if (!GuildSettings?.voice) return;
+			const GuildSettings = await client.database.GuildDatabase.get(newState.guild.id);
+			const UserSettings = await client.database.UserDatabase.get(newState.member.id);
+			if (!GuildSettings?.voice?.length) return;
 
 			const channel = newState.channel;
 			const setting = GuildSettings.voice.find(o => o.creator == channel?.id);

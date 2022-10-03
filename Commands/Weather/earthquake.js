@@ -103,14 +103,10 @@ module.exports = {
      */
 	async execute(interaction) {
 		try {
-			const GuildSetting = (await interaction.client.database.GuildDatabase.findOne({
-				where: { id: interaction.guild.id },
-			}).catch(() => void 0));
+			const GuildSetting = interaction.client.database.GuildDatabase.get(interaction.guild.id);
 
 			if (!GuildSetting)
-				await interaction.client.database.GuildDatabase.create(
-					GuildDatabaseModel(interaction.guild.id),
-				);
+				await interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
 
 			const sc = interaction.options.getSubcommand(false) || undefined;
 			switch (sc) {
@@ -176,10 +172,12 @@ module.exports = {
 					if (channel) desc += `且 **${small ? "" : "不"}傳送** 無編號地震報告`;
 					desc += "。";
 
-					await interaction.client.database.GuildDatabase.upsert(
-						{ id: interaction.guild.id, quake_channel: channel?.id || null, quake_style: style, quake_small: small },
-						{ where: { id: interaction.guild.id } },
-					);
+					GuildSetting.quake_channel = channel?.id || null;
+					GuildSetting.quake_style = style;
+					GuildSetting.quake_small = small;
+
+					await interaction.client.database.GuildDatabase.save();
+
 					const embed = new EmbedBuilder()
 						.setColor(Colors.Green)
 						.setDescription(desc)
@@ -199,10 +197,11 @@ module.exports = {
 					if (channel && mention != undefined) desc += `，並將在警報發佈時提及 **${mention}**`;
 					desc += "。";
 
-					await interaction.client.database.GuildDatabase.upsert(
-						{ id: interaction.guild.id, eew_channel: channel?.id || null, eew_mention: mention?.id },
-						{ where: { id: interaction.guild.id } },
-					);
+
+					GuildSetting.eew_channel = channel?.id || null;
+					GuildSetting.eew_mention = mention?.id;
+
+					await interaction.client.database.GuildDatabase.save();
 
 					const embed = new EmbedBuilder()
 						.setColor(Colors.Green)

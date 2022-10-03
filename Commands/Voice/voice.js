@@ -132,16 +132,12 @@ module.exports = {
 
 		try {
 			const voice = new EmbedBuilder();
-			const GuildSettings = await interaction.client.database.GuildDatabase.findOne({
-				where: { id: interaction.guild.id },
-			}).catch(() => void 0);
-			const UserSettings = await interaction.client.database.UserDatabase.findOne({
-				where: { id: interaction.member.id },
-			}).catch(() => void 0);
+			const GuildSettings = interaction.client.database.GuildDatabase.get(interaction.guild.id);
+			const UserSettings = interaction.client.database.UserDatabase.get(interaction.member.id);
+			if (!GuildSettings)
+				await interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
 			if (!UserSettings)
-				await interaction.client.database.UserDatabase.create(
-					UserDatabaseModel(interaction.member.id),
-				);
+				await interaction.client.database.UserDatabase.set(interaction.member.id, UserDatabaseModel());
 
 
 			const sc = interaction.options.getSubcommand();
@@ -151,10 +147,10 @@ module.exports = {
 					case "資訊": {
 						const pages = [];
 						voice
-							.setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+							.setAuthor({ name: `自動語音頻道 | ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
 							.setColor(Colors.Blue);
 
-						if (GuildSettings?.voice)
+						if (GuildSettings?.voice?.length)
 							GuildSettings?.voice.forEach(
 								/**
 								 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
@@ -211,16 +207,16 @@ module.exports = {
 							const sent = await interaction.editReply({ embeds: [pages[0]], components: [ar] });
 							const filter = (i) => i.customId === "kami_voice_paginator" && i.user.id === interaction.user.id;
 
-							const controller = sent.createMessageComponentCollector({ filter, idle: 15_000, componentType: ComponentType.SelectMenu });
+							const controller = sent.createMessageComponentCollector({ filter, idle: 60_000, componentType: ComponentType.SelectMenu });
 							controller.on("collect", async inter => {
 								const aru = new ActionRowBuilder()
 									.addComponents(new SelectMenuBuilder()
 										.addOptions(
 											GuildSettings?.voice.map(
 												/**
-													 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
-													 * @param {number} i Index
-													 */
+												 * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
+												 * @param {number} i Index
+												 */
 												(v, i) => (
 													{
 														label       : `#${interaction.guild.channels.cache.get(v.creator).name}`,
@@ -233,6 +229,10 @@ module.exports = {
 											))
 										.setCustomId("kami_voice_paginator"));
 								await inter.update({ embeds: [pages[+inter.values[0]]], components: [aru] });
+							});
+							controller.on("end", async reason => {
+								if (reason == "idle")
+									await sent.editReply({ embeds: new EmbedBuilder(sent.embeds[0].data).setFooter({ text: "互動已逾時" }), components: [] });
 							});
 						} else
 							await interaction.editReply({ embeds: [pages[0]] });
@@ -256,14 +256,12 @@ module.exports = {
 									limit   : 0,
 								},
 							});
-							await interaction.client.database.GuildDatabase.upsert(
-								{ id: interaction.guild.id, voice: GuildSettings?.voice },
-								{ where: { id: interaction.guild.id } },
-							);
+
+							await interaction.client.database.GuildDatabase.save();
 						} else
-							await interaction.client.database.GuildDatabase.create(
+							interaction.client.database.GuildDatabase.set(
+								interaction.guild.id,
 								GuildDatabaseModel(
-									interaction.guild.id,
 									[{
 										creator         : vch.id,
 										category        : cch?.id || "",
@@ -291,28 +289,22 @@ module.exports = {
 					case "刪除": {
 						const vch = interaction.options.getChannel("頻道");
 
-						const data = (await interaction.client.database.GuildDatabase.findOne({
-							where: { id: interaction.guild.id },
-						}).catch(() => void 0))?.voice;
-
-						if (data) {
-							const indexToDelete = data.map(v => v.creator).indexOf(vch.id);
+						if (GuildSettings?.voice?.length) {
+							const indexToDelete = GuildSettings.voice.map(v => v.creator).indexOf(vch.id);
 							if (indexToDelete == -1)
 								throw { message: "ERR_NOT_EXIST" };
 
-							data.splice(indexToDelete, 1);
-
-							await interaction.client.database.GuildDatabase.update(
-								{ id: interaction.guild.id, voice: data },
-								{ where: { id: interaction.guild.id } },
-							);
+							GuildSettings.voice.splice(indexToDelete, 1);
+							await interaction.client.database.GuildDatabase.save();
 
 							voice
 								.setColor(Colors.Green)
 								.setTitle("✅ 成功")
 								.setDescription(`已將 ${vch} 從自動語音頻道列表中刪除`);
 							await interaction.editReply({ embeds: [voice] });
-						}
+						} else
+							throw { message: "ERR_NOT_EXIST" };
+
 						break;
 					}
 
@@ -343,11 +335,10 @@ module.exports = {
 									: `${interaction.member.displayName} 的房間`;
 						if (censor.check(finalName)) finalName = censor.censor(finalName);
 
-						if (defa)
-							await interaction.client.database.UserDatabase.update(
-								{ id: interaction.member.id, voice_name: name },
-								{ where: { id: interaction.member.id } },
-							);
+						if (defa) {
+							UserSettings.voice_name = name;
+							await interaction.client.database.UserDatabase.save();
+						}
 
 						await interaction.member.voice.channel.setName(finalName);
 						interaction.editReply({ embeds: [] });
@@ -366,11 +357,10 @@ module.exports = {
 								? setting.channelSettings.limit
 								: 0;
 
-						if (defa)
-							await interaction.client.database.UserDatabase.update(
-								{ id: interaction.member.id, voice_limit: limit != undefined ? limit : null },
-								{ where: { id: interaction.member.id } },
-							);
+						if (defa) {
+							UserSettings.voice_limit = limit != undefined ? limit : null;
+							await interaction.client.database.UserDatabase.save();
+						}
 
 						await interaction.member.voice.channel.setUserLimit(finalLimit);
 						break;
@@ -386,7 +376,6 @@ module.exports = {
 
 						interaction.member.voice.channel.permissionOverwrites.cache.forEach(
 							/**
-							 *
 							 * @param {import("discord.js").PermissionOverwrites} v
 							 * @param {string} id
 							 */

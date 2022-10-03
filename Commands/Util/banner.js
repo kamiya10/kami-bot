@@ -23,12 +23,12 @@ module.exports = {
 			webp : interaction.user.bannerURL({ format: "webp", size: 4096 }),
 			gif  : interaction.user.bannerURL({ format: "gif", dynamic: true, size: 4096 }),
 		};
-		const bannerURL = interaction.user.bannerURL({ dynamic: true });
+		const bannerURL = interaction.user.bannerURL();
 		const md = `[PNG](${bannerURLs.png}) | [JPEG](${bannerURLs.jpeg}) | [WEBP](${bannerURLs.webp}) | [GIF](${bannerURLs.gif})`;
 
 		const error = bannerURL
-			? "這個成員沒有個人檔案橫幅"
-			: undefined;
+			? undefined
+			: "這個成員沒有個人檔案橫幅";
 
 		const embed = new EmbedBuilder()
 			.setColor(Colors.Blue)

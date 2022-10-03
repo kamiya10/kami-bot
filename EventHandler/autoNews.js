@@ -1,3 +1,5 @@
+const { ChannelType } = require("discord.js");
+
 module.exports = {
 	name  : "autoNews",
 	event : "messageCreate",
@@ -6,7 +8,7 @@ module.exports = {
      * @param {import("discord.js").Message} message
      */
 	async execute(client, message) {
-		if (message.channel.type == "GUILD_NEWS")
+		if (message.channel.type == ChannelType.GuildAnnouncement)
 			if (message.channel.topic?.startsWith("[AutoNews]"))
 				if (!message.content.startsWith("-"))
 					if (message.crosspostable) {

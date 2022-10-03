@@ -43,10 +43,8 @@ module.exports = {
 			checker();
 		});
 
-		const GuildSetting = await client.database.GuildDatabase.findAll({
-			attributes: ["quake_channel", "quake_small", "quake_style"],
-		}).catch(() => void 0);
-		const channels = GuildSetting.filter(v => v.quake_channel != null && v.quake_small).map(v => [v.quake_channel, v.quake_style]);
+		const GuildSetting = client.database.GuildDatabase.getAll(["quake_channel", "quake_small", "quake_style"]);
+		const channels = Object.keys(GuildSetting).filter(v => (GuildSetting[v].quake_channel != null) && GuildSetting[v].quake_small).map(v => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
 
 		if (channels?.length)
 			channels.forEach(async ch => {

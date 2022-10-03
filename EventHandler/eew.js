@@ -26,11 +26,9 @@ module.exports = {
 			if (event.topic != "CWB_EEW") return;
 			logger.debug(`${this.name} triggered`);
 
-			const GuildSetting = await client.database.GuildDatabase.findAll({
-				attributes: ["eew_channel", "eew_mention"],
-			}).catch(() => void 0);
+			const GuildSetting = client.database.GuildDatabase.getAll(["eew_channel", "eew_mention"]).catch(() => void 0);
 
-			const eewchannels = GuildSetting.filter(v => v.eew_channel != null).map(v => [v.eew_channel, v.eew_mention]);
+			const eewchannels = Object.keys(GuildSetting).filter(v => GuildSetting[v].eew_channel != null).map(v => [GuildSetting[v].eew_channel, GuildSetting[v].eew_mention]);
 
 			event.data.forEach(data => {
 				const pt = new Date(message.createdTimestamp);
@@ -67,9 +65,7 @@ module.exports = {
 				const max = getMaxIntensity(expected);
 				const maxAll = getAllMaxIntensity(expected);
 
-				// console.log("nearest", nearest, "max", max, "maxAll", maxAll);
 				const relPos = calRelative(data.lon, data.lat);
-				// const intensity = calIntensity(distances, data.magnitude, data.depth).sort((a, b) => b.pga - a.pga).filter(v => v.value != 0);
 
 				const depth = [30, 70, 300, 700];
 				depth.push(data.depth);
@@ -164,7 +160,6 @@ function caldistance({ lat: lat1, lon: lon1 }, { lat: lat2, lon: lon2 }) {
 	return 12742 * Math.asin(Math.sqrt(a));
 }
 
-const intenses = [0, 1, 2, 3, 4, 5, 5.5, 6, 6.5, 7];
 const intensesTW = ["\\⚫０級", "\\⚪１級", "\\🔵２級", "\\🟢３級", "\\🟡４級", "\\🟠５弱", "\\🟤５強", "\\🔴６弱", "\\🟣６強", "\\🛑７級" ];
 
 /**
@@ -245,9 +240,6 @@ function getBearing(degree) {
 	return bears[deg.indexOf(degree)];
 }
 
-function PGA(magnitude, dist, depth) {
-	return 1.657 * Math.exp(1.533 * magnitude) * (((dist ** 2 + depth ** 2) ** (1 / 2)) ** -1.607);
-}
 
 function toRadians(degrees) {
 	return degrees * Math.PI / 180;
@@ -304,4 +296,4 @@ const getMaxIntensity = (expected) => {
 
 const twoSideDistance = (side1, side2) => (side1 ** 2 + side2 ** 2) ** 0.5;
 
-const pga = (magnitde, distance, siteEffect = 1) => (1.657 * Math.pow(Math.E, (1.533 * magnitde)) * Math.pow(distance, -1.607) * siteEffect).toFixed(3);
+const pga = (magnitde, distance, siteEffect = 1) => (1.657 * Math.exp(1.533 * magnitde) * (distance ** -1.607) * siteEffect).toFixed(3);

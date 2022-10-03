@@ -9,10 +9,8 @@ module.exports = {
 	 */
 	async execute(client) {
 		logger.info("The bot is online");
-		const GuildSetting = await client.database.GuildDatabase.findAll({
-			attributes: ["voice"],
-		});
-		const checklist = GuildSetting.filter(v => v?.voice.length);
+		const GuildSetting = await client.database.GuildDatabase.getAll(["voice"]);
+		const checklist = Object.keys(GuildSetting).filter(v => GuildSetting[v]?.voice?.length).map(v => GuildSetting[v]);
 		checklist.forEach(v => {
 			v.voice.forEach(val => {
 				if (val.category)

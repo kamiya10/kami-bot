@@ -1,11 +1,10 @@
 require("dotenv").config();
-const { Client } = require("discord.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v10");
+const { Client, GatewayIntentBits } = require("discord.js");
 const fs = require("node:fs");
-const client = new Client({ intents: ["GUILDS"] });
-const rest = new REST({ version: "10" }).setToken(process.env.KAMI_TOKEN);
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.login(process.env.KAMI_TOKEN);
+
 const commands = [];
 
 const commandCategories = fs.readdirSync("./Commands");
@@ -29,7 +28,7 @@ client.once("ready", async () => {
 	let count = 0, errcount = 0;
 	if (await new Promise((resolve) => {
 		client.guilds.cache.forEach(async v => {
-			await rest.put(Routes.applicationGuildCommands(client.application.id, v.id), { body: commands })
+			v.commands.set(commands)
 				.then(() => count++)
 				.catch((e) => {
 					console.error(`${v.name}(${v.id}): ${e}`);

@@ -1,15 +1,13 @@
 require("dotenv").config();
-const { Database, GuildDatabase, UserDatabase } = require("./Database/database");
 const { Kami } = require("./Core/client");
+const KamiDatabase = require("./Database/KamiDatabase");
 const chalk = require("chalk");
 const config = require("./config");
 const readline = require("node:readline");
 const cwb = new (require("./API/cwb_forecast"))(process.env.CWB_TOKEN);
 process.env.DEBUG_MODE = config.debug;
 
-
-Kami.database = { GuildDatabase, UserDatabase, Database };
-Kami.database.Database.sync({ alter: true });
+Kami.database = { GuildDatabase: new KamiDatabase("guild.json"), UserDatabase: new KamiDatabase("user.json") };
 Kami.version = process.env.BOT_VERSION;
 
 // alter
