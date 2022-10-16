@@ -1,6 +1,6 @@
 const { ApplicationCommandType } = require("discord-api-types/v10");
 const { ContextMenuCommandBuilder } = require("@discordjs/builders");
-const { EmbedBuilder } = require("discord.js");
+const { Colors, EmbedBuilder } = require("discord.js");
 
 module.exports = {
 	data: new ContextMenuCommandBuilder()
@@ -17,7 +17,7 @@ module.exports = {
 		const content = interaction.targetMessage.content;
 		if (!content.length) {
 			embed
-				.setColor("RED")
+				.setColor(Colors.Red)
 				.setDescription("沒有可以變成名言的東西");
 
 			await interaction.editReply({ embeds: [embed] });

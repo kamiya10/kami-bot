@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } = require("discord.js");
+const { ActionRowBuilder, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
 function emoji(i, time) {
 	try {
@@ -16,11 +16,14 @@ function emoji(i, time) {
 			"陰短暫陣雨或雷雨"    : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
 			"陰時多雲短暫陣雨或雷雨" : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
 			"多雲午後短暫雷陣雨"   : ["<:cwb_22:991295064447914105>", "<:cwb_22n:991294935913480192>"],
+			"陰短暫陣雨"       : ["<:cwb_11:1031128863624925234>", "<:cwb_11:1031128863624925234>"],
+			"多雲短暫陣雨"      : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
+			"多雲時陰短暫陣雨"    : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
 		};
 
-		return e[i][time.includes("晚") ? 1 : 0];
+		return e[i][time.includes("晚") ? 1 : 0] ?? ":white_sun_small_cloud:";
 	} catch (error) {
-		return undefined;
+		return ":white_sun_small_cloud:";
 	}
 }
 
@@ -125,7 +128,7 @@ module.exports = {
 						const hazard_list = _hazards.record.filter(h => h?.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1)))?.length > 0);
 						if (hazard_list.length > 0)
 							embeds.push(...hazard_list.map(e => new EmbedBuilder()
-								.setColor("RED")
+								.setColor(Colors.Red)
 								.setAuthor({
 									name    : `${e?.hazardConditions?.hazards?.hazard?.info?.phenomena || e?.datasetInfo?.datasetDescription}${e?.hazardConditions?.hazards?.hazard?.info?.significance}`,
 									iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
@@ -136,7 +139,7 @@ module.exports = {
 						const hazards_W33_list = _hazards_W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
 						if (hazards_W33_list.length > 0)
 							embeds.push(...hazards_W33_list.map(e => new EmbedBuilder()
-								.setColor("RED")
+								.setColor(Colors.Red)
 								.setAuthor({
 									name    : "大雷雨即時訊息",
 									iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
@@ -155,7 +158,7 @@ module.exports = {
 						})
 						.setTitle(`${_currentCounty} ${_county_data.datasetDescription}`)
 						.setURL(`https://www.cwb.gov.tw/V8/C/W/County/County.html?CID=${cwb_Forecast.cid[_currentCounty]}`)
-						.setColor("BLUE")
+						.setColor(Colors.Blue)
 						.setImage(await cwb_Forecast.ecard(_currentCounty))
 						.setTimestamp();
 
@@ -227,7 +230,7 @@ module.exports = {
 						const hazard_list = _hazards.record.filter(h => h.hazardConditions.hazards.hazard.info.affectedAreas.location.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
 						if (hazard_list.length > 0)
 							embeds.push(...hazard_list.map(e => new EmbedBuilder()
-								.setColor("RED")
+								.setColor(Colors.Red)
 								.setAuthor({
 									name    : `${e.hazardConditions.hazards.hazard.info.phenomena}${e.hazardConditions.hazards.hazard.info.significance}`,
 									iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
@@ -243,7 +246,7 @@ module.exports = {
 						})
 						.setTitle(`${_currentCounty} ${_currentTown} ${_county_data.datasetDescription}`)
 						.setURL(`https://www.cwb.gov.tw/V8/C/W/County/County.html?CID=${cwb_Forecast.cid[_currentCounty]}`)
-						.setColor("BLUE")
+						.setColor(Colors.Blue)
 						.setImage(await cwb_Forecast.ecard(_currentCounty))
 						.setTimestamp();
 					const values = {};
