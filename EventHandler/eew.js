@@ -2,7 +2,8 @@ const { Colors, EmbedBuilder } = require("discord.js");
 const logger = require("../Core/logger");
 let distances;
 const pos = require("../locations.json");
-const ongoingMsgids = {};
+const ongoingMsgIds = {};
+const isMessageAllSent = {};
 const magnitudeTW = ["極微", "極微", "微小", "微小", "輕微", "中等", "強烈", "重大", "極大"];
 const magnitudeE = ["\\⚫", "\\⚫", "\\⚪", "\\🔵", "\\🟢", "\\🟡", "\\🟠", "\\🔴", "\\🛑"];
 const depthTW = ["極淺層", "淺層", "中層", "深層"];
@@ -91,23 +92,33 @@ module.exports = {
 					.setTimestamp();
 
 
-				if (data.type == "Alert")
+				if (data.type == "Alert") {
 					eewchannels.forEach(async v => {
 						try {
+							isMessageAllSent[data.id] = false;
 							const ch = client.channels.cache.get(v[0]);
 							if (ch) {
 								const sent = await ch.send({ content: `⚠ 強震即時警報 ${v[1] ? ch.guild.roles.cache.get(v[1]) : ""}`, embeds: [embed] }).catch((e) => logger.error(`無法發送速報 ${client.channels.cache.get(v[0])} ${v[0]} ${e}`));
-								ongoingMsgids[data.id] ??= [];
-								ongoingMsgids[data.id].push(sent);
+								ongoingMsgIds[data.id] ??= [];
+								ongoingMsgIds[data.id].push(sent);
 							}
 						} catch (err) {
 							console.error(err);
 						}
 					});
-				else if (data.type == "Update")
-					ongoingMsgids[data.id].forEach(async m => {
-						m.edit({ embeds: [embed] });
-					});
+					isMessageAllSent[data.id] = true;
+				} else if (data.type == "Update")
+					while (true)
+						if (isMessageAllSent[data.id]) {
+							ongoingMsgIds[data.id].forEach(async m => {
+								try {
+									await m.edit({ embeds: [embed] });
+								} catch (err) {
+									console.error(err);
+								}
+							});
+							break;
+						}
 			});
 		} catch (e) {
 			if (!e.message.startsWith("Unexpected token"))
