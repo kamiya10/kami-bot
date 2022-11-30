@@ -26,8 +26,7 @@ module.exports = {
 			if (event.topic != "CWB_EEW") return;
 			logger.debug(`${this.name} triggered`);
 
-			const GuildSetting = client.database.GuildDatabase.getAll(["eew_channel", "eew_mention"]).catch(() => void 0);
-
+			const GuildSetting = client.database.GuildDatabase.getAll(["eew_channel", "eew_mention"]);
 			const eewchannels = Object.keys(GuildSetting).filter(v => GuildSetting[v].eew_channel != null).map(v => [GuildSetting[v].eew_channel, GuildSetting[v].eew_mention]);
 
 			event.data.forEach(data => {
@@ -87,6 +86,7 @@ module.exports = {
 							{ name: "預估震度", value: `${max.int >= 7 ? "**> 🏚️ 此地震可能會造成災害，勿驚慌、趴下、掩護、穩住。**" : data.magnitude >= 5.5 ? "**> 🚸 本次搖晃可能較多地區有感，請小心自身周邊安全。**" : ""}\n${Object.keys(maxAll).map(k => ({ text: `${k} **${maxAll[k].intString}**`, pga: maxAll[k].pga })).sort((a, b) => b.pga - a.pga).map(v => v.text).join("\n")}` },
 						],
 					)
+					.setImage("https://upload.cc/i1/2022/11/30/6DOluI.png")
 					.setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" }).setFooter({ text: `發布於 ${pt.getHours() < 10 ? "0" : ""}${pt.getHours()}:${pt.getMinutes() < 10 ? "0" : ""}${pt.getMinutes()}:${pt.getSeconds() < 10 ? "0" : ""}${pt.getSeconds()}` })
 					.setTimestamp();
 
