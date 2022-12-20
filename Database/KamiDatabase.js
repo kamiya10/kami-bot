@@ -2,76 +2,79 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 class KamiDatabase {
-	constructor(filename) {
-		try {
-			this._folder = path.join(__dirname);
-			this._path = path.join(this._folder, filename);
-			this.name = filename.split(".")[0];
-			if (!fs.existsSync(this._path))
-				fs.writeFileSync(this._path, "{}", { encoding: "utf-8" });
+  constructor(filename) {
+    try {
+      this._folder = path.join(__dirname);
+      this._path = path.join(this._folder, filename);
+      this.name = filename.split(".")[0];
 
-			this._data = JSON.parse(fs.readFileSync(this._path, { encoding: "utf-8" }));
+      if (!fs.existsSync(this._path))
+        fs.writeFileSync(this._path, "{}", { encoding: "utf-8" });
 
-			this.backup();
+      this._data = JSON.parse(fs.readFileSync(this._path, { encoding: "utf-8" }));
 
-			const thisClass = this;
-			this._proxy = new Proxy(this._data, {
-				set(target, key, value) {
-					target[key] = value;
-					thisClass.save();
-				},
-				get(target, key) {
-					return target[key];
-				},
-			});
-		} catch (error) {
-			console.error(error);
-		}
-	}
+      this.backup();
 
-	get data() {
-		return this._proxy;
-	}
+      const thisClass = this;
+      this._proxy = new Proxy(this._data, {
+        set(target, key, value) {
+          target[key] = value;
+          thisClass.save();
+        },
+        get(target, key) {
+          return target[key];
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-	get path() {
-		return this._path;
-	}
+  get data() {
+    return this._proxy;
+  }
 
-	backup() {
-		const files = fs.readdirSync(this._folder).filter(filename => filename.startsWith("backup~") && filename.endsWith(`${this.name}.json`));
-		if (files.length)
-			for (const file of files)
-				fs.rmSync(path.join(this._folder, file));
+  get path() {
+    return this._path;
+  }
 
-		fs.writeFileSync(path.join(this._folder, `backup~${Date.now()}_${this.name}.json`), JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
-	}
+  backup() {
+    const files = fs.readdirSync(this._folder).filter(filename => filename.startsWith("backup~") && filename.endsWith(`${this.name}.json`));
 
-	save() {
-		fs.writeFileSync(this._path, JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
-	}
+    if (files.length)
+      for (const file of files)
+        fs.rmSync(path.join(this._folder, file));
 
-	get(id) {
-		return this.data[id];
-	}
+    fs.writeFileSync(path.join(this._folder, `backup~${Date.now()}_${this.name}.json`), JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
+  }
 
-	getAll(keys) {
-		return Object.keys(this._data).reduce((acc, v) => {
-			for (const k of keys)
-				if (Object.hasOwnProperty.call(this._data[v], k)) {
-					acc[v] ??= {};
-					acc[v][k] = this._data[v][k];
-				}
-			return acc;
-		}, {});
-	}
+  save() {
+    fs.writeFileSync(this._path, JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
+  }
 
-	set(id, value) {
-		this.data[id] = value;
-	}
+  get(id) {
+    return this.data[id];
+  }
 
-	remove(id) {
-		delete this.data[id];
-	}
+  getAll(keys) {
+    return Object.keys(this._data).reduce((acc, v) => {
+      for (const k of keys)
+        if (Object.hasOwnProperty.call(this._data[v], k)) {
+          acc[v] ??= {};
+          acc[v][k] = this._data[v][k];
+        }
+
+      return acc;
+    }, {});
+  }
+
+  set(id, value) {
+    this.data[id] = value;
+  }
+
+  remove(id) {
+    delete this.data[id];
+  }
 }
 
 module.exports = KamiDatabase;

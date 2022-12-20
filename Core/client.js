@@ -3,11 +3,11 @@ const fs = require("fs");
 const path = require("path");
 
 const KamiIntents = [
-	GatewayIntentBits.MessageContent,
-	GatewayIntentBits.Guilds,
-	GatewayIntentBits.GuildMembers,
-	GatewayIntentBits.GuildMessages,
-	GatewayIntentBits.GuildVoiceStates,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildVoiceStates,
 ];
 
 const Kami = new Client({ intents: KamiIntents, allowedMentions: { parse: ["roles", "everyone"] } });
@@ -15,12 +15,14 @@ const Kami = new Client({ intents: KamiIntents, allowedMentions: { parse: ["role
 // #region Event Registion
 
 const eventFiles = fs.readdirSync("./EventHandler").filter(file => file.endsWith(".js"));
+
 for (const file of eventFiles) {
-	const event = require(path.resolve(`./EventHandler/${file}`));
-	if (event.once)
-		Kami.once(event.event, (...args) => event.execute(Kami, ...args));
-	else
-		Kami.on(event.event, (...args) => event.execute(Kami, ...args));
+  const event = require(path.resolve(`./EventHandler/${file}`));
+
+  if (event.once)
+    Kami.once(event.event, (...args) => event.execute(Kami, ...args));
+  else
+    Kami.on(event.event, (...args) => event.execute(Kami, ...args));
 }
 
 // #endregion
@@ -29,20 +31,22 @@ for (const file of eventFiles) {
 
 Kami.commands = new Collection();
 const commandCategories = fs.readdirSync("./Commands");
-for (const category of commandCategories) {
-	const commandFiles = fs.readdirSync(`./Commands/${category}`).filter(file => file.endsWith(".js"));
 
-	for (const file of commandFiles) {
-		const command = require(path.resolve(`./Commands/${category}/${file}`));
-		Kami.commands.set(command.data.name, command);
-	}
+for (const category of commandCategories) {
+  const commandFiles = fs.readdirSync(`./Commands/${category}`).filter(file => file.endsWith(".js"));
+
+  for (const file of commandFiles) {
+    const command = require(path.resolve(`./Commands/${category}/${file}`));
+    Kami.commands.set(command.data.name, command);
+  }
 }
+
 Kami.context = new Collection();
 const commandFiles = fs.readdirSync("./Context").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
-	const command = require(path.resolve(`./Context/${file}`));
-	Kami.context.set(command.data.name, command);
+  const command = require(path.resolve(`./Context/${file}`));
+  Kami.context.set(command.data.name, command);
 }
 
 // #endregion
