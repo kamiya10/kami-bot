@@ -130,7 +130,7 @@ module.exports = {
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction<import("discord.js").Interaction>} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction<import("discord.js").Interaction>} interaction
    */
   async execute(interaction) {
     const placeholder = {

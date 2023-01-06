@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require("discord.js");
 const logger = require("../Core/logger");
 
 module.exports = {
@@ -25,7 +26,7 @@ module.exports = {
                 if (ch.isVoiceBased())
                   if (ch.id != val.creator)
                     if (ch.members.size) {
-                      const m = ch.permissionOverwrites.cache.filter((p, k) => p.allow.has("ManageChannels") && k != client.user.id);
+                      const m = ch.permissionOverwrites.cache.filter((p, k) => p.allow.has(PermissionFlagsBits.ManageChannels) && k != client.user.id);
                       client.watchedChanels.set(ch.id, { master: m?.firstKey() });
                     } else {
                       await ch.delete();

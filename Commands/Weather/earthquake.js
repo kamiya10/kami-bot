@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandRoleOption, SlashCommandSubcommandBuilder } = require("discord.js");
+const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, PermissionFlagsBits, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandRoleOption, SlashCommandSubcommandBuilder, StringSelectMenuBuilder } = require("discord.js");
 const GuildDatabaseModel = require("../../Model/GuildDatabaseModel");
 const formatEarthquake = require("../../Functions/formatEarthquake");
 const styles = [
@@ -13,94 +13,126 @@ const styles = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("earthquake")
-    .setDescription("查詢地震報告")
+    .setNameLocalization("zh-TW", "地震報告")
+    .setDescription("Earthquake Reports")
+    .setDescriptionLocalization("zh-TW", "查詢地震報告")
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("lookup")
-      .setDescription("查看地震報告")
+      .setNameLocalization("zh-TW", "查看")
+      .setDescription("View earthquake reports.")
+      .setDescriptionLocalization("zh-TW", "查看地震報告")
       .addIntegerOption(new SlashCommandIntegerOption()
-        .setName("樣式")
-        .setDescription("地震報告樣式")
+        .setName("style")
+        .setNameLocalization("zh-TW", "樣式")
+        .setDescription("Display style of the earthquake report.")
+        .setDescriptionLocalization("zh-TW", "地震報告樣式")
         .addChoices(...[
           {
-            name  : "精簡",
-            value : 0,
+            name               : "Simple",
+            name_localizations : { "zh-TW": "精簡" },
+            value              : 0,
           },
           {
-            name  : "標準",
-            value : 1,
+            name               : "Standard",
+            name_localizations : { "zh-TW": "標準" },
+            value              : 1,
           },
           {
-            name  : "標準（大報告圖）",
-            value : 2,
+            name               : "Standard (Large Report Image)",
+            name_localizations : { "zh-TW": "標準（大報告圖）" },
+            value              : 2,
           },
           {
-            name  : "詳細",
-            value : 3,
+            name               : "Detailed",
+            name_localizations : { "zh-TW": "詳細" },
+            value              : 3,
           },
           {
-            name  : "詳細（多欄位）",
-            value : 4,
+            name               : "Detailed (Multi-field)",
+            name_localizations : { "zh-TW": "詳細（多欄位）" },
+            value              : 4,
           },
           {
-            name  : "進階",
-            value : 5,
+            name               : "Advanced",
+            name_localizations : { "zh-TW": "進階" },
+            value              : 5,
           },
         ])))
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("report")
-      .setDescription("地震報告推播設定")
+      .setNameLocalization("zh-TW", "推播")
+      .setDescription("Earthquake report push settings.")
+      .setDescriptionLocalization("zh-TW", "地震報告推播設定")
       .addChannelOption(new SlashCommandChannelOption()
-        .setName("頻道")
-        .setDescription("要發送地震報告的頻道")
+        .setName("channel")
+        .setNameLocalization("zh-TW", "頻道")
+        .setDescription("The channel earthquake reports should be sent to.")
+        .setDescriptionLocalization("zh-TW", "要發送地震報告的頻道")
         .addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews))
       .addIntegerOption(new SlashCommandIntegerOption()
-        .setName("樣式")
-        .setDescription("地震報告樣式")
+        .setName("style")
+        .setNameLocalization("zh-TW", "樣式")
+        .setDescription("Display style of the earthquake report.")
+        .setDescriptionLocalization("zh-TW", "地震報告樣式")
         .addChoices(
           ...[
             {
-              name  : "精簡",
-              value : 0,
+              name               : "Simple",
+              name_localizations : { "zh-TW": "精簡" },
+              value              : 0,
             },
             {
-              name  : "標準",
-              value : 1,
+              name               : "Standard",
+              name_localizations : { "zh-TW": "標準" },
+              value              : 1,
             },
             {
-              name  : "標準（大報告圖）",
-              value : 2,
+              name               : "Standard (Large Report Image)",
+              name_localizations : { "zh-TW": "標準（大報告圖）" },
+              value              : 2,
             },
             {
-              name  : "詳細",
-              value : 3,
+              name               : "Detailed",
+              name_localizations : { "zh-TW": "詳細" },
+              value              : 3,
             },
             {
-              name  : "詳細（多欄位）",
-              value : 4,
+              name               : "Detailed (Multi-field)",
+              name_localizations : { "zh-TW": "詳細（多欄位）" },
+              value              : 4,
             },
             {
-              name  : "進階",
-              value : 5,
+              name               : "Advanced",
+              name_localizations : { "zh-TW": "進階" },
+              value              : 5,
             },
           ],
         ))
       .addBooleanOption(new SlashCommandBooleanOption()
-        .setName("無編號報告")
-        .setDescription("是否推波無編號地震報告")))
+        .setName("unnumbered")
+        .setNameLocalization("zh-TW", "無編號報告")
+        .setDescription("Whether unnumbered earthquake reports should be sent.")
+        .setDescriptionLocalization("zh-TW", "是否推播無編號地震報告")))
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("eew")
-      .setDescription("強震即時警報推播設定")
+      .setNameLocalization("zh-TW", "強震即時警報")
+      .setDescription("Earthquake Early Warning push setting.")
+      .setDescriptionLocalization("zh-TW", "強震即時警報推播設定")
       .addChannelOption(new SlashCommandChannelOption()
-        .setName("頻道")
-        .setDescription("要發送強震即時警報的頻道"))
+        .setName("channel")
+        .setNameLocalization("zh-TW", "頻道")
+        .setDescription("The channel Earthquake Early Warnings should be sent to.")
+        .setDescriptionLocalization("zh-TW", "要發送強震即時警報的頻道"))
       .addRoleOption(new SlashCommandRoleOption()
-        .setName("提及")
-        .setDescription("發送強震即時警報時提及的身分組"))),
+        .setName("mention")
+        .setNameLocalization("zh-TW", "提及")
+        .setDescription("The role to ping when Earthquake Early Warnings are sent.")
+        .setDescriptionLocalization("zh-TW", "發送強震即時警報時提及的身分組"))),
 
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     try {
@@ -113,7 +145,7 @@ module.exports = {
 
       switch (sc) {
         case "lookup": {
-          const style = interaction.options.getInteger("樣式") ?? 5;
+          const style = interaction.options.getInteger("style") ?? 5;
 
           if (!interaction.client.eq.quake_data || !interaction.client.eq.quake_data) {
             await interaction.editReply({ embeds: [
@@ -128,13 +160,13 @@ module.exports = {
           }
 
           let messagedata = formatEarthquake(interaction.client.eq.quake_data_all[0], style);
-          let reports = new SelectMenuBuilder()
+          let reports = new StringSelectMenuBuilder()
             .setCustomId("report")
             .setOptions(
               interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
-                label       : `${v.earthquakeNo == 111000 ? "小地區有感地震" : v.earthquakeNo}`,
+                label       : `${v.EarthquakeNo % 1000 == 0 ? "小地區有感地震" : v.EarthquakeNo}`,
                 value       : `${index}`,
-                description : v.reportContent,
+                description : v.ReportContent,
                 default     : index == 0,
               })),
             );
@@ -146,13 +178,13 @@ module.exports = {
           const sent = await interaction.editReply(messagedata);
           const filter = (i) => i.user.id === interaction.user.id;
 
-          const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
+          const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.StringSelect });
           collector.on("collect", async i => {
             reports = reports.setOptions(
               interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
-                label       : `${v.earthquakeNo == 111000 ? "小地區有感地震" : v.earthquakeNo}`,
+                label       : `${v.EarthquakeNo % 1000 == 0 ? "小地區有感地震" : v.EarthquakeNo}`,
                 value       : `${index}`,
-                description : v.reportContent,
+                description : v.ReportContent,
                 default     : index == i.values[0],
               })),
             );
@@ -166,10 +198,10 @@ module.exports = {
         }
 
         case "report": {
-          if (!interaction.memberPermissions.has("ADMINISTRATOR")) throw { message: "ERR_PERMISSION_DENIED" };
-          const channel = interaction.options.getChannel("頻道");
-          const style = interaction.options.getInteger("樣式");
-          const small = interaction.options.getBoolean("無編號報告");
+          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
+          const channel = interaction.options.getChannel("channel");
+          const style = interaction.options.getInteger("style");
+          const small = interaction.options.getBoolean("unnumbered");
 
           let desc = "";
 
@@ -196,9 +228,9 @@ module.exports = {
         }
 
         case "eew": {
-          if (!interaction.memberPermissions.has("ADMINISTRATOR")) throw { message: "ERR_PERMISSION_DENIED" };
-          const channel = interaction.options.getChannel("頻道");
-          const mention = interaction.options.getRole("提及");
+          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
+          const channel = interaction.options.getChannel("channel");
+          const mention = interaction.options.getRole("mention");
 
           let desc = "";
 

@@ -55,7 +55,7 @@ module.exports = {
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const question = interaction.options.getString("問題");

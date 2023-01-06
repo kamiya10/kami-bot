@@ -4,8 +4,7 @@ module.exports = {
   once  : false,
 
   /**
-   *
-   * @param {import("discord.js").Interaction} interaction The interaction which was created
+   * @param {import("discord.js").ChatInputCommandInteraction } interaction The interaction which was created
    */
   async execute(client, interaction) {
     if (!(interaction.isCommand() || interaction.isMessageContextMenuCommand())) return;

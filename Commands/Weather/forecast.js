@@ -1,5 +1,13 @@
-const { ActionRowBuilder, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } = require("discord.js");
+/* eslint-disable array-bracket-newline */
+/* eslint-disable array-element-newline */
+const { ActionRowBuilder, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, StringSelectMenuBuilder } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
+const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
+
+const width = 400;
+const height = 400;
+const backgroundColour = "transparent";
+const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColour });
 
 function emoji(i, time) {
   try {
@@ -35,12 +43,12 @@ module.exports = {
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setDescription("請使用下方下拉式選單選取欲查詢天氣地區");
-    let county = new SelectMenuBuilder()
+    let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
       .setOptions(
@@ -50,9 +58,9 @@ module.exports = {
           description : cwb_Forecast.county_code2[k],
         })),
       );
-    let town = new SelectMenuBuilder()
+    let town = new StringSelectMenuBuilder()
       .setCustomId("town")
-      .setPlaceholder("目前不支援鄉鎮天氣預報查詢")
+      .setPlaceholder("請選擇鄉鎮")
       .setDisabled(true)
       .addOptions(
         [
@@ -62,17 +70,15 @@ module.exports = {
           },
         ],
       );
-    const sent = await interaction.editReply(
-      {
-        embeds     : [embed],
-        components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
-      },
-    );
+    const sent = await interaction.editReply({
+      embeds     : [embed],
+      components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+    });
     const filter = (i) => i.user.id === interaction.user.id;
 
     const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 
-    let _county_data, _town_data, _hazards, _hazards_W33, _currentCounty, _currentTown;
+    let _county_data, _town_data, _hazards, _hazards_W33, _currentCounty, _currentTown, _currentTownPage = 0;
     const loading = new EmbedBuilder()
       .setDescription("<a:loading:849794359083270144> 正在獲取資料");
 
@@ -80,6 +86,7 @@ module.exports = {
       switch (i.customId) {
         case "county": {
           _currentCounty = i.values[0];
+          _currentTownPage = 0;
           await i.deferUpdate();
 
           county = county.setOptions(
@@ -92,26 +99,19 @@ module.exports = {
           ).setDisabled(true);
 
           town = town
-            .setDisabled(true);
-
-          /*
             .setOptions(
-              cwb_Forecast.county_town[_currentCounty][0].map(v => ({
+              cwb_Forecast.county_town[_currentCounty][_currentTownPage].map(v => ({
                 label       : v,
                 value       : v,
-                description : _currentCounty,
-                default     : v == _currentTown,
+                description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
               })),
-            )
-		      */
+            ).setDisabled(true);
 
           if (!_county_data || !_hazards)
-            await i.editReply(
-              {
-                embeds     : [loading],
-                components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
-              },
-            );
+            await i.editReply({
+              embeds     : [loading],
+              components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+            });
 
           if (!_county_data)
             _county_data = (await cwb_Forecast.forecast())?.records;
@@ -183,46 +183,63 @@ module.exports = {
           embeds.push(forecast_embed);
 
           county = county.setDisabled(false);
-          // town = town.setDisabled(false);
+          town = town.setDisabled(false);
 
-          await i.editReply(
-            {
-              embeds,
-              components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
-            },
-          );
+          await i.editReply({
+            embeds,
+            components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+          });
           break;
         }
 
-        case "town":{
+        case "town": {
           _currentTown = i.values[0];
 
           await i.deferUpdate();
 
+          if (_currentTown == "...") {
+            if (_currentTownPage)
+              _currentTownPage = 0;
+            else
+              _currentTownPage = 1;
+
+            town = town.setOptions(
+              cwb_Forecast.county_town[_currentCounty][_currentTownPage].map(v => ({
+                label       : v,
+                value       : v,
+                description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
+              })),
+            );
+
+            await i.editReply({
+              embeds     : i.message.embeds,
+              components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+            });
+            break;
+          }
+
           county = county.setDisabled(true);
           town = town.setOptions(
-            cwb_Forecast.county_town[_currentCounty][0].map(k => ({
-              label       : k,
-              value       : k,
-              description : _currentCounty,
-              default     : k == _currentTown,
+            cwb_Forecast.county_town[_currentCounty][0].map(v => ({
+              label       : v,
+              value       : v,
+              description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
+              default     : v == _currentTown,
             })),
           ).setDisabled(true);
 
           if (!_town_data) {
-            await i.editReply(
-              {
-                embeds     : [loading],
-                components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
-              },
-            );
+            await i.editReply({
+              embeds     : [loading],
+              components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+            });
             _town_data = (await cwb_Forecast.forecast_county(_currentCounty))?.records;
           }
 
           const embeds = [];
 
           if (_hazards.record.length > 0) {
-            const hazard_list = _hazards.record.filter(h => h.hazardConditions.hazards.hazard.info.affectedAreas.location.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
+            const hazard_list = _hazards.record.filter(h => h.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
 
             if (hazard_list.length > 0)
               embeds.push(...hazard_list.map(e => new EmbedBuilder()
@@ -234,6 +251,8 @@ module.exports = {
                 .setDescription(e.contents.content.contentText)));
           }
 
+          const location = _town_data.locations[0].location.find(e => e.locationName == _currentTown);
+
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
               name    : "中央氣象局",
@@ -241,31 +260,69 @@ module.exports = {
               url     : "https://www.cwb.gov.tw/",
             })
             .setTitle(`${_currentCounty} ${_currentTown} ${_county_data.datasetDescription}`)
-            .setURL(`https://www.cwb.gov.tw/V8/C/W/County/County.html?CID=${cwb_Forecast.cid[_currentCounty]}`)
+            .setURL(`https://www.cwb.gov.tw/V8/C/W/Town/Town.html?TID=${location.geocode}`)
             .setColor(Colors.Blue)
             .setImage(await cwb_Forecast.ecard(_currentCounty))
             .setTimestamp();
-          const values = {};
-          const location = _town_data.locations[0].location.find(e => e.locationName == _currentTown);
-          location.weatherElement.forEach(weatherElement => {
-            values[weatherElement.elementName] = weatherElement;
-          });
 
-          forecast_embed.addFields(
-            ...[{ name: `:droplet: ${values.PoP6h.description}`, value: barChart(values.PoP6h.time, "🟦", "%"), inline: true }, { name: `:thermometer: ${values.T.description}`, value: tempChart(values.T.time, "🟦", "℃", values.AT.time), inline: true }],
-          );
+          const elements = new Map(location.weatherElement.map(weatherElement => [weatherElement.elementName, weatherElement]));
+          const fields = [];
+
+          for (const key of ["Wx", "T", "AT", "PoP6h", "RH", "CI"]) {
+
+            /**
+             * @type {{time: {}[]}}
+             */
+            const el = elements.get(key);
+            const time = (key == "PoP6h")
+              ? el.time.reduce((acc, v, index) => (!index && (v.dateTime != elements.get("T").time[0].startTime) ? acc.push(v) : acc.push(v, v)) && acc, [])
+              : el.time;
+
+            if (!fields.length)
+              for (const t of time)
+                fields.push({
+                  name  : timestamp(t.startTime),
+                  value : "",
+                });
+
+            const numericValues = time.map((v) => +v.elementValue[0].value);
+
+            for (const ti in time) {
+              let str = "";
+
+              switch (key) {
+                case "Wx":
+                  str = `${emoji(time[ti].elementValue[0].value)} **${time[ti].elementValue[0].value}**`;
+                  break;
+                case "CI":
+                  str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 | **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
+                  break;
+
+                default: {
+                  const floor = Math.min(...numericValues);
+                  const ceil = Math.max(...numericValues);
+                  const step = (ceil - floor) / 10;
+                  const count = Math.round((numericValues[ti] - floor) / step);
+                  str = `${{ T: "🌡", AT: "👕", PoP6h: "☔", RH: "💧" }[key]} ${{ T: "氣溫　　", AT: "體感溫度", PoP6h: "降雨機率", RH: "相對溼度" }[key]} | ${{ T: "🟧", AT: "🟨", PoP6h: "🟦", RH: "🟪" }[key].repeat(count)} **${time[ti].elementValue[0].value}${{ T: "℃", AT: "℃" }[key] ?? "%"}**`;
+                  break;
+                }
+              }
+
+              fields[ti].value += `${str}\n`;
+            }
+          }
+
+          forecast_embed.addFields(...fields);
 
           embeds.push(forecast_embed);
 
           county = county.setDisabled(false);
           town = town.setDisabled(false);
 
-          await i.editReply(
-            {
-              embeds,
-              components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
-            },
-          );
+          await i.editReply({
+            embeds,
+            components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+          });
           break;
         }
       }

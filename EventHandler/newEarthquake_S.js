@@ -9,14 +9,14 @@ module.exports = {
 
   /**
    * @param {import("discord.js").Client<boolean>} client
-   * @param {Earthquake} earthquake
+   * @param {Earthquake} Earthquake
    */
-  async execute(client, earthquake) {
+  async execute(client, Earthquake) {
     logger.debug(`${this.name} triggered`);
 
     // check image is accessable
     await new Promise((resolve) => {
-      const time = new Date(earthquake.earthquakeInfo.originTime);
+      const time = new Date(Earthquake.EarthquakeInfo.OriginTime);
       const timecode = ""
 				+ time.getFullYear()
 				+ (time.getMonth() + 1 < 10 ? "0" : "") + (time.getMonth() + 1)
@@ -25,12 +25,12 @@ module.exports = {
 				+ (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
 				+ (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
       const cwb_image
-				= "https://www.cwb.gov.tw/Data/earthquake/img/EC"
-				+ (earthquake.earthquakeNo == 111000 ? "L" : "")
-				+ (earthquake.earthquakeNo == 111000 ? timecode : timecode.slice(4, timecode.length - 2))
-				+ (earthquake.earthquakeInfo.magnitude.magnitudeValue * 10)
-				+ (earthquake.earthquakeNo == 111000 ? "" : earthquake.earthquakeNo.toString().substring(3))
-				+ "_H.png";
+        = "https://www.cwb.gov.tw/Data/earthquake/img/EC"
+        + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
+        + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
+        + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
+        + (Earthquake.EarthquakeNo % 1000 == 0 ? "" : Earthquake.EarthquakeNo.toString().substring(3))
+        + "_H.png";
 
       const checker = async () => {
         await fetch(cwb_image, { method: "GET" }).then(async res => {
@@ -58,7 +58,7 @@ module.exports = {
     if (channels?.length)
       channels.forEach(async ch => {
         try {
-          await client.channels.cache.get(ch[0])?.send(formatEarthquake(earthquake, ch[1])).catch(() => void 0);
+          await client.channels.cache.get(ch[0])?.send(formatEarthquake(Earthquake, ch[1])).catch(() => void 0);
         } catch (e) {
           console.error(e);
         }

@@ -13,7 +13,7 @@ module.exports = {
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const member = interaction.options.getMember("成員") || interaction.member;

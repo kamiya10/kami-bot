@@ -25,7 +25,7 @@ module.exports = {
   defer: true,
 
   /**
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const dice = interaction.options.getInteger("面") ?? 6;

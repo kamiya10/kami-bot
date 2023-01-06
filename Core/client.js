@@ -53,5 +53,10 @@ for (const file of commandFiles) {
 
 Kami.cooldowns = new Collection();
 Kami.watchedChanels = new Collection();
+Kami.forecast = new Collection();
 Kami.eq = { quake_data: [], quake_data_s: [], quake_last: [], quake_last_s: [] };
+
+
+Kami.eqws - require("./websocket")(Kami, 1000);
+
 module.exports = { Kami };

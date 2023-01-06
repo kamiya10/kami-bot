@@ -7,7 +7,7 @@ module.exports = {
 
   /**
    *
-   * @param {import("discord.js").CommandInteraction} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.editReply("Pong!");
