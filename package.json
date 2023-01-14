@@ -23,7 +23,6 @@
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
     "erlpack": "github:discord/erlpack",
-    "i18n": "^0.15.1",
     "node-gyp": "^9.1.0",
     "pino": "^7.0.0-rc.9",
     "pino-pretty": "^9.1.0",

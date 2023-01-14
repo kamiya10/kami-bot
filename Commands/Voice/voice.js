@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } = require("discord.js");
+const { ActionRowBuilder, ChannelType, Colors, ComponentType, EmbedBuilder, PermissionFlagsBits, SelectMenuBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandUserOption } = require("discord.js");
 const GuildDatabaseModel = require("../../Model/GuildDatabaseModel");
 const UserDatabaseModel = require("../../Model/UserDatabaseModel");
 const censor = require("discord-censor");
@@ -24,6 +24,12 @@ const emoji = [
   "<:eighteen:889461886733668352>",
   "<:nineteen:889461886536515615>",
   "<:twenty:889461886565888021>",
+];
+
+const qualityString = [
+  "",
+  "`自動`",
+  "720p",
 ];
 
 module.exports = {
@@ -56,8 +62,42 @@ module.exports = {
       .addIntegerOption(new SlashCommandIntegerOption()
         .setName("位元率")
         .setDescription("要設定的位元率（單位：kbps）")
-        .setMinValue(0)
-        .setRequired(true))
+        .setMinValue(0))
+      .addBooleanOption(new SlashCommandBooleanOption()
+        .setName("預設")
+        .setDescription("設為預設")))
+    .addSubcommand(new SlashCommandSubcommandBuilder()
+      .setName("地區覆寫")
+      .setDescription("設定頻道地區覆寫")
+      .addStringOption(new SlashCommandStringOption()
+        .setName("地區覆寫")
+        .setDescription("要設定的地區覆寫")
+        .setChoices(...[
+          { name: "自動", value: "null" },
+          { name: "Brazil", value: "brazil" },
+          { name: "Hong Kong", value: "hongkong" },
+          { name: "India", value: "india" },
+          { name: "Japan", value: "japan" },
+          { name: "Rotterdam", value: "rotterdam" },
+          { name: "Russia", value: "russia" },
+          { name: "Singapore", value: "singapore" },
+          { name: "South Africa", value: "southafrica" },
+          { name: "Sydney", value: "sydney" },
+          { name: "US Central", value: "us-central" },
+          { name: "US East", value: "us-east" },
+          { name: "US South", value: "us-south" },
+          { name: "US West", value: "us-west" },
+        ]))
+      .addBooleanOption(new SlashCommandBooleanOption()
+        .setName("預設")
+        .setDescription("設為預設")))
+    .addSubcommand(new SlashCommandSubcommandBuilder()
+      .setName("視訊畫質")
+      .setDescription("設定頻道視訊畫質")
+      .addIntegerOption(new SlashCommandIntegerOption()
+        .setName("視訊畫質")
+        .setDescription("要設定的視訊畫質")
+        .setChoices(...[{ name: "自動", value: 1 }, { name: "720p", value: 2 }]))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("預設")
         .setDescription("設為預設")))
@@ -107,7 +147,8 @@ module.exports = {
         .addChannelOption(new SlashCommandChannelOption()
           .setName("頻道")
           .setDescription("要設定的自動語音頻道")
-          .addChannelTypes(ChannelType.GuildVoice))
+          .addChannelTypes(ChannelType.GuildVoice)
+          .setRequired(true))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("類別")
           .setDescription("設定自動語音頻道創頻道要創在哪一個類別下")
@@ -124,13 +165,36 @@ module.exports = {
           .setName("位元率")
           .setDescription("設定伺服器自動語音頻道位元率（單位：kbps）")
           .setMinValue(0))
+        .addStringOption(new SlashCommandStringOption()
+          .setName("地區覆寫")
+          .setDescription("設定伺服器自動語音頻道地區覆寫")
+          .setChoices(...[
+            { name: "自動", value: "null" },
+            { name: "Brazil", value: "brazil" },
+            { name: "Hong Kong", value: "hongkong" },
+            { name: "India", value: "india" },
+            { name: "Japan", value: "japan" },
+            { name: "Rotterdam", value: "rotterdam" },
+            { name: "Russia", value: "russia" },
+            { name: "Singapore", value: "singapore" },
+            { name: "South Africa", value: "southafrica" },
+            { name: "Sydney", value: "sydney" },
+            { name: "US Central", value: "us-central" },
+            { name: "US East", value: "us-east" },
+            { name: "US South", value: "us-south" },
+            { name: "US West", value: "us-west" },
+          ]))
+        .addIntegerOption(new SlashCommandIntegerOption()
+          .setName("視訊畫質")
+          .setDescription("設定伺服器自動語音頻道視訊畫質")
+          .setChoices(...[{ name: "自動", value: 1 }, { name: "720p", value: 2 }]))
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("覆蓋設定")
           .setDescription("覆蓋現有設定")))),
   defer: true,
 
   /**
-   * @param {import("discord.js").ChatInputCommandInteraction<import("discord.js").Interaction>} interaction
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const placeholder = {
@@ -145,16 +209,15 @@ module.exports = {
       const UserSettings = interaction.client.database.UserDatabase.get(interaction.member.id);
 
       if (!GuildSettings)
-        await interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
+        interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
 
       if (!UserSettings)
-        await interaction.client.database.UserDatabase.set(interaction.member.id, UserDatabaseModel());
-
+        interaction.client.database.UserDatabase.set(interaction.member.id, UserDatabaseModel());
 
       const sc = interaction.options.getSubcommand();
 
       if (interaction.options.getSubcommandGroup(false) == "伺服器設定") {
-        if (!interaction.memberPermissions.has("Administrator")) throw { message: "ERR_PERMISSION_DENIED" };
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
 
         switch (sc) {
           case "資訊": {
@@ -184,6 +247,8 @@ module.exports = {
                   chsetting.push(`　　預覽 │ ${finalName}`);
                   chsetting.push(`　位元率 │ **${v.channelSettings.bitrate}** kbps`);
                   chsetting.push(`人數上限 │ ${v.channelSettings.limit ? `**${v.channelSettings.limit}** 人` : "`無限制`"}`);
+                  chsetting.push(`地區覆寫 │ ${v.channelSettings.region ? `**${v.channelSettings.region}**` : "`自動`"}`);
+                  chsetting.push(`視訊畫質 │ ${v.channelSettings.quality > 1 ? `**${qualityString[v.channelSettings.quality]}**` : "`自動`"}`);
 
                   const embed = new EmbedBuilder(voice.data);
                   embed
@@ -274,6 +339,8 @@ module.exports = {
                   name    : "",
                   bitrate : 64,
                   limit   : 0,
+                  region  : null,
+                  quality : 1,
                 },
               });
 
@@ -287,9 +354,11 @@ module.exports = {
                       creator         : vch.id,
                       category        : cch?.id || "",
                       channelSettings : {
-                        name    : "",
+                        name    : null,
                         bitrate : 64,
                         limit   : 0,
+                        region  : null,
+                        quality : null,
                       },
                     },
                   ],
@@ -298,6 +367,7 @@ module.exports = {
             }
 
             voice
+              .setAuthor({ name: `自動語音頻道 | ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
               .setColor(Colors.Green)
               .setTitle("✅ 成功")
               .setDescription(`已將 ${vch} 新增到自動語音頻道列表`);
@@ -333,8 +403,158 @@ module.exports = {
             break;
           }
 
-          case "設定":
-            throw { message: "ERR_NOT_IMPLEMENTED" };
+          case "設定": {
+            const channel = interaction.options.getChannel("頻道");
+            const category = interaction.options.getChannel("類別");
+            const name = interaction.options.getString("名稱");
+            const limit = interaction.options.getInteger("人數上限");
+            const bitrate = interaction.options.getInteger("位元率");
+            const region = interaction.options.getString("地區覆寫");
+            const quality = interaction.options.getInteger("視訊畫質");
+            const override = interaction.options.getBoolean("覆蓋設定");
+            const setting = GuildSettings.voice.find(o => o.creator == channel.id);
+
+            voice
+              .setAuthor({ name: `自動語音頻道 | ${interaction.guild.name}`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+              .setDescription(`已變更 ${channel} 的自動語音頻道設定檔`)
+              .setColor(Colors.Green);
+
+            if ((category != null && setting.category != category?.id) || (category == null && override)) {
+              if (category?.type == ChannelType.GuildCategory || override) {
+                voice
+                  .addFields({
+                    name   : "語音頻道類別",
+                    value  : `${setting.category ? `\`${setting.category}\` <#${setting.category}>` : "`未設定`"}\n**→ ${category ? `\`${category.id}\` ${category}` : "`未設定語音頻道類別`"}**`,
+                    inline : true,
+                  });
+
+                setting.category = category?.id ?? null;
+              }
+            } else {
+              voice
+                .addFields({
+                  name   : "語音頻道類別",
+                  value  : `${setting.category ? `<#${setting.category}>\n\`${setting.category}\`` : "`未設定`"}`,
+                  inline : true,
+                });
+            }
+
+            {
+              const censored = censor.censor(name ?? "{user.displayName} 的房間");
+
+              if ((name != null && setting.channelSettings.name != (override ? null : censored)) || (name == null && override)) {
+                const finalName = censor.censor(censored.replace(/{.+}/g, all => placeholder[all] || all));
+
+                voice
+                  .addFields({
+                    name   : "頻道名稱",
+                    value  : `\`${setting.channelSettings.name ? setting.channelSettings.name : "`未設定`"}\`\n**→ \`${override ? "`未設定`" : censored}\`\n預覽：${finalName}**`,
+                    inline : true,
+                  });
+
+                setting.channelSettings.name = override ? null : censored;
+              } else {
+                const finalName = censor.censor((setting.channelSettings.name ?? "{user.displayName} 的房間").replace(/{.+}/g, all => placeholder[all] || all));
+
+                voice
+                  .addFields({
+                    name   : "頻道名稱",
+                    value  : `\`${setting.channelSettings.name ? setting.channelSettings.name : "`未設定`"}\`\n預覽：${finalName}`,
+                    inline : true,
+                  });
+              }
+            }
+
+            {
+              const guildLimit = ((limit ?? 0) > 100) ? 100 : limit ?? 0;
+
+              if (setting.channelSettings.limit != guildLimit) {
+                voice
+                  .addFields({
+                    name  : "人數上限",
+                    value : ((limit ?? 0) > 100)
+                      ? `${setting.channelSettings.limit ? ` ${setting.channelSettings.limit} ` : "`無限制`"}\n**→ ~~ ${limit} ~~ ${guildLimit} 人 （伺服器上限）**`
+                      : `${setting.channelSettings.limit ? ` ${setting.channelSettings.limit} ` : "`無限制`"}\n**→ ${(limit ?? 0) ? `${limit ?? 0} 人` : "`無限制`"}**`,
+                    inline: true,
+                  });
+
+                setting.channelSettings.limit = guildLimit;
+              } else {
+                voice
+                  .addFields({
+                    name   : "人數上限",
+                    value  : `${setting.channelSettings.limit ? ` ${setting.channelSettings.limit} ` : "`無限制`"}`,
+                    inline : true,
+                  });
+              }
+            }
+
+            {
+              const guildBitrate = ((bitrate ?? 64000) > interaction.guild.maximumBitrate) ? interaction.guild.maximumBitrate : bitrate ?? 64000;
+
+              if ((bitrate != null && setting.channelSettings.bitrate != guildBitrate) || (bitrate == null && override)) {
+                voice
+                  .addFields({
+                    name  : "位元率",
+                    value : (bitrate > interaction.guild.maximumBitrate)
+                      ? `${setting.channelSettings.bitrate} kbps\n**→ ~~ ${bitrate} ~~ ${interaction.guild.maximumBitrate} kbps （伺服器上限）**`
+                      : `${setting.channelSettings.bitrate} kbps\n**→ ${bitrate ?? 64000} kbps**`,
+                    inline: true,
+                  });
+
+                setting.channelSettings.bitrate = guildBitrate;
+              } else {
+                voice
+                  .addFields({
+                    name   : "位元率",
+                    value  : `${setting.channelSettings.bitrate} kbps`,
+                    inline : true,
+                  });
+              }
+            }
+
+
+            if ((region !== null && setting.channelSettings.region != (region == "null" ? null : region)) || (region === null && override)) {
+              voice
+                .addFields({
+                  name   : "地區覆寫",
+                  value  : `${setting.channelSettings.region ? setting.channelSettings.region : "`自動`"}\n**→ ${(region == "null" ? null : region) ? region : "`自動`"}**`,
+                  inline : true,
+                });
+
+              setting.channelSettings.region = (region == "null" ? null : region);
+            } else {
+              voice
+                .addFields({
+                  name   : "地區覆寫",
+                  value  : `${setting.channelSettings.region ? setting.channelSettings.region : "`自動`"}`,
+                  inline : true,
+                });
+            }
+
+            if ((quality != null && setting.channelSettings.quality != quality) || (quality == null && override)) {
+              voice
+                .addFields({
+                  name   : "視訊畫質",
+                  value  : `${qualityString[setting.channelSettings.quality]}\n**→ ${qualityString[quality ?? 1]}**`,
+                  inline : true,
+                });
+
+              setting.channelSettings.quality = quality ?? 1;
+            } else {
+              voice
+                .addFields({
+                  name   : "視訊畫質",
+                  value  : `${qualityString[setting.channelSettings.quality ?? 1]}`,
+                  inline : true,
+                });
+            }
+
+            interaction.client.database.GuildDatabase.save();
+
+            await interaction.editReply({ embeds: [voice] });
+            break;
+          }
 
           default:
             break;
@@ -346,17 +566,22 @@ module.exports = {
 
         if (interaction.client.watchedChanels.get(interaction.member.voice.channelId).master != interaction.member.id) throw { message: "ERR_NOT_MASTER" };
 
+        const setting = GuildSettings.voice.find(o => o.creator == interaction.client.watchedChanels.get(interaction.member.voice.channelId).creator);
+
+        voice
+          .setAuthor({ name: `自動語音頻道 | ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+          .setColor(Colors.Green)
+          .setTitle("✅ 成功");
+
         switch (sc) {
           case "名稱": {
             const name = interaction.options.getString("名稱");
             const defa = interaction.options.getBoolean("預設");
 
-            const setting = GuildSettings.voice.find(o => o.creator == interaction.client.watchedChanels.get(interaction.member.voice.channelId).creator);
-
             let finalName = name != undefined
               ? name.replace(/{.+}/g, all => placeholder[all] || all)
-              : UserSettings?.voice_name
-                ? UserSettings.voice_name.replace(/{.+}/g, all => placeholder[all] || all)
+              : UserSettings?.voice?.name
+                ? UserSettings.voice.name.replace(/{.+}/g, all => placeholder[all] || all)
                 : setting?.channelSettings?.name
                   ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)
                   : `${interaction.member.displayName} 的房間`;
@@ -364,12 +589,12 @@ module.exports = {
             if (censor.check(finalName)) finalName = censor.censor(finalName);
 
             if (defa) {
-              UserSettings.voice_name = name;
-              await interaction.client.database.UserDatabase.save();
+              UserSettings.voice.name = name;
+              interaction.client.database.UserDatabase.save();
             }
 
             await interaction.member.voice.channel.setName(finalName);
-            interaction.editReply({ embeds: [] });
+            await interaction.editReply({ content: "✅" });
             break;
           }
 
@@ -377,25 +602,89 @@ module.exports = {
             const limit = interaction.options.getInteger("人數上限");
             const defa = interaction.options.getBoolean("預設");
 
-            const setting = GuildSettings.voice.find(o => o.creator == interaction.client.watchedChanels.get(interaction.member.voice.channelId).creator);
-
             const finalLimit = limit != undefined
-              ? limit
+              ? limit > 100
+                ? 100
+                : limit
               : setting.channelSettings.limit != undefined
                 ? setting.channelSettings.limit
                 : 0;
 
             if (defa) {
-              UserSettings.voice_limit = limit != undefined ? limit : null;
-              await interaction.client.database.UserDatabase.save();
+              UserSettings.voice.limit = limit != undefined ? limit : null;
+              interaction.client.database.UserDatabase.save();
             }
 
             await interaction.member.voice.channel.setUserLimit(finalLimit);
+            await interaction.editReply({ content: "✅" });
             break;
           }
 
-          case "位元率":
-            throw { message: "ERR_NOT_IMPLEMENTED" }; case "靜音": {
+          case "位元率":{
+            const bitrate = interaction.options.getInteger("位元率");
+            const defa = interaction.options.getBoolean("預設");
+
+            const guildBitrate = bitrate != undefined
+              ? bitrate > interaction.guild.maximumBitrate
+                ? interaction.guild.maximumBitrate
+                : bitrate
+              : setting.channelSettings.bitrate != undefined
+                ? setting.channelSettings.bitrate
+                : 64000;
+
+            if (defa) {
+              UserSettings.voice_bitrate = bitrate != undefined ? bitrate : null;
+              interaction.client.database.UserDatabase.save();
+            }
+
+            await interaction.member.voice.channel.setBitrate(guildBitrate);
+            await interaction.editReply({ content: "✅" });
+            break;
+          }
+
+          case "地區覆寫": {
+            const region = interaction.options.getString("地區覆寫");
+            const defa = interaction.options.getBoolean("預設");
+
+            const finalRegion = region != undefined
+              ? region
+              : setting.channelSettings.region != undefined
+                ? setting.channelSettings.region
+                : null;
+
+            if (defa) {
+              UserSettings.voice.limit = region != undefined ? region : null;
+              interaction.client.database.UserDatabase.save();
+            }
+
+            await interaction.member.voice.channel.setRTCRegion(finalRegion);
+            await interaction.editReply({ content: "✅" });
+            break;
+          }
+
+          case "視訊畫質": {
+            const quality = interaction.options.getInteger("視訊畫質");
+            const defa = interaction.options.getBoolean("預設");
+
+            const finalQuality = quality != undefined
+              ? quality > 100
+                ? 100
+                : quality
+              : setting.channelSettings.quality != undefined
+                ? setting.channelSettings.quality
+                : 1;
+
+            if (defa) {
+              UserSettings.voice.quality = quality != undefined ? quality : null;
+              interaction.client.database.UserDatabase.save();
+            }
+
+            await interaction.member.voice.channel.setVideoQualityMode(finalQuality);
+            await interaction.editReply({ content: "✅" });
+            break;
+          }
+
+          case "靜音": {
             const member = interaction.options.getMember("成員");
             let muted = interaction.options.getBoolean("狀態");
             const permission = [];
@@ -411,16 +700,16 @@ module.exports = {
 
                 if (id == member.id) {
                   if (muted == undefined)
-                    muted = !v.deny.has("Speak");
+                    muted = !v.deny.has(PermissionFlagsBits.Speak);
 
                   if (muted) {
-                    if (!v.deny.has("Speak")) deny = v.deny.add("Speak");
+                    if (!v.deny.has(PermissionFlagsBits.Speak)) deny = v.deny.add(PermissionFlagsBits.Speak);
 
-                    if (v.allow.has("Speak")) allow = v.allow.remove("Speak");
+                    if (v.allow.has(PermissionFlagsBits.Speak)) allow = v.allow.remove(PermissionFlagsBits.Speak);
                   } else {
-                    if (v.deny.has("Speak")) deny = v.deny.remove("Speak");
+                    if (v.deny.has(PermissionFlagsBits.Speak)) deny = v.deny.remove(PermissionFlagsBits.Speak);
 
-                    if (!v.allow.has("Speak")) allow = v.allow.add("Speak");
+                    if (!v.allow.has(PermissionFlagsBits.Speak)) allow = v.allow.add(PermissionFlagsBits.Speak);
                   }
                 } else {
                   allow = v.allow;
@@ -438,6 +727,7 @@ module.exports = {
             if (member.voice.channelId == interaction.member.voice.channelId)
               await member.voice.setChannel(member.voice.channel);
 
+            await interaction.editReply({ content: "✅" });
             break;
           }
 
@@ -445,7 +735,6 @@ module.exports = {
             break;
         }
       }
-
     } catch (e) {
       const errCase = {
         ERR_VOICE_ALREADY_EXISTED : "這個頻道已經設定為自動語音頻道了",

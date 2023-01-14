@@ -295,7 +295,7 @@ module.exports = {
                   str = `${emoji(time[ti].elementValue[0].value)} **${time[ti].elementValue[0].value}**`;
                   break;
                 case "CI":
-                  str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 | **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
+                  str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 │ **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
                   break;
 
                 default: {
@@ -303,7 +303,7 @@ module.exports = {
                   const ceil = Math.max(...numericValues);
                   const step = (ceil - floor) / 10;
                   const count = Math.round((numericValues[ti] - floor) / step);
-                  str = `${{ T: "🌡", AT: "👕", PoP6h: "☔", RH: "💧" }[key]} ${{ T: "氣溫　　", AT: "體感溫度", PoP6h: "降雨機率", RH: "相對溼度" }[key]} | ${{ T: "🟧", AT: "🟨", PoP6h: "🟦", RH: "🟪" }[key].repeat(count)} **${time[ti].elementValue[0].value}${{ T: "℃", AT: "℃" }[key] ?? "%"}**`;
+                  str = `${{ T: "🌡", AT: "👕", PoP6h: "☔", RH: "💧" }[key]} ${{ T: "氣溫　　", AT: "體感溫度", PoP6h: "降雨機率", RH: "相對溼度" }[key]} │ ${{ T: "🟧", AT: "🟨", PoP6h: "🟦", RH: "🟪" }[key].repeat(count)} **${time[ti].elementValue[0].value}${{ T: "℃", AT: "℃" }[key] ?? "%"}**`;
                   break;
                 }
               }

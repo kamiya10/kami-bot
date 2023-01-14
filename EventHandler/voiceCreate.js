@@ -1,4 +1,4 @@
-const { ChannelType, Collection } = require("discord.js");
+const { ChannelType, Collection, PermissionFlagsBits } = require("discord.js");
 const censor = require("discord-censor");
 const logger = require("../Core/logger");
 
@@ -41,8 +41,8 @@ module.exports = {
       };
 
       if (setting) {
-        let finalName = UserSettings?.voice_name
-          ? UserSettings.voice_name.replace(/{.+}/g, all => placeholder[all] || all)
+        let finalName = UserSettings?.voice?.name
+          ? UserSettings.voice.name.replace(/{.+}/g, all => placeholder[all] || all)
           : setting.channelSettings.name
             ? setting.channelSettings.name.replace(/{.+}/g, all => placeholder[all] || all)
             : `${newState.member.displayName} 的房間`;
@@ -56,32 +56,38 @@ module.exports = {
         /**
 				 * @type {import("discord.js").OverwriteResolvable[]}
 				 */
-        const perms = newState.guild.members.me.permissions.has("Administrator")
+        const perms = newState.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)
           ? [
-            { id: client.user.id, allow: [ "ManageChannels", "ManageRoles" ] },
-            { id    : newState.member.id, allow : [
-              "Connect",
-              "Stream",
-              "Speak",
-              "MuteMembers",
-              "ManageChannels",
-              "ManageRoles",
-              "UseVAD",
-              "PrioritySpeaker",
-              "MoveMembers",
-            ] },
+            { id: client.user.id, allow: [ PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageRoles ] },
+            {
+              id    : newState.member.id,
+              allow : [
+                PermissionFlagsBits.Connect,
+                PermissionFlagsBits.Stream,
+                PermissionFlagsBits.Speak,
+                PermissionFlagsBits.MuteMembers,
+                PermissionFlagsBits.ManageChannels,
+                PermissionFlagsBits.ManageRoles,
+                PermissionFlagsBits.UseVAD,
+                PermissionFlagsBits.PrioritySpeaker,
+                PermissionFlagsBits.MoveMembers,
+              ],
+            },
           ]
           : [
-            { id: client.user.id, allow: ["ManageChannels"] },
-            { id    : newState.member.id, allow : [
-              "Connect",
-              "Stream",
-              "Speak",
-              "MuteMembers",
-              "ManageChannels",
-              "UseVAD",
-              "PrioritySpeaker",
-            ] },
+            { id: client.user.id, allow: [PermissionFlagsBits.ManageChannels] },
+            {
+              id    : newState.member.id,
+              allow : [
+                PermissionFlagsBits.Connect,
+                PermissionFlagsBits.Stream,
+                PermissionFlagsBits.Speak,
+                PermissionFlagsBits.MuteMembers,
+                PermissionFlagsBits.ManageChannels,
+                PermissionFlagsBits.UseVAD,
+                PermissionFlagsBits.PrioritySpeaker,
+              ],
+            },
           ];
 
         /**
@@ -92,7 +98,7 @@ module.exports = {
           return a;
         }, []);
 
-        if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: [ "Connect", "Speak" ] });
+        if (muterole.length > 0) perms.push({ id: muterole[0].id, deny: [ PermissionFlagsBits.Connect, PermissionFlagsBits.Speak ] });
         perms.concat(Array.from(channel.parent.permissionOverwrites.cache.values()));
 
         /**
@@ -103,7 +109,9 @@ module.exports = {
           type                 : ChannelType.GuildVoice,
           parent               : category,
           userLimit            : +(UserSettings?.voice?.limit ? UserSettings.voice.limit : setting.channelSettings.limit),
-          bitrate              : +(UserSettings?.voice?.bitrate ? UserSettings.voice.bitrate : setting.channelSettings.bitrate) * 1000,
+          bitrate              : +(UserSettings?.voice?.bitrate ? UserSettings.voice.bitrate : setting.channelSettings.bitrate),
+          rtcRegion            : UserSettings?.voice?.region ? UserSettings.voice.region : setting.channelSettings.region ?? null,
+          videoQualityMode     : +(UserSettings?.voice?.quality ? UserSettings.voice.quality : setting.channelSettings.quality ?? 1),
           permissionOverwrites : perms,
           reason               : "自動創建語音頻道 | Auto Voice Channel",
         };

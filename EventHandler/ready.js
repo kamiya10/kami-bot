@@ -10,6 +10,8 @@ module.exports = {
    * @param {import("discord.js").Client} client
    */
   async execute(client) {
+    await client.guilds.fetch({ force: true });
+
     logger.info("The bot is online");
     const GuildSetting = await client.database.GuildDatabase.getAll(["voice"]);
     const checklist = Object.keys(GuildSetting).filter(v => GuildSetting[v]?.voice?.length).map(v => GuildSetting[v]);

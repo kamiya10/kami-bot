@@ -20,6 +20,7 @@ class KamiDatabase {
         set(target, key, value) {
           target[key] = value;
           thisClass.save();
+          return true;
         },
         get(target, key) {
           return target[key];

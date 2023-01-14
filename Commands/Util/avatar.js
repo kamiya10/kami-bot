@@ -18,6 +18,7 @@ module.exports = {
   async execute(interaction) {
     const member = interaction.options.getMember("成員") || interaction.member;
     const displayGuild = interaction.options.getBoolean("伺服器");
+
     const avatarURLs = displayGuild == undefined
       ? {
         png  : member.displayAvatarURL({ format: "png", size: 4096 }),
@@ -58,7 +59,7 @@ module.exports = {
       .setImage(avatarURL)
       .setTimestamp();
 
-    if (error)
+    if (!error)
       embed
         .setTitle(`${member ? `${member.displayName} ` : "你"}的${displayGuild ? "伺服器" : ""}頭貼`)
         .setDescription(md);

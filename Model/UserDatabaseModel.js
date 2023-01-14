@@ -1,21 +1,13 @@
 /**
  *
  * @param {string} user_id
- * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }[]} voice
+ * @param {{ voice: { name: string, bitrate: number, limit: number, region: string, quailty: 1 | 2 } }[]} voice
  * @param {string|null} logger_message_delete
  */
 module.exports = (
-  voice_name = null,
-  voice_limit = null,
-  voice_bitrate = null,
-  voice_forbid = null,
-  voice_permit = null,
+  voice = {},
 ) => ({
-  voice_name,
-  voice_limit,
-  voice_bitrate,
-  voice_forbid,
-  voice_permit,
+  voice,
 });
 
 module.exports.typing = {

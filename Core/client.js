@@ -51,6 +51,15 @@ for (const file of commandFiles) {
 
 // #endregion
 
+// #region
+
+Kami.locale = {};
+
+for (const locale of fs.readdirSync("./Localization").filter(file => file.endsWith(".json")))
+  Kami.locale[locale.slice(0, -5)] = require(path.resolve(`./Localization/${locale}`));
+
+// #endregion
+
 Kami.cooldowns = new Collection();
 Kami.watchedChanels = new Collection();
 Kami.forecast = new Collection();
