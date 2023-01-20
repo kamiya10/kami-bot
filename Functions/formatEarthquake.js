@@ -91,7 +91,7 @@ function formatEarthquake(Earthquake, style = 0) {
     + cwb_code
     + ".html";
   const cwb_image
-    = "https://www.cwb.gov.tw/Data/earthquake/img/EC"
+    = Earthquake.cwb_image ? Earthquake.cwb_image : "https://www.cwb.gov.tw/Data/earthquake/img/EC"
     + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
     + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
     + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)

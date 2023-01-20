@@ -136,18 +136,17 @@ module.exports = {
    */
   async execute(interaction) {
     try {
+      if (!interaction.client.database.GuildDatabase.has(interaction.guild.id))
+        interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
+
       const GuildSetting = interaction.client.database.GuildDatabase.get(interaction.guild.id);
-
-      if (!GuildSetting)
-        await interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
-
       const sc = interaction.options.getSubcommand(false) || undefined;
 
       switch (sc) {
         case "lookup": {
           const style = interaction.options.getInteger("style") ?? 5;
 
-          if (!interaction.client.eq.quake_data || !interaction.client.eq.quake_data) {
+          if (!interaction.client.data.quake_data || !interaction.client.data.quake_data) {
             await interaction.editReply({ embeds: [
               new EmbedBuilder()
                 .setColor(Colors.Blue)
@@ -155,15 +154,15 @@ module.exports = {
             ] });
 
             while (true)
-              if (interaction.client.eq.quake_data && interaction.client.eq.quake_data_s)
+              if (interaction.client.data.quake_data && interaction.client.data.quake_data_s)
                 break;
           }
 
-          let messagedata = formatEarthquake(interaction.client.eq.quake_data_all[0], style);
+          let messagedata = formatEarthquake(interaction.client.data.quake_data_all[0], style);
           let reports = new StringSelectMenuBuilder()
             .setCustomId("report")
             .setOptions(
-              interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
+              interaction.client.data.quake_data_all.slice(0, 20).map((v, index) => ({
                 label       : `${v.EarthquakeNo % 1000 == 0 ? "小地區有感地震" : v.EarthquakeNo}`,
                 value       : `${index}`,
                 description : v.ReportContent,
@@ -181,14 +180,14 @@ module.exports = {
           const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.StringSelect });
           collector.on("collect", async i => {
             reports = reports.setOptions(
-              interaction.client.eq.quake_data_all.slice(0, 20).map((v, index) => ({
+              interaction.client.data.quake_data_all.slice(0, 20).map((v, index) => ({
                 label       : `${v.EarthquakeNo % 1000 == 0 ? "小地區有感地震" : v.EarthquakeNo}`,
                 value       : `${index}`,
                 description : v.ReportContent,
                 default     : index == i.values[0],
               })),
             );
-            messagedata = formatEarthquake(interaction.client.eq.quake_data_all[i.values[0]], style);
+            messagedata = formatEarthquake(interaction.client.data.quake_data_all[i.values[0]], style);
             messagedata.components.push(new ActionRowBuilder({ components: [reports] }));
             await i.update(messagedata);
 

@@ -18,12 +18,8 @@ module.exports = function connect(client, retryTimeout) {
     ws.send(JSON.stringify({
       uuid     : `KamiBot/${process.env.BOT_VERSION} (platform; Windows NT 10.0; Win64; x64)`,
       function : "subscriptionService",
-      value    : [
-        "PWS-v1",
-        "earthquake-v2",
-        "rts-v1",
-      ],
-      key: process.env.WS_KEY,
+      value    : ["earthquake-v2", "trem-eq-v1"],
+      key      : process.env.WS_KEY,
     }));
   });
 
@@ -32,16 +28,19 @@ module.exports = function connect(client, retryTimeout) {
 
     if (data.response != undefined) {
       if (data.response == "Connection Succeeded")
-        logger.info("WebSocket has connected", data);
+        logger.info("WebSocket has connected");
     } else {
-      switch (data.Function) {
-        case "NTP":
-          break; case "RTS":
-          break; case "earthquake":
+      switch (data.type) {
+        case "ntp":
+        case "earthquake":
+          break;
+        case "trem-eq":
+          console.debug("trem-eq", data);
+          client.emit("rts", data);
           break;
 
         default:
-          logger.debug("message", data);
+          console.debug("message", data);
       }
     }
   });

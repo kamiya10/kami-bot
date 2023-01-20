@@ -1,4 +1,5 @@
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
+const KamiDatabase = require("../Database/KamiDatabase");
 const fs = require("fs");
 const path = require("path");
 
@@ -11,6 +12,8 @@ const KamiIntents = [
 ];
 
 const Kami = new Client({ intents: KamiIntents, allowedMentions: { parse: ["roles", "everyone"] } });
+
+Kami.database = { GuildDatabase: new KamiDatabase("guild.json"), UserDatabase: new KamiDatabase("user.json") };
 
 // #region Event Registion
 
@@ -63,8 +66,15 @@ for (const locale of fs.readdirSync("./Localization").filter(file => file.endsWi
 Kami.cooldowns = new Collection();
 Kami.watchedChanels = new Collection();
 Kami.forecast = new Collection();
-Kami.eq = { quake_data: [], quake_data_s: [], quake_last: [], quake_last_s: [] };
-
+Kami.data = {
+  quake_data   : [],
+  quake_data_s : [],
+  quake_last   : [],
+  quake_last_s : [],
+  quake_image  : new Collection(),
+  rts_stations : new Collection(),
+  rts_list     : new Collection(),
+};
 
 Kami.eqws - require("./websocket")(Kami, 1000);
 

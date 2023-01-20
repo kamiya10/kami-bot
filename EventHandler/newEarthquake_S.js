@@ -1,3 +1,4 @@
+const { AttachmentBuilder, Message } = require("discord.js");
 const fetch = require("node-fetch").default;
 const formatEarthquake = require("../Functions/formatEarthquake");
 const logger = require("../Core/logger");
@@ -37,12 +38,20 @@ module.exports = {
           if (res.ok) {
             const buf = await res.buffer();
 
-            if (buf.byteLength > 0)
+            if (buf.byteLength > 0) {
+
+              /**
+               * @type {Message}
+               */
+              const sent = await client.channels.cache.get("986968207111909427").send({ files: [new AttachmentBuilder().setFile(buf)] });
+              Earthquake.cwb_image = sent.attachments.first().url;
               resolve(true);
+            }
+
           } else {
             setTimeout(() => checker(), 8000);
           }
-        }).catch(() => setTimeout(() => checker(), 8000));
+        }).catch(() => setTimeout(() => checker(), 2000));
       };
 
       checker();
@@ -56,9 +65,9 @@ module.exports = {
     const channels = Object.keys(GuildSetting).filter(v => (GuildSetting[v].quake_channel != null) && GuildSetting[v].quake_small).map(v => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
 
     if (channels?.length)
-      channels.forEach(async ch => {
+      channels.forEach(ch => {
         try {
-          await client.channels.cache.get(ch[0])?.send(formatEarthquake(Earthquake, ch[1])).catch(() => void 0);
+          client.channels.cache.get(ch[0])?.send(formatEarthquake(Earthquake, ch[1])).catch(() => void 0);
         } catch (e) {
           console.error(e);
         }

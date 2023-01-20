@@ -1,6 +1,6 @@
 require("dotenv").config();
+const { Collection } = require("discord.js");
 const { Kami } = require("./Core/client");
-const KamiDatabase = require("./Database/KamiDatabase");
 const chalk = require("chalk");
 const config = require("./config");
 const readline = require("node:readline");
@@ -8,7 +8,6 @@ const { stripIndent } = require("common-tags");
 const cwb = new (require("./API/cwb_forecast"))(process.env.CWB_TOKEN);
 process.env.DEBUG_MODE = config.debug;
 
-Kami.database = { GuildDatabase: new KamiDatabase("guild.json"), UserDatabase: new KamiDatabase("user.json") };
 Kami.version = process.env.BOT_VERSION;
 
 // alter
@@ -198,23 +197,26 @@ async function updateData() {
     const fetched_data_s = (await cwb.earthquake_report_s({ format: "json" }).catch(() => void 0))?.records?.Earthquake;
 
     if (fetched_data != undefined) {
-      Kami.eq.quake_last = Kami.eq.quake_data;
-      Kami.eq.quake_data = fetched_data;
+      Kami.data.quake_last = Kami.data.quake_data;
+      Kami.data.quake_data = fetched_data;
 
-      if (Kami.eq.quake_last.length && Kami.eq.quake_last[0]?.ReportContent != Kami.eq.quake_data[0].ReportContent)
-        Kami.emit("newEarthquake", Kami.eq.quake_data[0]);
+      if (Kami.data.quake_last.length && Kami.data.quake_last[0]?.ReportContent != Kami.data.quake_data[0].ReportContent)
+        Kami.emit("newEarthquake", Kami.data.quake_data[0]);
     }
 
     if (fetched_data_s != undefined) {
-      Kami.eq.quake_last_s = Kami.eq.quake_data_s;
-      Kami.eq.quake_data_s = fetched_data_s;
+      Kami.data.quake_last_s = Kami.data.quake_data_s;
+      Kami.data.quake_data_s = fetched_data_s;
 
-      if (Kami.eq.quake_last_s.length && Kami.eq.quake_last_s[0]?.ReportContent != Kami.eq.quake_data_s[0].ReportContent)
-        Kami.emit("newEarthquake_S", Kami.eq.quake_data_s[0]);
+      if (Kami.data.quake_last_s.length && Kami.data.quake_last_s[0]?.ReportContent != Kami.data.quake_data_s[0].ReportContent)
+        Kami.emit("newEarthquake_S", Kami.data.quake_data_s[0]);
     }
 
     if (fetched_data != undefined && fetched_data_s != undefined)
-      Kami.eq.quake_data_all = [...Kami.eq.quake_data, ...Kami.eq.quake_data_s].sort((a, b) => new Date(b.EarthquakeInfo.OriginTime) - new Date(a.EarthquakeInfo.OriginTime));
+      Kami.data.quake_data_all = [...Kami.data.quake_data, ...Kami.data.quake_data_s].sort((a, b) => new Date(b.EarthquakeInfo.OriginTime) - new Date(a.EarthquakeInfo.OriginTime));
+
+    const rts_list = await (await fetch("https://raw.githubusercontent.com/ExpTechTW/API/master/Json/earthquake/station.json", { method: "GET" })).json();
+    Kami.data.rts_stations = new Collection(Object.keys(rts_list).map(k => [k, rts_list[k]]));
   } catch (error) {
     console.error(error);
   }
