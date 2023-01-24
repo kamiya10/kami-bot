@@ -128,8 +128,8 @@ module.exports = {
         .setNameLocalization("zh-TW", "提及")
         .setDescription("The role to ping when Earthquake Early Warnings are sent.")
         .setDescriptionLocalization("zh-TW", "發送強震即時警報時提及的身分組"))),
-
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

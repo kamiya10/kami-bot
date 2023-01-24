@@ -4,7 +4,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Ping"),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    *

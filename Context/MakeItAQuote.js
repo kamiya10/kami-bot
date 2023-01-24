@@ -1,5 +1,4 @@
-const { Colors, EmbedBuilder } = require("discord.js");
-const { ApplicationCommandType } = require("discord-api-types/v10");
+const { ApplicationCommandType, Colors, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const { ContextMenuCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -8,7 +7,8 @@ module.exports = {
     .setNameLocalization("zh-TW", "讓他變名言")
     .setType(ApplicationCommandType.Message)
     .setDMPermission(false),
-  defer: true,
+  defer     : true,
+  ephemeral : true,
 
   /**
    * @param {import("discord.js").MessageContextMenuCommandInteraction} interaction
@@ -16,6 +16,9 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder();
     const content = interaction.targetMessage.content;
+
+    if (interaction.targetMessage.member == null)
+      await interaction.guild.members.fetch({ force: true });
 
     if (!content.length) {
       embed
@@ -26,7 +29,7 @@ module.exports = {
       return;
     }
 
-    const quote = "***❝  " + content.split("\n").join("***\n***　") + " ❞***" + `\n　　　　　　　　—— ${interaction.targetMessage.member.displayName} (${new Date(Date.now()).getFullYear()})`;
+    const quote = "***❝  " + content.split("\n").join("***\n***　") + " ❞***" + `\n　　　　　　　　—— ${interaction.targetMessage.member?.displayName ?? interaction.targetMessage.author.username} (${new Date(Date.now()).getFullYear()})`;
     embed
       .setColor(interaction.targetMessage.member.displayHexColor)
       .setDescription(quote)

@@ -52,7 +52,8 @@ module.exports = {
       .setName("選項")
       .setDescription("要提問的問題，使用半形逗號分隔")
       .setRequired(true)),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

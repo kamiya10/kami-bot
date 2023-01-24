@@ -40,7 +40,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("forecast")
     .setDescription("查詢氣象預報"),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

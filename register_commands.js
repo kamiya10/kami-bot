@@ -37,6 +37,7 @@ client.once("ready", async () => {
 
   if (await new Promise((resolve) => {
     progress.start(client.guilds.cache.size, 0);
+    
 
     client.guilds.cache.forEach(v => {
       v.commands.set(commands)

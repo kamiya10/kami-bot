@@ -1,3 +1,4 @@
+const { AttachmentBuilder } = require("discord.js");
 const fetch = require("node-fetch").default;
 const formatEarthquake = require("../Functions/formatEarthquake");
 const logger = require("../Core/logger");
@@ -37,8 +38,15 @@ module.exports = {
           if (res.ok) {
             const buf = await res.buffer();
 
-            if (buf.byteLength > 0)
+            if (buf.byteLength > 0) {
+
+              /**
+               * @type {Message}
+               */
+              const sent = await client.channels.cache.get("986968207111909427").send({ files: [new AttachmentBuilder().setFile(buf)] });
+              Earthquake.cwb_image = sent.attachments.first().url;
               resolve(true);
+            }
           } else {
             setTimeout(checker, 8000, retryCount + 1);
           }

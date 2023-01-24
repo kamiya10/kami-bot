@@ -15,7 +15,8 @@ module.exports = {
       .setName("圖片")
       .setDescription("要搜尋的圖片")
       .setRequired(true)),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

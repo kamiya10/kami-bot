@@ -22,7 +22,8 @@ module.exports = {
       .setName("數量")
       .setDescription("要投擲的數量")
       .setMinValue(1)),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

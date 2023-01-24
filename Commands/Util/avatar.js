@@ -10,7 +10,8 @@ module.exports = {
     .addBooleanOption(new SlashCommandBooleanOption()
       .setName("伺服器")
       .setDescription("是否顯示伺服器頭貼")),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

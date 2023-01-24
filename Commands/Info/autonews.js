@@ -7,7 +7,8 @@ module.exports = {
     .setDescription("Display a list of configured AutoNews channels.")
     .setDescriptionLocalization("zh-TW", "查看已設定的自動公告發佈頻道列表。")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    *

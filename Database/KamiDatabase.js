@@ -73,6 +73,10 @@ class KamiDatabase {
     this.data[id] = value;
   }
 
+  has(id) {
+    return Object.prototype.hasOwnProperty.call(this.data, id);
+  }
+
   remove(id) {
     delete this.data[id];
   }

@@ -191,7 +191,8 @@ module.exports = {
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("覆蓋設定")
           .setDescription("覆蓋現有設定")))),
-  defer: true,
+  defer     : true,
+  ephemeral : false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

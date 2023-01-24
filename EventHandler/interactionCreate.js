@@ -17,7 +17,7 @@ module.exports = {
     if (!command) return;
 
     try {
-      if (command.defer) await interaction.deferReply();
+      if (command.defer) await interaction.deferReply({ ephemeral: command.ephemeral });
       await command.execute(interaction);
     } catch (error) {
       console.error(error);
