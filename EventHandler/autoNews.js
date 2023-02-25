@@ -10,7 +10,7 @@ module.exports = {
    */
   async execute(client, message) {
     if (message.channel.type == ChannelType.GuildAnnouncement)
-      if (message.channel.topic?.startsWith("[AutoNews]"))
+      if (message.channel.topic?.includes("[AutoNews]"))
         if (!message.content.startsWith("-"))
           if (message.crosspostable) {
             await message.crosspost();
