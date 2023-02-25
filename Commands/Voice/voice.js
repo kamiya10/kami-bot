@@ -163,7 +163,7 @@ module.exports = {
           .setMinValue(0))
         .addIntegerOption(new SlashCommandIntegerOption()
           .setName("位元率")
-          .setDescription("設定伺服器自動語音頻道位元率（單位：kbps）")
+          .setDescription("設定伺服器自動語音頻道位元率（單位：bps）")
           .setMinValue(0))
         .addStringOption(new SlashCommandStringOption()
           .setName("地區覆寫")
@@ -207,18 +207,20 @@ module.exports = {
     try {
       const voice = new EmbedBuilder();
       const GuildSettings = interaction.client.database.GuildDatabase.get(interaction.guild.id);
-      const UserSettings = interaction.client.database.UserDatabase.get(interaction.member.id);
+      const UserSettings = interaction.client.database.UserDatabase.get(interaction.user.id);
 
       if (!GuildSettings)
         interaction.client.database.GuildDatabase.set(interaction.guild.id, GuildDatabaseModel());
 
       if (!UserSettings)
-        interaction.client.database.UserDatabase.set(interaction.member.id, UserDatabaseModel());
+        interaction.client.database.UserDatabase.set(interaction.user.id, UserDatabaseModel());
+
+      const bypass = interaction.user.id == process.env.OWNER_ID;
 
       const sc = interaction.options.getSubcommand();
 
       if (interaction.options.getSubcommandGroup(false) == "伺服器設定") {
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !bypass) throw { message: "ERR_PERMISSION_DENIED" };
 
         switch (sc) {
           case "資訊": {
@@ -246,7 +248,7 @@ module.exports = {
 
                   if (v.channelSettings.name) chsetting.push(`　　預設 | ${DEFAULT_CHANNEL_NAME}`);
                   chsetting.push(`　　預覽 │ ${finalName}`);
-                  chsetting.push(`　位元率 │ **${v.channelSettings.bitrate}** kbps`);
+                  chsetting.push(`　位元率 │ **${v.channelSettings.bitrate / 1000}** kbps`);
                   chsetting.push(`人數上限 │ ${v.channelSettings.limit ? `**${v.channelSettings.limit}** 人` : "`無限制`"}`);
                   chsetting.push(`地區覆寫 │ ${v.channelSettings.region ? `**${v.channelSettings.region}**` : "`自動`"}`);
                   chsetting.push(`視訊畫質 │ ${v.channelSettings.quality > 1 ? `**${qualityString[v.channelSettings.quality]}**` : "`自動`"}`);
@@ -287,7 +289,7 @@ module.exports = {
                         }),
                     ))
                   .setCustomId("kami_voice_paginator"));
-              const sent = await interaction.editReply({ embeds: [pages[0]], components: [ar] });
+              const sent = await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [pages[0]], components: [ar] });
               const filter = (i) => i.customId === "kami_voice_paginator" && i.user.id === interaction.user.id;
 
               const controller = sent.createMessageComponentCollector({ filter, idle: 60_000, componentType: ComponentType.SelectMenu });
@@ -319,7 +321,7 @@ module.exports = {
                   await sent.editReply({ embeds: new EmbedBuilder(sent.embeds[0].data).setFooter({ text: "互動已逾時" }), components: [] });
               });
             } else {
-              await interaction.editReply({ embeds: [pages[0]] });
+              await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [pages[0]] });
             }
 
             break;
@@ -372,7 +374,7 @@ module.exports = {
               .setColor(Colors.Green)
               .setTitle("✅ 成功")
               .setDescription(`已將 ${vch} 新增到自動語音頻道列表`);
-            await interaction.editReply({ embeds: [voice] });
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -396,7 +398,7 @@ module.exports = {
                 .setColor(Colors.Green)
                 .setTitle("✅ 成功")
                 .setDescription(`已將 ${vch} 從自動語音頻道列表中刪除`);
-              await interaction.editReply({ embeds: [voice] });
+              await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             } else {
               throw { message: "ERR_NOT_EXIST" };
             }
@@ -498,8 +500,8 @@ module.exports = {
                   .addFields({
                     name  : "位元率",
                     value : (bitrate > interaction.guild.maximumBitrate)
-                      ? `${setting.channelSettings.bitrate} kbps\n**→ ~~ ${bitrate} ~~ ${interaction.guild.maximumBitrate} kbps （伺服器上限）**`
-                      : `${setting.channelSettings.bitrate} kbps\n**→ ${bitrate ?? 64000} kbps**`,
+                      ? `${setting.channelSettings.bitrate / 1000} kbps\n**→ ~~ ${bitrate / 1000} ~~ ${interaction.guild.maximumBitrate / 1000} kbps （伺服器上限）**`
+                      : `${setting.channelSettings.bitrate / 1000} kbps\n**→ ${(bitrate ?? 64000) / 1000} kbps**`,
                     inline: true,
                   });
 
@@ -508,7 +510,7 @@ module.exports = {
                 voice
                   .addFields({
                     name   : "位元率",
-                    value  : `${setting.channelSettings.bitrate} kbps`,
+                    value  : `${setting.channelSettings.bitrate / 1000} kbps`,
                     inline : true,
                   });
               }
@@ -553,7 +555,7 @@ module.exports = {
 
             interaction.client.database.GuildDatabase.save();
 
-            await interaction.editReply({ embeds: [voice] });
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -565,7 +567,7 @@ module.exports = {
 
         if (!interaction.client.watchedChanels.has(interaction.member.voice.channelId)) throw { message: "ERR_NOT_WATCHED" };
 
-        if (interaction.client.watchedChanels.get(interaction.member.voice.channelId).master != interaction.member.id) throw { message: "ERR_NOT_MASTER" };
+        if (interaction.client.watchedChanels.get(interaction.member.voice.channelId).master != interaction.user.id && !bypass) throw { message: "ERR_NOT_MASTER" };
 
         const setting = GuildSettings.voice.find(o => o.creator == interaction.client.watchedChanels.get(interaction.member.voice.channelId).creator);
 
@@ -595,7 +597,16 @@ module.exports = {
             }
 
             await interaction.member.voice.channel.setName(finalName);
-            await interaction.editReply({ content: "✅" });
+
+            let desc = `已將頻道名稱設為 **${finalName}**`;
+
+            if (defa) desc += "，並將在創建語音頻道時使用此名稱";
+
+            desc += "。";
+
+            voice.setDescription(desc);
+
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -612,12 +623,25 @@ module.exports = {
                 : 0;
 
             if (defa) {
-              UserSettings.voice.limit = limit != undefined ? limit : null;
+              UserSettings.voice.limit = limit != undefined
+                ? limit > 100
+                  ? 100
+                  : limit
+                : null;
               interaction.client.database.UserDatabase.save();
             }
 
             await interaction.member.voice.channel.setUserLimit(finalLimit);
-            await interaction.editReply({ content: "✅" });
+
+            let desc = `已將頻道人數上限設為 **${finalLimit || "`無限制`"}**`;
+
+            if (defa) desc += "，並將在創建語音頻道時使用此人數上限";
+
+            desc += "。";
+
+            voice.setDescription(desc);
+
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -639,7 +663,16 @@ module.exports = {
             }
 
             await interaction.member.voice.channel.setBitrate(guildBitrate);
-            await interaction.editReply({ content: "✅" });
+
+            let desc = `已將頻道位元率設為 **${guildBitrate / 1000} kbps** `;
+
+            if (defa) desc += "，並將在創建語音頻道時使用此位元率";
+
+            desc += "。";
+
+            voice.setDescription(desc);
+
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -659,7 +692,16 @@ module.exports = {
             }
 
             await interaction.member.voice.channel.setRTCRegion(finalRegion);
-            await interaction.editReply({ content: "✅" });
+
+            let desc = `已將頻道地區覆寫設為 **${finalRegion}** `;
+
+            if (defa) desc += "，並將在創建語音頻道時使用此地區覆寫";
+
+            desc += "。";
+
+            voice.setDescription(desc);
+
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
@@ -681,7 +723,16 @@ module.exports = {
             }
 
             await interaction.member.voice.channel.setVideoQualityMode(finalQuality);
-            await interaction.editReply({ content: "✅" });
+
+            let desc = `已將頻道視訊畫質設為 **${qualityString[finalQuality]}** `;
+
+            if (defa) desc += "，並將在創建語音頻道時使用此視訊畫質";
+
+            desc += "。";
+
+            voice.setDescription(desc);
+
+            await interaction.editReply({ content: bypass ? "⏭️ 已繞過權限檢查。" : "", embeds: [voice] });
             break;
           }
 
