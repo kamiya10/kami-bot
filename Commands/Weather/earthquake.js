@@ -114,6 +114,21 @@ module.exports = {
         .setDescription("Whether unnumbered earthquake reports should be sent.")
         .setDescriptionLocalization("zh-TW", "是否推播無編號地震報告")))
     .addSubcommand(new SlashCommandSubcommandBuilder()
+      .setName("rts")
+      .setNameLocalization("zh-TW", "地震檢知")
+      .setDescription("(Experimental) Realtime shaking detection, data provided by ExpTech.")
+      .setDescriptionLocalization("zh-TW", "（實驗性功能）即時地震檢知，資料由 ExpTech 提供")
+      .addChannelOption(new SlashCommandChannelOption()
+        .setName("channel")
+        .setNameLocalization("zh-TW", "頻道")
+        .setDescription("The channel RTS Detections should be sent to.")
+        .setDescriptionLocalization("zh-TW", "要發送即時地震檢知的頻道"))
+      .addRoleOption(new SlashCommandRoleOption()
+        .setName("mention")
+        .setNameLocalization("zh-TW", "提及")
+        .setDescription("The role to ping when RTS Detections are sent.")
+        .setDescriptionLocalization("zh-TW", "發送即時地震檢知時提及的身分組")))
+    .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("eew")
       .setNameLocalization("zh-TW", "強震即時警報")
       .setDescription("Earthquake Early Warning push setting.")
@@ -141,6 +156,8 @@ module.exports = {
 
       const GuildSetting = interaction.client.database.GuildDatabase.get(interaction.guild.id);
       const sc = interaction.options.getSubcommand(false) || undefined;
+
+      const bypass = interaction.user.id == process.env.OWNER_ID;
 
       switch (sc) {
         case "lookup": {
@@ -197,10 +214,13 @@ module.exports = {
         }
 
         case "report": {
-          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
+          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !bypass) throw { message: "ERR_PERMISSION_DENIED" };
           const channel = interaction.options.getChannel("channel");
           const style = interaction.options.getInteger("style");
           const small = interaction.options.getBoolean("unnumbered");
+
+          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
+
 
           let desc = "";
 
@@ -226,10 +246,41 @@ module.exports = {
           break;
         }
 
-        case "eew": {
-          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) throw { message: "ERR_PERMISSION_DENIED" };
+        case "rts": {
+          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !bypass) throw { message: "ERR_PERMISSION_DENIED" };
           const channel = interaction.options.getChannel("channel");
           const mention = interaction.options.getRole("mention");
+
+          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
+
+
+          let desc = "";
+
+          if (channel) desc += `已將 **${channel}** 設為即時地震檢知頻道`; else desc += "已關閉即時地震檢知功能";
+
+          if (channel && mention != undefined) desc += `，並將在警報發佈時提及 **${mention}**`;
+          desc += "。";
+
+          GuildSetting.rts_channel = channel?.id || null;
+          GuildSetting.rts_mention = mention?.id;
+
+          await interaction.client.database.GuildDatabase.save();
+
+          const embed = new EmbedBuilder()
+            .setColor(Colors.Green)
+            .setDescription(desc)
+            .setTitle("✅ 成功");
+
+          await interaction.editReply({ embeds: [embed] });
+          break;
+        }
+
+        case "eew": {
+          if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !bypass) throw { message: "ERR_PERMISSION_DENIED" };
+          const channel = interaction.options.getChannel("channel");
+          const mention = interaction.options.getRole("mention");
+
+          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
 
           let desc = "";
 
@@ -255,7 +306,8 @@ module.exports = {
       }
     } catch (e) {
       const errCase = {
-        ERR_PERMISSION_DENIED: "你沒有權限這麼做",
+        ERR_PERMISSION_DENIED  : "你沒有權限這麼做",
+        ERR_MISSING_PERMISSION : "我沒有權限在這個頻道傳送訊息",
       }[e.message];
 
       const embed = new EmbedBuilder()
