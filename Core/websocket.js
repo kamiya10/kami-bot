@@ -5,6 +5,11 @@ const logger = require("./logger");
 module.exports = function connect(client, retryTimeout) {
   const ws = new WebSocket("wss://exptech.com.tw/api", { handshakeTimeout: 3000 });
 
+  const heartbeat = setTimeout(() => {
+    logger.warn("Heartbeat check failed! Closing WebSocket...");
+    ws.close();
+  }, 15_000);
+
   ws.on("close", () => {
     logger.info(`WebSocket closed. Reconnect after ${retryTimeout / 1000}s`);
     setTimeout(connect, retryTimeout, client, retryTimeout).unref();
@@ -32,15 +37,20 @@ module.exports = function connect(client, retryTimeout) {
     } else {
       switch (data.type) {
         case "ntp":
-        case "earthquake":
+        case "earthquake": {
+          heartbeat.refresh();
           break;
-        case "trem-eq":
+        }
+
+        case "trem-eq": {
           console.debug("trem-eq", data);
           client.emit("rts", data);
           break;
+        }
 
-        default:
+        default: {
           console.debug("message", data);
+        }
       }
     }
   });
