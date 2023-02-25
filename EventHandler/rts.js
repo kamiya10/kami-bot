@@ -1,13 +1,6 @@
 /* eslint-disable no-inline-comments */
-const { Collection, Colors, EmbedBuilder, Message } = require("discord.js");
+const { Collection, Colors, EmbedBuilder, Message, TextChannel } = require("discord.js");
 const logger = require("../Core/logger");
-
-const test_channels
-= [
-  "926547824362016771", // exptech
-  "949333369869701230", // 火柴
-  "927820595712909353", // 黑科技喵喵
-];
 
 const intensesTW = [
   "\\⚫０級",
@@ -38,6 +31,9 @@ module.exports = {
     if (!client.data.rts_list.has(data.id))
       client.data.rts_list.set(data.id, new Collection());
 
+    const GuildSetting = client.database.GuildDatabase.getAll(["rts_channel", "rts_metion"]);
+    const rts_channels = Object.keys(GuildSetting).filter(v => GuildSetting[v].rts_channel != null).map(v => [GuildSetting[v].rts_channel, GuildSetting[v].rts_metion]);
+
     const embed = new EmbedBuilder()
       .setAuthor({ name: "地震檢知" })
       .setFooter({ text: "此為實驗性功能，即時資料由 ExpTech 探索科技提供。", iconURL: "https://upload.cc/i1/2023/01/16/mtKV7B.png" });
@@ -49,8 +45,6 @@ module.exports = {
         name  : "發布狀態",
         value : `${data.cancel ? "**已取消**" : data.final ? "**最終報**" : `第 **${data.number}** 報`} （接收於 <t:${~~(data.timestamp / 1000)}:f>）`,
       });
-
-    if (data.cancel) embed_cache[data.id].cancelled = true;
 
     if (Object.keys(data.list).length)
       if (Object.keys(data.list).length > 10) {
@@ -83,8 +77,8 @@ module.exports = {
     if (!embed_cache[data.id]) {
       const timer = () => {
         if (embed_cache[data.id].update) {
-          for (const channelID of test_channels) {
-            const message = client.data.rts_list.get(data.id).get(channelID);
+          for (const setting of rts_channels) {
+            const message = client.data.rts_list.get(data.id).get(setting[0]);
 
             if (message) {
               if (message instanceof Message)
@@ -92,32 +86,33 @@ module.exports = {
               else
                 message.then(m => m.edit({ embeds: [embed_cache[data.id].embed] }).catch(console.error));
             } else {
-              const channel = client.channels.cache.get(channelID);
+              const channel = client.channels.cache.get(setting[0]);
 
-              const sent = channel.send({ embeds: [embed_cache[data.id].embed] }).catch(console.error);
-              client.data.rts_list.get(data.id).set(channelID, sent);
-              sent.then(v => client.data.rts_list.get(data.id).set(channelID, v));
+              if (channel instanceof TextChannel) {
+                const sent = channel.send({ embeds: [embed_cache[data.id].embed] }).catch(console.error);
+                client.data.rts_list.get(data.id).set(setting[0], sent);
+                sent.then(v => client.data.rts_list.get(data.id).set(setting[0], v));
+              }
             }
           }
 
           embed_cache[data.id].update = false;
-          logger.debug("rts updated");
+          embed_cache[data.id].end ? logger.debug("rts end") : logger.debug("rts updated");
         }
 
         if (embed_cache[data.id].end) {
           clearInterval(embed_cache[data.id].timer);
           setTimeout(() => {
-            for (const channelID of test_channels) {
-              const message = client.data.rts_list.get(data.id).get(channelID);
+            for (const setting of rts_channels) {
+              const message = client.data.rts_list.get(data.id).get(setting[0]);
 
-              if (message) message.delete();
+              if (message)
+                if (embed_cache[data.id].cancelled)
+                  message.delete();
             }
 
-            if (embed_cache[data.id].cancelled)
-              client.data.rts_list.delete(data.id);
-
             delete embed_cache[data.id];
-          }, 15000).unref();
+          }, 15_000).unref();
         }
       };
 
@@ -132,6 +127,8 @@ module.exports = {
     } else {
       embed_cache[data.id].embed = embed;
       embed_cache[data.id].update = true;
+
+      if (data.cancel) embed_cache[data.id].cancelled = true;
 
       if (data.cancel || data.final) embed_cache[data.id].end = true;
     }
