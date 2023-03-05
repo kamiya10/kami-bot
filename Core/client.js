@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits } = require("discord.js");
+const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
 const KamiDatabase = require("../Database/KamiDatabase");
 const fs = require("fs");
 const path = require("path");
@@ -76,6 +76,6 @@ Kami.data = {
   rts_list     : new Collection(),
 };
 
-Kami.eqws - require("./websocket")(Kami, 1000);
+Kami.eqws - require("./websocket")(Kami, 5000);
 
 module.exports = { Kami };
