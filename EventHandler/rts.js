@@ -1,5 +1,6 @@
 /* eslint-disable no-inline-comments */
 const { Collection, Colors, EmbedBuilder, Message, TextChannel } = require("discord.js");
+const chalk = require("chalk");
 const logger = require("../Core/logger");
 
 const intensesTW = [
@@ -48,12 +49,16 @@ module.exports = {
 
     if (Object.keys(data.list).length)
       if (Object.keys(data.list).length > 10) {
-        const ids = Object.keys(data.list);
+        const uuids = Object.keys(data.list);
+
+        /**
+         * @type {Record<string, number>}
+         */
         const int = {};
 
-        for (let i = 0; i < ids.length; i++)
-          if (data.list[ids[i]] > int[client.data.rts_stations.get(ids[i]).area])
-            int[client.data.rts_stations.get(ids[i]).area] = data.list[ids[i]];
+        for (let i = 0; i < uuids.length; i++)
+          if (data.list[uuids[i]] > (int[client.data.rts_stations.get(uuids[i]).area] ?? -1))
+            int[client.data.rts_stations.get(uuids[i]).area] = data.list[uuids[i]];
 
         embed.addFields({
           name  : "各地最大測得震度",
@@ -67,12 +72,14 @@ module.exports = {
         embed.addFields({
           name  : "各地最大測得震度",
           value : Object.keys(data.list)
-            .map(id => ({ name: client.data.rts_stations.get(id).Loc, intensity: data.list[id] }))
+            .map(uuid => ({ name: client.data.rts_stations.get(uuid).Loc, intensity: data.list[uuid] }))
             .sort((a, b) => b.intensity - a.intensity)
             .map(area => `${area.name} ${intensesTW[area.intensity] ?? "\\◾誤報"}`)
             .join("\n"),
         });
       }
+
+    logger.debug(`${chalk.magenta("[rts]")} ${data.alert ? chalk.redBright(data.id) : data.id} ${(data.cancel ? chalk.gray : chalk.yellow)(`#${data.number}`)}${chalk.gray(data.final ? "（最終報）" : "")}`);
 
     if (!embed_cache[data.id]) {
       const timer = () => {
@@ -89,7 +96,7 @@ module.exports = {
               const channel = client.channels.cache.get(setting[0]);
 
               if (channel instanceof TextChannel) {
-                const sent = channel.send({ embeds: [embed_cache[data.id].embed] }).catch(console.error);
+                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
                 client.data.rts_list.get(data.id).set(setting[0], sent);
                 sent.then(v => client.data.rts_list.get(data.id).set(setting[0], v));
               }
@@ -97,7 +104,6 @@ module.exports = {
           }
 
           embed_cache[data.id].update = false;
-          embed_cache[data.id].end ? logger.debug("rts end") : logger.debug("rts updated");
         }
 
         if (embed_cache[data.id].end) {
