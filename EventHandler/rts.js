@@ -216,7 +216,7 @@ module.exports = {
         alert         : data.alert,
         lastTimestamp : data.timestamp,
         felt          : [],
-        maxints       : {},
+        maxints       : data.list,
         timer         : setInterval(timer, 1500),
       };
       timer();
