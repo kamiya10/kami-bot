@@ -176,7 +176,7 @@ module.exports = {
           const urlButton = new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
             .setLabel("檢知報告")
-            .setURL(`https://exptech.com.tw/api/v1/file?path=/trem-report.html&id=${data.id}`);
+            .setURL(`https://exptech.com.tw/api/v1/file?path=/trem-report.html&id=${data.report_id}`);
 
           clearInterval(embed_cache[data.id].timer);
           setTimeout(() => {
@@ -198,7 +198,7 @@ module.exports = {
                       value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
                     });
 
-                    message.reply({ embeds: [endEmbed], components: [new ActionRowBuilder({ components: [urlButton] })], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                    message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
                   }
                 }
             }
