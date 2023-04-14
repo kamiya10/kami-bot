@@ -118,10 +118,10 @@ class CWB_Forcast {
   };
 
   /**
-     * @param {"宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"} county
-     * @param {{limit: number,offset: number,format?: "JSON" | "XMAL",locationName: ["宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"],elementName: ["Wx" | "PoP" | "Cl" | "MinT" | "MaxT"],sort?: "time",startTime: date,timeFrom: date,timeTo: date}} options
-     * @returns
-     */
+   * @param {"宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"} county
+   * @param {{limit: number,offset: number,format?: "JSON" | "XMAL",locationName: ["宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"],elementName: ["Wx" | "PoP" | "Cl" | "MinT" | "MaxT"],sort?: "time",startTime: date,timeFrom: date,timeTo: date}} options
+   * @returns
+   */
   async forecast(options) {
     let url = CWB_Forcast.#baseurl
                 + "F-C0032-001"
@@ -145,10 +145,10 @@ class CWB_Forcast {
   }
 
   /**
-     * @param {"宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"} county
-     * @param {{limit: number,offset: number,format?: "JSON" | "XMAL",locationName: ["宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"],elementName: ["Wx" | "PoP" | "Cl" | "MinT" | "MaxT"],sort?: "time",startTime: date,timeFrom: date,timeTo: date}} options
-     * @returns
-     */
+   * @param {"宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"} county
+   * @param {{limit: number,offset: number,format?: "JSON" | "XMAL",locationName: ["宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"],elementName: ["Wx" | "PoP" | "Cl" | "MinT" | "MaxT"],sort?: "time",startTime: date,timeFrom: date,timeTo: date}} options
+   * @returns
+   */
   async forecast_county(county, options) {
     let url = CWB_Forcast.#baseurl
               + this.county_code2[county]
