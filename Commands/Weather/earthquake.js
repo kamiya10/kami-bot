@@ -127,7 +127,12 @@ module.exports = {
         .setName("mention")
         .setNameLocalization("zh-TW", "提及")
         .setDescription("The role to ping when RTS Detections are sent.")
-        .setDescriptionLocalization("zh-TW", "發送即時地震檢知時提及的身分組")))
+        .setDescriptionLocalization("zh-TW", "發送即時地震檢知時提及的身分組"))
+      .addBooleanOption(new SlashCommandBooleanOption()
+        .setName("alert")
+        .setNameLocalization("zh-TW", "警報")
+        .setDescription("Send the detection only when it is alerted.")
+        .setDescriptionLocalization("zh-TW", "只在警報時發送訊息")))
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("eew")
       .setNameLocalization("zh-TW", "強震即時警報")
@@ -250,19 +255,20 @@ module.exports = {
           if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !bypass) throw { message: "ERR_PERMISSION_DENIED" };
           const channel = interaction.options.getChannel("channel");
           const mention = interaction.options.getRole("mention");
+          const alert = interaction.options.getBoolean("alert");
 
           if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
-
 
           let desc = "";
 
           if (channel) desc += `已將 **${channel}** 設為即時地震檢知頻道`; else desc += "已關閉即時地震檢知功能";
 
-          if (channel && mention != undefined) desc += `，並將在警報發佈時提及 **${mention}**`;
+          if (channel && mention != undefined) desc += `，並將在 **${alert ? "警報" : "檢知"}** 發佈時提及 **${mention}**`;
           desc += "。";
 
           GuildSetting.rts_channel = channel?.id || null;
-          GuildSetting.rts_mention = mention?.id;
+          GuildSetting.rts_mention = mention?.id || null;
+          GuildSetting.rts_alert = alert || null;
 
           await interaction.client.database.GuildDatabase.save();
 

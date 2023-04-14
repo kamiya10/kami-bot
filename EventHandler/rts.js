@@ -1,5 +1,5 @@
 /* eslint-disable no-inline-comments */
-const { Collection, Colors, EmbedBuilder, Message, TextChannel } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, Colors, ComponentType, EmbedBuilder, Message, TextChannel, TimestampStyles, time } = require("discord.js");
 const chalk = require("chalk");
 const logger = require("../Core/logger");
 
@@ -32,8 +32,8 @@ module.exports = {
     if (!client.data.rts_list.has(data.id))
       client.data.rts_list.set(data.id, new Collection());
 
-    const GuildSetting = client.database.GuildDatabase.getAll(["rts_channel", "rts_metion"]);
-    const rts_channels = Object.keys(GuildSetting).filter(v => GuildSetting[v].rts_channel != null).map(v => [GuildSetting[v].rts_channel, GuildSetting[v].rts_metion]);
+    const GuildSetting = client.database.GuildDatabase.getAll(["rts_channel", "rts_metion", "rts_alert"]);
+    const rts_channels = Object.keys(GuildSetting).filter(v => GuildSetting[v].rts_channel != null).map(v => [GuildSetting[v].rts_channel, GuildSetting[v].rts_metion, GuildSetting[v].rts_alert]);
 
     const embed = new EmbedBuilder()
       .setAuthor({ name: "地震檢知" })
@@ -44,7 +44,7 @@ module.exports = {
       .setDescription(`${data.final ? "\\⚫已停止追蹤" : "\\📡 追蹤中"}`)
       .addFields({
         name  : "發布狀態",
-        value : `${data.cancel ? "**已取消**" : data.final ? "**最終報**" : `第 **${data.number}** 報`} （接收於 <t:${~~(data.timestamp / 1000)}:f>）`,
+        value : `${data.cancel ? "**已取消**" : data.final ? "**最終報**" : `第 **${data.number}** 報`} （接收於 ${time(data.timestamp, TimestampStyles.ShortDateTime)}）`,
       });
 
     if (Object.keys(data.list).length)
@@ -82,23 +82,60 @@ module.exports = {
     logger.debug(`${chalk.magenta("[rts]")} ${data.alert ? chalk.redBright(data.id) : data.id} ${(data.cancel ? chalk.gray : chalk.yellow)(`#${data.number}`)}${chalk.gray(data.final ? "（最終報）" : "")}`);
 
     if (!embed_cache[data.id]) {
+      const button = new ButtonBuilder()
+        .setCustomId("felt")
+        .setEmoji("😣")
+        .setLabel("我有感覺")
+        .setStyle(data.alert ? ButtonStyle.Primary : ButtonStyle.Secondary);
+
+      if (Object.keys(data.list).length)
+        for (const uuid in data.list)
+          if ((embed_cache[data.id].maxints[uuid] ?? -1) > data.list[uuid])
+            embed_cache[data.id].maxints[uuid] = data.list[uuid];
+
+
       const timer = () => {
         if (embed_cache[data.id].update) {
+          if (embed_cache[data.id].alert)
+            button.setStyle(ButtonStyle.Primary);
+
           for (const setting of rts_channels) {
+            if (rts_channels[2] == true && embed_cache[data.id].alert != true) continue;
+
             const message = client.data.rts_list.get(data.id).get(setting[0]);
 
             if (message) {
               if (message instanceof Message)
-                message.edit({ embeds: [embed_cache[data.id].embed] }).catch(console.error);
+                message.edit({ embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })] }).catch(console.error);
               else
-                message.then(m => m.edit({ embeds: [embed_cache[data.id].embed] }).catch(console.error));
+                message.then(m => m.edit({ embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })] }).catch(console.error));
             } else {
               const channel = client.channels.cache.get(setting[0]);
 
               if (channel instanceof TextChannel) {
-                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
+                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
                 client.data.rts_list.get(data.id).set(setting[0], sent);
-                sent.then(v => client.data.rts_list.get(data.id).set(setting[0], v));
+                sent.then(v => {
+                  if (!(v instanceof Message)) return;
+                  client.data.rts_list.get(data.id).set(setting[0], v);
+                  const collector = v.createMessageComponentCollector({ componentType: ComponentType.Button, idle: 300_000 });
+                  collector.on("collect", async i => {
+                    const replyEmbed = new EmbedBuilder();
+
+                    if (!embed_cache[data.id].felt.includes(i.user.id)) {
+                      embed_cache[data.id].felt.push(i.user.id);
+                      replyEmbed
+                        .setColor(Colors.Green)
+                        .setDescription("感謝你的回報！");
+                    } else {
+                      replyEmbed
+                        .setColor(Colors.Red)
+                        .setDescription("你已經回報過了，一個人對同一檢知只能回報一次。");
+                    }
+
+                    await i.editReply({ embeds: [replyEmbed] });
+                  });
+                });
               }
             }
           }
@@ -107,14 +144,63 @@ module.exports = {
         }
 
         if (embed_cache[data.id].end) {
+          const max = embed_cache[data.id].maxints
+            .map(uuid => ({ name: client.data.rts_stations.get(uuid).Loc, intensity: embed_cache[data.id].maxints[uuid] }))
+            .sort((a, b) => b.intensity - a.intensity);
+
+          const endEmbed = new EmbedBuilder()
+            .setColor(data.alert ? Colors.Red : Colors.Orange)
+            .setAuthor({ name: "地震檢知" })
+            .addFields(...[
+              {
+                name   : "🕐 起始時間",
+                value  : time(data.time, TimestampStyles.ShortDateTime),
+                inline : true,
+              },
+              {
+                name   : "⏹️ 結束時間",
+                value  : time(embed_cache[data.id].lastTimestamp, TimestampStyles.ShortDateTime),
+                inline : true,
+              },
+              {
+                name   : "📊 計測最大震度",
+                value  : `${max.name} ${intensesTW[max.intensity]}`,
+                inline : true,
+              },
+              {
+                name  : "😣 體感回報",
+                value : `這次${embed_cache[data.id].alert ? "警報" : "檢知"}${embed_cache[data.id].felt.length < 2 ? "只" : "共"}有 **${embed_cache[data.id].felt.length}** 人回報`,
+              }])
+            .setFooter({ text: "此為實驗性功能，即時資料由 ExpTech 探索科技提供。", iconURL: "https://upload.cc/i1/2023/01/16/mtKV7B.png" });
+
+          const urlButton = new ButtonBuilder()
+            .setStyle(ButtonStyle.Link)
+            .setLabel("檢知報告")
+            .setURL(`https://exptech.com.tw/api/v1/file?path=/trem-report.html&id=${data.id}`);
+
           clearInterval(embed_cache[data.id].timer);
           setTimeout(() => {
             for (const setting of rts_channels) {
               const message = client.data.rts_list.get(data.id).get(setting[0]);
 
-              if (message)
-                if (embed_cache[data.id].cancelled)
+              if (message instanceof Message)
+                if (embed_cache[data.id].cancelled) {
                   message.delete();
+                } else {
+                  message.edit({ embeds: [embed_cache[data.id].embed], components: [] }).catch(console.error);
+
+                  if (embed_cache[data.id].felt.length) {
+                    const ranking = [];
+                    for (const index in embed_cache[data.id].felt)
+                      if (message.guild.members.cache.has(embed_cache[data.id].felt[index])) ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index])}`);
+                    endEmbed.addFields({
+                      name  : "🏆 回報排行榜",
+                      value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
+                    });
+
+                    message.reply({ embeds: [endEmbed], components: [new ActionRowBuilder({ components: [urlButton] })], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                  }
+                }
             }
 
             delete embed_cache[data.id];
@@ -124,17 +210,25 @@ module.exports = {
 
       embed_cache[data.id] = {
         embed,
-        update    : true,
-        cancelled : false,
-        end       : false,
-        timer     : setInterval(timer, 1500),
+        update        : true,
+        cancelled     : false,
+        end           : false,
+        alert         : data.alert,
+        lastTimestamp : data.timestamp,
+        felt          : [],
+        maxints       : {},
+        timer         : setInterval(timer, 1500),
       };
       timer();
     } else {
       embed_cache[data.id].embed = embed;
       embed_cache[data.id].update = true;
+      embed_cache[data.id].lastTimestamp = data.timestamp;
 
       if (data.cancel) embed_cache[data.id].cancelled = true;
+
+      if (data.alert)
+        embed_cache[data.id].alert = true;
 
       if (data.cancel || data.final) embed_cache[data.id].end = true;
     }

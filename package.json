@@ -20,7 +20,7 @@
     "common-tags": "^1.8.2",
     "discord-api-types": "^0.37.11",
     "discord-censor": "^1.0.9",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
     "erlpack": "github:discord/erlpack",
     "node-gyp": "^9.1.0",
