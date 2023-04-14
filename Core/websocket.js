@@ -11,7 +11,9 @@ function connect(client, retryTimeout) {
 
   ws.on("close", () => {
     logger.info(`WebSocket closed. Reconnect after ${retryTimeout / 1000}s`);
+    ws.removeAllListeners();
     ws = null;
+    clearInterval(ping);
     setTimeout(() => connect(client, retryTimeout), retryTimeout).unref();
   });
 
@@ -27,9 +29,11 @@ function connect(client, retryTimeout) {
         logger.warn("Heartbeat check failed! Closing WebSocket...");
         clearInterval(ping);
         clearTimeout(heartbeat);
-        ws.terminate();
-      }, 10_000);
-    }, 15_000);
+
+        if (ws instanceof WebSocket)
+          ws.terminate();
+      }, 5_000);
+    }, 20_000);
 
     ws.send(JSON.stringify({
       uuid     : `KamiBot/${process.env.BOT_VERSION} (platform; Windows NT 10.0; Win64; x64)`,
