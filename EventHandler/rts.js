@@ -88,12 +88,6 @@ module.exports = {
         .setLabel("我有感覺")
         .setStyle(data.alert ? ButtonStyle.Primary : ButtonStyle.Secondary);
 
-      if (Object.keys(data.list).length)
-        for (const uuid in data.list)
-          if ((embed_cache[data.id].maxints[uuid] ?? -1) > data.list[uuid])
-            embed_cache[data.id].maxints[uuid] = data.list[uuid];
-
-
       const timer = () => {
         if (embed_cache[data.id].update) {
           if (embed_cache[data.id].alert)
@@ -224,6 +218,11 @@ module.exports = {
       embed_cache[data.id].embed = embed;
       embed_cache[data.id].update = true;
       embed_cache[data.id].lastTimestamp = data.timestamp;
+
+      if (Object.keys(data.list).length)
+        for (const uuid in data.list)
+          if ((embed_cache[data.id].maxints[uuid] ?? -1) > data.list[uuid])
+            embed_cache[data.id].maxints[uuid] = data.list[uuid];
 
       if (data.cancel) embed_cache[data.id].cancelled = true;
 
