@@ -107,7 +107,7 @@ module.exports = {
               const channel = client.channels.cache.get(setting[0]);
 
               if (channel instanceof TextChannel) {
-                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
+                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], components: embed_cache.end ? [] : [new ActionRowBuilder({ components: [button] })], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
                 client.data.rts_list.get(data.id).set(setting[0], sent);
                 sent.then(v => {
                   if (!(v instanceof Message)) return;
@@ -172,29 +172,37 @@ module.exports = {
             .setLabel("檢知報告")
             .setURL(`https://exptech.com.tw/api/v1/file?path=/trem-report.html&id=${data.report_id}`);
 
+          for (const setting of rts_channels) {
+            const message = client.data.rts_list.get(data.id).get(setting[0]);
+
+            if (message instanceof Message)
+              if (!embed_cache[data.id].cancelled) {
+                message.edit({ embeds: [embed_cache[data.id].embed], components: [] }).catch(console.error);
+
+                if (embed_cache[data.id].felt.length) {
+                  const ranking = [];
+                  for (const index in embed_cache[data.id].felt)
+                    if (message.guild.members.cache.has(embed_cache[data.id].felt[index]))
+                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index])}`);
+
+                  endEmbed.addFields({
+                    name  : "🏆 回報排行榜",
+                    value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
+                  });
+
+                  message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                }
+              }
+          }
+
           clearInterval(embed_cache[data.id].timer);
           setTimeout(() => {
             for (const setting of rts_channels) {
               const message = client.data.rts_list.get(data.id).get(setting[0]);
 
               if (message instanceof Message)
-                if (embed_cache[data.id].cancelled) {
+                if (embed_cache[data.id].cancelled)
                   message.delete();
-                } else {
-                  message.edit({ embeds: [embed_cache[data.id].embed], components: [] }).catch(console.error);
-
-                  if (embed_cache[data.id].felt.length) {
-                    const ranking = [];
-                    for (const index in embed_cache[data.id].felt)
-                      if (message.guild.members.cache.has(embed_cache[data.id].felt[index])) ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index])}`);
-                    endEmbed.addFields({
-                      name  : "🏆 回報排行榜",
-                      value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
-                    });
-
-                    message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
-                  }
-                }
             }
 
             delete embed_cache[data.id];
