@@ -127,7 +127,7 @@ module.exports = {
                         .setDescription("你已經回報過了，一個人對同一檢知只能回報一次。");
                     }
 
-                    await i.editReply({ embeds: [replyEmbed] });
+                    await i.reply({ embeds: [replyEmbed] });
                   });
                 });
               }
