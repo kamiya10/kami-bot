@@ -44,7 +44,7 @@ module.exports = {
       .setDescription(`${data.final ? "\\⚫已停止追蹤" : "\\📡 追蹤中"}`)
       .addFields({
         name  : "發布狀態",
-        value : `${data.cancel ? "**已取消**" : data.final ? "**最終報**" : `第 **${data.number}** 報`} （接收於 ${time(data.timestamp, TimestampStyles.ShortDateTime)}）`,
+        value : `${data.cancel ? "**已取消**" : data.final ? "**最終報**" : `第 **${data.number}** 報`} （接收於 ${time(~~(data.timestamp / 1000), TimestampStyles.ShortDateTime)}）`,
       });
 
     if (Object.keys(data.list).length)
@@ -148,12 +148,12 @@ module.exports = {
             .addFields(...[
               {
                 name   : "🕐 起始時間",
-                value  : time(data.time, TimestampStyles.ShortDateTime),
+                value  : time(~~(data.time / 1000), TimestampStyles.ShortDateTime),
                 inline : true,
               },
               {
                 name   : "⏹️ 結束時間",
-                value  : time(embed_cache[data.id].lastTimestamp, TimestampStyles.ShortDateTime),
+                value  : time(~~(embed_cache[data.id].lastTimestamp / 1000), TimestampStyles.ShortDateTime),
                 inline : true,
               },
               {
