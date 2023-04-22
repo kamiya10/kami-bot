@@ -163,7 +163,7 @@ module.exports = {
               },
               {
                 name  : "😣 體感回報",
-                value : `這次${embed_cache[data.id].alert ? "警報" : "檢知"}${embed_cache[data.id].felt.length == 0 ? "沒" : embed_cache[data.id].felt.length < 2 ? "只" : "共"}有 **${embed_cache[data.id].felt.length}** 人回報`,
+                value : `這次${embed_cache[data.id].alert ? "警報" : "檢知"}${embed_cache[data.id].felt.length == 0 ? "沒有人" : `${embed_cache[data.id].felt.length < 2 ? "只" : "共"}有 **${embed_cache[data.id].felt.length}** 人`}回報`,
               }])
             .setFooter({ text: "此為實驗性功能，即時資料由 ExpTech 探索科技提供。", iconURL: "https://upload.cc/i1/2023/01/16/mtKV7B.png" });
 
