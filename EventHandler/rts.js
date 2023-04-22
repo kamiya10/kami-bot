@@ -185,12 +185,14 @@ module.exports = {
                     if (message.guild.members.cache.has(embed_cache[data.id].felt[index]))
                       ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index])}`);
 
-                  endEmbed.addFields({
+                  const sendEmbed = new EmbedBuilder(endEmbed.data);
+
+                  sendEmbed.addFields({
                     name  : "🏆 回報排行榜",
                     value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
                   });
 
-                  message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                  message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
                 }
               }
           }
