@@ -140,7 +140,7 @@ module.exports = {
         if (embed_cache[data.id].end) {
           const max = Object.keys(embed_cache[data.id].maxints)
             .map(uuid => ({ name: client.data.rts_stations.get(uuid).Loc, intensity: embed_cache[data.id].maxints[uuid] }))
-            .sort((a, b) => b.intensity - a.intensity);
+            .sort((a, b) => b.intensity - a.intensity)[0];
 
           const endEmbed = new EmbedBuilder()
             .setColor(data.alert ? Colors.Red : Colors.Orange)
