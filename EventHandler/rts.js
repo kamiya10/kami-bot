@@ -116,8 +116,8 @@ module.exports = {
                   collector.on("collect", async i => {
                     const replyEmbed = new EmbedBuilder();
 
-                    if (!embed_cache[data.id].felt.includes(i.user.id)) {
-                      embed_cache[data.id].felt.push(i.user.id);
+                    if (embed_cache[data.id].felt.find(value => value.id == i.user.id) == undefined) {
+                      embed_cache[data.id].felt.push({ id: i.user.id, timestamp: i.createdTimestamp });
                       replyEmbed
                         .setColor(Colors.Green)
                         .setDescription("感謝你的回報！");
@@ -182,8 +182,8 @@ module.exports = {
                 if (embed_cache[data.id].felt.length) {
                   const ranking = [];
                   for (const index in embed_cache[data.id].felt)
-                    if (message.guild.members.cache.has(embed_cache[data.id].felt[index]))
-                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index])}`);
+                    if (message.guild.members.cache.has(embed_cache[data.id].felt[index].id))
+                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp / 1000).toFixed(2))}s` : ""}`);
 
                   const sendEmbed = new EmbedBuilder(endEmbed.data);
 
