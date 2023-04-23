@@ -127,7 +127,7 @@ module.exports = {
                         .setDescription("你已經回報過了，一個人對同一檢知只能回報一次。");
                     }
 
-                    await i.reply({ embeds: [replyEmbed] });
+                    await i.reply({ embeds: [replyEmbed], ephemeral: true });
                   });
                 });
               }
@@ -192,9 +192,9 @@ module.exports = {
                     value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
                   });
 
-                  message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                  message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
                 } else {
-                  message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } });
+                  message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
                 }
               }
           }
