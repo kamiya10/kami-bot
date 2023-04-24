@@ -180,10 +180,12 @@ module.exports = {
                 message.edit({ embeds: [embed_cache[data.id].embed], components: [] }).catch(console.error);
 
                 if (embed_cache[data.id].felt.length) {
+                  embed_cache[data.id].felt = embed_cache[data.id].felt.sort((a, b) => a.timestamp - b.timestamp);
+
                   const ranking = [];
                   for (const index in embed_cache[data.id].felt)
                     if (message.guild.members.cache.has(embed_cache[data.id].felt[index].id))
-                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `\`${index + 1}\\.\``} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat(((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp) / 1000).toFixed(2))}s` : ""}`);
+                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `\`${+index + 1}.\``} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat(((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp) / 1000).toFixed(2))}s` : ""}`);
 
                   if (ranking.length) {
                     const sendEmbed = new EmbedBuilder(endEmbed.data);
