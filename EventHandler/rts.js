@@ -183,18 +183,20 @@ module.exports = {
                   const ranking = [];
                   for (const index in embed_cache[data.id].felt)
                     if (message.guild.members.cache.has(embed_cache[data.id].felt[index].id))
-                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `${index + 1}.`} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp / 1000).toFixed(2))}s` : ""}`);
+                      ranking.push(`${["🥇", "🥈", "🥉"][index] ?? `\`${index + 1}\\.\``} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat(((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp) / 1000).toFixed(2))}s` : ""}`);
 
-                  const sendEmbed = new EmbedBuilder(endEmbed.data);
+                  if (ranking.length) {
+                    const sendEmbed = new EmbedBuilder(endEmbed.data);
 
-                  sendEmbed.addFields({
-                    name  : "🏆 回報排行榜",
-                    value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
-                  });
+                    sendEmbed.addFields({
+                      name  : "🏆 回報排行榜",
+                      value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
+                    });
 
-                  message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
-                } else {
-                  message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
+                    message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
+                  } else {
+                    message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
+                  }
                 }
               }
           }
