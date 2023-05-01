@@ -1,4 +1,4 @@
-const { Colors, EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
+const { Colors, EmbedBuilder, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,30 +22,30 @@ module.exports = {
 
     const avatarURLs = displayGuild == null
       ? {
-        png  : member.displayAvatarURL({ format: "png", size: 4096 }),
-        jpeg : member.displayAvatarURL({ format: "jpeg", size: 4096 }),
-        webp : member.displayAvatarURL({ format: "webp", size: 4096 }),
-        gif  : member.displayAvatarURL({ format: "gif", dynamic: true, size: 4096 }),
+        png  : member.displayAvatarURL({ extension: ImageFormat.PNG, forceStatic: true, size: 4096 }),
+        jpeg : member.displayAvatarURL({ extension: ImageFormat.JPEG, forceStatic: true, size: 4096 }),
+        webp : member.displayAvatarURL({ extension: ImageFormat.WebP, forceStatic: true, size: 4096 }),
+        gif  : member.displayAvatarURL({ extension: ImageFormat.GIF, size: 4096 }),
       }
       : displayGuild
         ? {
-          png  : member.avatarURL({ format: "png", size: 4096 }),
-          jpeg : member.avatarURL({ format: "jpeg", size: 4096 }),
-          webp : member.avatarURL({ format: "webp", size: 4096 }),
-          gif  : member.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
+          png  : member.avatarURL({ extension: ImageFormat.PNG, forceStatic: true, size: 4096 }),
+          jpeg : member.avatarURL({ extension: ImageFormat.JPEG, forceStatic: true, size: 4096 }),
+          webp : member.avatarURL({ extension: ImageFormat.WebP, forceStatic: true, size: 4096 }),
+          gif  : member.avatarURL({ extension: ImageFormat.GIF, size: 4096 }),
         }
         : {
-          png  : member.user.avatarURL({ format: "png", size: 4096 }),
-          jpeg : member.user.avatarURL({ format: "jpeg", size: 4096 }),
-          webp : member.user.avatarURL({ format: "webp", size: 4096 }),
-          gif  : member.user.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
+          png  : member.user.avatarURL({ extension: ImageFormat.PNG, forceStatic: true, size: 4096 }),
+          jpeg : member.user.avatarURL({ extension: ImageFormat.JPEG, forceStatic: true, size: 4096 }),
+          webp : member.user.avatarURL({ extension: ImageFormat.WebP, forceStatic: true, size: 4096 }),
+          gif  : member.user.avatarURL({ extension: ImageFormat.GIF, size: 4096 }),
         };
 
     const avatarURL = displayGuild == null
-      ? member.displayAvatarURL({ dynamic: true })
+      ? member.displayAvatarURL({ size: 256 })
       : displayGuild
-        ? member.avatarURL({ dynamic: true })
-        : member.user.avatarURL({ dynamic: true });
+        ? member.avatarURL({ size: 256 })
+        : member.user.avatarURL({ size: 256 });
 
     const md = `[PNG](${avatarURLs.png}) | [JPEG](${avatarURLs.jpeg}) | [WEBP](${avatarURLs.webp}) | [GIF](${avatarURLs.gif})`;
 
