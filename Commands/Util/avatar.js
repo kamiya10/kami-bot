@@ -20,7 +20,7 @@ module.exports = {
     const member = interaction.options.getMember("成員") || interaction.member;
     const displayGuild = interaction.options.getBoolean("伺服器");
 
-    const avatarURLs = displayGuild == undefined
+    const avatarURLs = displayGuild == null
       ? {
         png  : member.displayAvatarURL({ format: "png", size: 4096 }),
         jpeg : member.displayAvatarURL({ format: "jpeg", size: 4096 }),
@@ -41,7 +41,7 @@ module.exports = {
           gif  : member.user.avatarURL({ format: "gif", dynamic: true, size: 4096 }),
         };
 
-    const avatarURL = displayGuild == undefined
+    const avatarURL = displayGuild == null
       ? member.displayAvatarURL({ dynamic: true })
       : displayGuild
         ? member.avatarURL({ dynamic: true })
@@ -50,10 +50,10 @@ module.exports = {
     const md = `[PNG](${avatarURLs.png}) | [JPEG](${avatarURLs.jpeg}) | [WEBP](${avatarURLs.webp}) | [GIF](${avatarURLs.gif})`;
 
     const error = avatarURL
-      ? displayGuild
+      ? null
+      : displayGuild
         ? "這個成員沒有伺服器頭貼"
-        : "這個成員沒有頭貼"
-      : undefined;
+        : "這個成員沒有頭貼";
 
     const embed = new EmbedBuilder()
       .setColor(Colors.Blue)
