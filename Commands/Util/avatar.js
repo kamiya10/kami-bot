@@ -42,10 +42,10 @@ module.exports = {
         };
 
     const avatarURL = displayGuild == null
-      ? member.displayAvatarURL({ size: 256 })
+      ? member.displayAvatarURL({ size: 128 })
       : displayGuild
-        ? member.avatarURL({ size: 256 })
-        : member.user.avatarURL({ size: 256 });
+        ? member.avatarURL({ size: 128 })
+        : member.user.avatarURL({ size: 128 });
 
     const md = `[PNG](${avatarURLs.png}) | [JPEG](${avatarURLs.jpeg}) | [WEBP](${avatarURLs.webp}) | [GIF](${avatarURLs.gif})`;
 
