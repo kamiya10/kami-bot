@@ -293,6 +293,7 @@ module.exports = {
               let str = "";
 
               switch (key) {
+                case "Wx": break;
                 case "CI":
                   str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 │ **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
                   break;
