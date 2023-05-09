@@ -331,7 +331,7 @@ module.exports = {
             buttons.push(new ButtonBuilder()
               .setStyle(ButtonStyle.Secondary)
               .setLabel(`${time.getMonth() + 1}/${time.getDate()}`)
-              .setCustomId(`forecast-${paging.index(page)}`));
+              .setCustomId(`forecast-${paging.indexOf(page)}`));
           }
 
           embeds.push(pages[0]);
