@@ -282,7 +282,7 @@ module.exports = {
             if (!fields.length)
               for (const t of time)
                 fields.push({
-                  name  : timestamp(t.startTime),
+                  name  : `${timestamp(t.startTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
                   page  : t.startTime,
                   value : "",
                 });
@@ -293,9 +293,6 @@ module.exports = {
               let str = "";
 
               switch (key) {
-                case "Wx":
-                  str = `${emoji(time[ti].elementValue[0].value)} **${time[ti].elementValue[0].value}**`;
-                  break;
                 case "CI":
                   str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 │ **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
                   break;
