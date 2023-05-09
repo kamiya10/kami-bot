@@ -1,6 +1,6 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
-const { ActionRowBuilder, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, StringSelectMenuBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, StringSelectMenuBuilder } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
 const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
 
@@ -283,6 +283,7 @@ module.exports = {
               for (const t of time)
                 fields.push({
                   name  : timestamp(t.startTime),
+                  page  : t.startTime,
                   value : "",
                 });
 
@@ -313,16 +314,44 @@ module.exports = {
             }
           }
 
-          forecast_embed.addFields(...fields);
+          const paging = fields.map((v) => new Date(v.page).getDate()).filter((v, index, a) => a.indexOf(v) === index);
+          const pages = [];
+          const buttons = [];
 
-          embeds.push(forecast_embed);
+          for (const date of paging) {
+            const page = new EmbedBuilder(forecast_embed.data);
+
+            for (const field of fields)
+              if (new Date(field.page).getDate() == date)
+                page.addFields(field);
+
+            pages.push(page);
+
+            const time = new Date(fields.find(v => new Date(v.page).getDate() == date).page);
+            buttons.push(new ButtonBuilder()
+              .setStyle(ButtonStyle.Secondary)
+              .setLabel(`${time.getMonth() + 1}/${time.getDate()}`)
+              .setCustomId(`forecast-${paging.index(page)}`));
+          }
+
+          embeds.push(pages[0]);
+          const forecaseembedindex = embeds.indexOf(pages[0]);
 
           county = county.setDisabled(false);
           town = town.setDisabled(false);
 
-          await i.editReply({
+          const s = await i.editReply({
             embeds,
-            components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
+            components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] }), new ActionRowBuilder({ components: buttons })],
+          });
+          const sc = s.createMessageComponentCollector({ componentType: ComponentType.Button });
+          sc.on("collect", inter => {
+            const newembeds = inter.message.embeds;
+            newembeds.splice(forecaseembedindex, 1, pages[inter.customId.split("-")[1]]);
+            inter.update({
+              embeds     : newembeds,
+              components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] }), new ActionRowBuilder({ components: buttons })],
+            });
           });
           break;
         }
