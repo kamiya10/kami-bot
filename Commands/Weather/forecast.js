@@ -80,6 +80,7 @@ module.exports = {
     const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 
     let _county_data, _town_data, _hazards, _hazards_W33, _currentCounty, _currentTown, _currentTownPage = 0;
+
     const loading = new EmbedBuilder()
       .setDescription("<a:loading:849794359083270144> 正在獲取資料");
 

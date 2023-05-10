@@ -7,9 +7,6 @@ const progress = new cliProgress.SingleBar({
   hideCursor: true,
 }, cliProgress.Presets.shades_classic);
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-client.login(process.env.KAMI_TOKEN);
-
 const commands = [];
 
 const commandCategories = fs.readdirSync("./Commands");
@@ -19,7 +16,9 @@ for (const category of commandCategories) {
 
   for (const file of commandFiles) {
     const command = require(`./Commands/${category}/${file}`);
-    commands.push(command.data.toJSON());
+
+    if (command.dev)
+      commands.push(command.data.toJSON());
   }
 }
 
@@ -27,10 +26,17 @@ const commandFiles = fs.readdirSync("./Context").filter(file => file.endsWith(".
 
 for (const file of commandFiles) {
   const command = require(`./Context/${file}`);
-  commands.push(command.data.toJSON());
+
+  if (command.dev)
+    commands.push(command.data.toJSON());
 }
 
+console.log(`Commands Length: ${commands.length}`);
 console.log("Starting command registration");
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.login(process.env.DEV_TOKEN);
 
 client.once("ready", async () => {
   let count = 0, errcount = 0;

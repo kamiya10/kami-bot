@@ -6,7 +6,7 @@ const path = require("path");
 const KamiIntents = [
   GatewayIntentBits.MessageContent,
   GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMembers,
+  // GatewayIntentBits.GuildMembers,
   GatewayIntentBits.GuildMessages,
   GatewayIntentBits.GuildVoiceStates,
 ];
