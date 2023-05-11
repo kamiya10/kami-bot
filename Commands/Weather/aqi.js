@@ -139,26 +139,33 @@ module.exports = {
             .setColor([Colors.Green, Colors.Yellow, Colors.Orange, Colors.Red, Colors.Purple, Colors.DarkRed, Colors.DarkButNotBlack, Colors.DarkButNotBlack][AQI.getAQILevel(+data.AQI)])
             .setThumbnail(aqi.getAQIMapImageURL())
             .addFields({
-              name  : "**AQI 空氣品質指標**",
-              value : `**${["🟢 良好", "🟡 普通", "🟠 對敏感族群不健康", "🔴 對所有族群不健康", "🟣 非常不健康", "🟤 危害", "🟤 危害"][AQI.getAQILevel(data.AQI)]}** ${data.AQI}`,
+              name   : "**AQI 空氣品質指標**",
+              value  : `**${["🟢 良好", "🟡 普通", "🟠 對敏感族群不健康", "🔴 對所有族群不健康", "🟣 非常不健康", "🟤 危害", "🟤 危害"][AQI.getAQILevel(data.AQI)]}** ${data.AQI}`,
+              inline : true,
             }, {
-              name  : "PM₂.₅ 細懸浮微粒 (μg/m³)",
-              value : `移動平均 **${data.AVPM25}**\n小時濃度 **${data.PM25_FIX}**`,
+              name   : "PM₂.₅ 細懸浮微粒 (μg/m³)",
+              value  : `移動平均 **${data.AVPM25}**\n小時濃度 **${data.PM25_FIX}**`,
+              inline : true,
             }, {
-              name  : "PM₁₀ 懸浮微粒 (μg/m³)",
-              value : `移動平均 **${data.AVPM10}**\n小時濃度 **${data.PM10_FIX}**`,
+              name   : "PM₁₀ 懸浮微粒 (μg/m³)",
+              value  : `移動平均 **${data.AVPM10}**\n小時濃度 **${data.PM10_FIX}**`,
+              inline : true,
             }, {
-              name  : "O₃ 臭氧 (ppb)",
-              value : `8小時移動平均 **${data.AVO3}**\n小時濃度 **${data.O3_FIX}**`,
+              name   : "O₃ 臭氧 (ppb)",
+              value  : `8小時移動平均 **${data.AVO3}**\n小時濃度 **${data.O3_FIX}**`,
+              inline : true,
             }, {
-              name  : "CO 一氧化碳 (ppm)",
-              value : `8小時移動平均 **${data.AVCO}**\n小時濃度 **${data.CO_FIX}**`,
+              name   : "CO 一氧化碳 (ppm)",
+              value  : `8小時移動平均 **${data.AVCO}**\n小時濃度 **${data.CO_FIX}**`,
+              inline : true,
             }, {
-              name  : "SO₂ 二氧化硫 (ppb)",
-              value : `小時濃度 **${data.SO2_FIX}**`,
+              name   : "SO₂ 二氧化硫 (ppb)",
+              value  : `小時濃度 **${data.SO2_FIX}**`,
+              inline : true,
             }, {
-              name  : "NO₂ 二氧化氮 (ppb)",
-              value : `小時濃度 **${data.NO2_FIX}**`,
+              name   : "NO₂ 二氧化氮 (ppb)",
+              value  : `小時濃度 **${data.NO2_FIX}**`,
+              inline : true,
             })
             .setTimestamp();
 
