@@ -188,7 +188,7 @@ module.exports = {
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>aqi image</title>
   </head>
-  <body style="height: 632px; width: 1132px; margin: 0; font-family: 'Noto Sans TC'; background-color: #F2F3F5">
+  <body style="height: 632px; width: 1132px; margin: 0; font-family: Lato, 'Noto Sans TC'; background-color: #F2F3F5">
       <div class="image" style="height: 600px; width: 1100px; padding: 16px; display: flex;">
           <div class="info" style=" flex: 1; display: grid; grid-template-columns: auto repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 48px 8px; margin: 32px 0 16px;">
               <div style="display: flex; flex-direction: column; align-items: center; grid-area: 1 / 1 / 4 / 2; align-self: center;">
@@ -205,7 +205,7 @@ module.exports = {
               <div class="pm25" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 1fr; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">PM<sub>2.5</sub> 細懸浮微粒</div>
-                      <div style="color: #666;">μg/m<sup>3</sup></div>
+                      <div style="color: #aaa;">μg/m<sup>3</sup></div>
                   </div>
                   <div>
                       <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVPM25}</div>
@@ -220,7 +220,7 @@ module.exports = {
               <div class="pm10" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 1fr; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">PM<sub>10</sub> 懸浮微粒</div>
-                      <div style="color: #666;">μg/m<sup>3</sup></div>
+                      <div style="color: #aaa;">μg/m<sup>3</sup></div>
                   </div>
                   <div>
                       <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVPM10}</div>
@@ -235,7 +235,7 @@ module.exports = {
               <div class="o3" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 1fr; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">O<sub>3</sub> 臭氧</div>
-                      <div style="color: #666;">ppb</div>
+                      <div style="color: #aaa;">ppb</div>
                   </div>
                   <div>
                       <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVO3}</div>
@@ -250,7 +250,7 @@ module.exports = {
               <div class="co" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 1fr; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">CO 一氧化碳</div>
-                      <div style="color: #666;">ppm</div>
+                      <div style="color: #aaa;">ppm</div>
                   </div>
                   <div>
                       <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVCO}</div>
@@ -265,7 +265,7 @@ module.exports = {
               <div class="co" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 84px; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">SO<sub>2</sub> 二氧化硫</div>
-                      <div style="color: #666;">ppb</div>
+                      <div style="color: #aaa;">ppb</div>
                   </div>
                   <div class="level" style="font-size: 18px;">小時濃度</div>
                   <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px; justify-self: right; margin-right: 16px;">${data.SO2_FIX}</div>
@@ -274,7 +274,7 @@ module.exports = {
               <div class="co" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 84px; align-items: center; justify-items: center; text-align: center;">
                   <div class="aqi-title" style="grid-area: 1 / 1 / 2 / 3; align-self: center;">
                       <div style="font-size: 24px;">NO<sub>2</sub> 二氧化氮</div>
-                      <div style="color: #666;">ppb</div>
+                      <div style="color: #aaa;">ppb</div>
                   </div>
                   <div class="level" style="font-size: 18px;">小時濃度</div>
                   <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px; justify-self: right; margin-right: 16px;">${data.NO2_FIX}</div>
