@@ -15,6 +15,9 @@ module.exports = {
    */
   async execute(interaction) {
     const embed = new EmbedBuilder();
+
+    if ((interaction.database.UserDatabase.get(interaction.targetMessage.author.id).allow_quote ?? true) != true) return;
+
     const content = interaction.targetMessage.content;
 
     if (interaction.targetMessage.member == null)

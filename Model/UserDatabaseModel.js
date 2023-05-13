@@ -6,14 +6,16 @@
  */
 module.exports = (
   voice = {},
+  allow_quote = null,
+  message_mention = null,
 ) => ({
   voice,
+  allow_quote,
+  message_mention,
 });
 
 module.exports.typing = {
-  voice_name    : String,
-  voice_limit   : Number,
-  voice_bitrate : Number,
-  voice_forbid  : Array(String),
-  voice_permit  : Array(String),
+  voice           : Object,
+  allow_quote     : Boolean,
+  message_mention : Boolean,
 };

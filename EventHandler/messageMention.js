@@ -14,6 +14,8 @@ module.exports = {
 
     if (message.author.bot) return;
 
+    if ((client.database.UserDatabase.get(message.user.id).message_mention ?? true) != true) return;
+
     const match = message.content.match(/^https:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)$/);
 
     if (match == null) return;
