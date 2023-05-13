@@ -16,7 +16,7 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder();
 
-    if ((interaction.database.UserDatabase.get(interaction.targetMessage.author.id)?.allow_quote ?? true) != true) {
+    if ((interaction.client.database.UserDatabase.get(interaction.targetMessage.author.id)?.allow_quote ?? true) != true) {
       embed
         .setColor(Colors.Red)
         .setDescription("❌ 這個訊息的作者不允許任何人把它變成名言");
