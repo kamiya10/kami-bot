@@ -42,7 +42,7 @@ class AQI {
   }
 
   async getSiteData(siteId, time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${time.getHours() - 1}`;
+    const timeStr = `${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${(time.getHours() - 1).toString().padStart(2, "0")}`;
     const url = AQI.#baseurl.json + `airlist/airlist_${siteId}_${timeStr}.json`;
     const res = await fetch(url);
 
@@ -55,7 +55,7 @@ class AQI {
   }
 
   getAQIMapImageURL(time = new Date(Date.now())) {
-    return `https://airtw.epa.gov.tw/ModelSimulate/${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}/output_AQI_${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${time.getHours()}0000.png`;
+    return `https://airtw.epa.gov.tw/ModelSimulate/${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}/output_AQI_${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${(time.getHours() - 1).toString().padStart(2, "0")}0000.png`;
   }
 
   static getAQILevel(aqi) {
