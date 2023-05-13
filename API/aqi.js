@@ -20,7 +20,7 @@ class AQI {
 
     if (res.ok) {
       const data = await res.json();
-      this.countyNames = data.reduce((acc, v) => (acc[v.Name] = v.Value) && acc, {});
+      this.countyNames = Object.fromEntries(data);
       return this.countyNames;
     } else {
       throw new Error(res.status);
@@ -34,7 +34,7 @@ class AQI {
 
     if (res.ok) {
       const data = await res.json();
-      this.sites[county] = data.reduce((acc, v) => (acc[v.Name] = v.Value) && acc, {});
+      this.sites[county] = Object.fromEntries(data);
       return this.sites[county];
     } else {
       throw new Error(res.status);
@@ -48,7 +48,7 @@ class AQI {
 
     if (res.ok) {
       const data = await res.json();
-      return data.reduce((acc, v) => (acc[Object.keys(v)[0]] = v[Object.keys(v)[0]]) && acc, {});
+      return Object.fromEntries(data);
     } else {
       throw new Error(res.status);
     }
