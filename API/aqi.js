@@ -14,7 +14,7 @@ class AQI {
   };
 
   async getCountyNames(time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${((time.getHours() - 1) < 0) ? "24" : ((time.getHours() - 1) < 10) ? `0${time.getHours() - 1}` : time.getHours() - 1}`;
+    const timeStr = `${time.getFullYear()}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate()}${(time.getHours() - 1).toString().padStart(2, "0")}`;
     const url = AQI.#baseurl.json + `GetCounty/GetCounty_${timeStr}.json`;
     const res = await fetch(url);
 
@@ -28,7 +28,7 @@ class AQI {
   }
 
   async getSiteIds(county, time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${((time.getHours() - 1) < 0) ? "24" : ((time.getHours() - 1) < 10) ? `0${time.getHours() - 1}` : time.getHours() - 1}`;
+    const timeStr = `${time.getFullYear()}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate()}${(time.getHours() - 1).toString().padStart(2, "0")}`;
     const url = AQI.#baseurl.json + `GetSite/GetSite_${county}_${timeStr}.json`;
     const res = await fetch(url);
 
