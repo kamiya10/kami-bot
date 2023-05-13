@@ -24,6 +24,7 @@
     "dotenv": "^16.0.3",
     "erlpack": "github:discord/erlpack",
     "node-gyp": "^9.1.0",
+    "node-html-to-image": "^3.3.0",
     "pino": "^7.0.0-rc.9",
     "pino-pretty": "^9.1.0",
     "sagiri": "^3.2.4",
