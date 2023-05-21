@@ -120,9 +120,19 @@ module.exports = {
 
           if (!_hazards)
             _hazards = (await cwb_Forecast.hazards())?.records;
-          const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
 
           const embeds = [];
+
+          const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
+          for (const w of [PWS, W26, W29, W33])
+            if (w)
+              embeds.push(new EmbedBuilder()
+                .setColor(Colors.Red)
+                .setAuthor({
+                  name: w.title,
+                })
+                .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
+
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(h => h?.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1)))?.length > 0);
@@ -152,18 +162,6 @@ module.exports = {
                 .setDescription(e.Description + e.Instruction)
                 .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}`)));
           }
-
-          for (const w of [PWS, W26, W29])
-            if (w)
-              embeds.push(new EmbedBuilder()
-                .setColor(Colors.Red)
-                .setAuthor({
-                  name    : "大雷雨即時訊息",
-                  iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
-                })
-                .setTitle(w.title)
-                .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
-
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
