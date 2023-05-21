@@ -124,7 +124,7 @@ module.exports = {
           const embeds = [];
 
           const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
-          for (const w of [PWS, W26, W29, W33])
+          for (const w of [PWS, W26, W29])
             if (w)
               embeds.push(new EmbedBuilder()
                 .setColor(Colors.Red)
