@@ -191,9 +191,9 @@ class CWB_Forcast {
 		+ "\nmodule.exports={WarnAll,WarnContent,WarnContent_W32,WarnContent_W33}", "warnings");
 
     return {
-      PWS : warnings.WarnContent.PWS.C,
-      W26 : warnings.WarnContent.W26.C,
-      W29 : warnings.WarnContent.W29.C,
+      PWS : warnings.WarnContent.PWS?.C,
+      W26 : warnings.WarnContent.W26?.C,
+      W29 : warnings.WarnContent.W29?.C,
       W32 : warnings.WarnContent_W32,
       W33 : warnings.WarnContent_W33,
     };
