@@ -182,13 +182,21 @@ class CWB_Forcast {
       },
     );
     const data = r.json();
+
     return data;
   }
 
-  async _hazards_W33() {
+  async _warns() {
     const warnings = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/warn/Warning_Content.js")).text())
 		+ "\nmodule.exports={WarnAll,WarnContent,WarnContent_W32,WarnContent_W33}", "warnings");
-    return warnings.WarnContent_W33;
+
+    return {
+      PWS : warnings.WarnContent.PWS.C,
+      W26 : warnings.WarnContent.W26.C,
+      W29 : warnings.WarnContent.W29.C,
+      W32 : warnings.WarnContent_W32,
+      W33 : warnings.WarnContent_W33,
+    };
   }
 
   async ecard(county) {

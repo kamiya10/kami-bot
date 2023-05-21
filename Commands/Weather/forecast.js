@@ -1,6 +1,6 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder, StringSelectMenuBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, TimestampStyles, time: timestamp } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
 const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
 
@@ -79,7 +79,7 @@ module.exports = {
 
     const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 
-    let _county_data, _town_data, _hazards, _hazards_W33, _currentCounty, _currentTown, _currentTownPage = 0;
+    let _county_data, _town_data, _hazards, _currentCounty, _currentTown, _currentTownPage = 0;
 
     const loading = new EmbedBuilder()
       .setDescription("<a:loading:849794359083270144> 正在獲取資料");
@@ -120,7 +120,7 @@ module.exports = {
 
           if (!_hazards)
             _hazards = (await cwb_Forecast.hazards())?.records;
-          _hazards_W33 = await cwb_Forecast._hazards_W33();
+          const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
 
           const embeds = [];
 
@@ -137,8 +137,8 @@ module.exports = {
                 .setDescription(e.contents.content.contentText)));
           }
 
-          if (_hazards_W33.length > 0) {
-            const hazards_W33_list = _hazards_W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
+          if (W33.length > 0) {
+            const hazards_W33_list = W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
 
             if (hazards_W33_list.length > 0)
               embeds.push(...hazards_W33_list.map(e => new EmbedBuilder()
@@ -152,6 +152,18 @@ module.exports = {
                 .setDescription(e.Description + e.Instruction)
                 .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}`)));
           }
+
+          for (const w of [PWS, W26, W29])
+            if (w)
+              embeds.push(new EmbedBuilder()
+                .setColor(Colors.Red)
+                .setAuthor({
+                  name    : "大雷雨即時訊息",
+                  iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                })
+                .setTitle(w.title)
+                .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
+
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
@@ -174,7 +186,7 @@ module.exports = {
 
             forecast_embed.addFields(
               ...[
-                { name: "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬", value: `**${timeperiod(new Date(time.startTime))}** ${timestamp(time.startTime)}` },
+                { name: "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬", value: `**${timeperiod(new Date(time.startTime))}** ${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)}` },
                 { name: `${emoji(values.Wx, timeperiod(new Date(time.startTime)))} 天氣`, value: values.Wx, inline: true },
                 { name: ":droplet: 降雨機率", value: `${values.PoP}%`, inline: true },
                 { name: ":thermometer: 氣溫", value: `${values.MinT}℃ ～ ${values.MaxT}℃`, inline: true },
@@ -283,7 +295,7 @@ module.exports = {
             if (!fields.length)
               for (const t of time)
                 fields.push({
-                  name  : `${timestamp(t.startTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
+                  name  : `${timestamp(t.startTime, TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
                   page  : t.startTime,
                   value : "",
                 });
@@ -382,15 +394,6 @@ function timeperiod(time) {
   else
     str += "明晨";
 
-  return str;
-}
-
-function timestamp(startTime, endTime) {
-  let str = "";
-  str += `<t:${~~(new Date(startTime).getTime() / 1000)}>`;
-
-  if (endTime)
-    str += ` ~ <t:${~~(new Date(endTime).getTime() / 1000)}>`;
   return str;
 }
 
