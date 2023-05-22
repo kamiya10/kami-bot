@@ -178,19 +178,24 @@ module.exports = {
           const location = _county_data.location.find(e => e.locationName == _currentCounty);
           location.weatherElement[0].time.forEach((time, index) => {
             const values = {};
+
+            console.log(location.weatherElement);
+
             location.weatherElement.forEach(weatherElement => {
               values[weatherElement.elementName] = Object.values(weatherElement.time[index].parameter)[0];
             });
 
-            forecast_embed.addFields(
-              ...[
-                { name: "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬", value: `**${timeperiod(new Date(time.startTime))}** ${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)}` },
-                { name: `${emoji(values.Wx, timeperiod(new Date(time.startTime)))} 天氣`, value: values.Wx, inline: true },
-                { name: ":droplet: 降雨機率", value: `${values.PoP}%`, inline: true },
-                { name: ":thermometer: 氣溫", value: `${values.MinT}℃ ～ ${values.MaxT}℃`, inline: true },
-                { name: ":smiley: 舒適度", value: values.CI, inline: true },
-              ],
-            );
+            const lines = [];
+
+            lines.push(`${emoji(values.Wx, timeperiod(new Date(time.startTime)))} **${values.Wx}**`);
+            lines.push(`🌡 氣溫　　 │ **${values.MinT}℃ ～ ${values.MaxT}℃**`);
+            lines.push(`☔ 降雨機率 │ **${values.PoP}%**`);
+            lines.push(`😀 舒適度　 │ **${values.CI}**`);
+
+            // ${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"}
+            forecast_embed.addFields({
+              name  : `**${timeperiod(new Date(time.startTime))}** ${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)}`,
+              value : lines.join("\n") });
           });
           embeds.push(forecast_embed);
 
