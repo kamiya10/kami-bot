@@ -179,22 +179,19 @@ module.exports = {
           location.weatherElement[0].time.forEach((time, index) => {
             const values = {};
 
-            console.log(location.weatherElement);
-
             location.weatherElement.forEach(weatherElement => {
               values[weatherElement.elementName] = Object.values(weatherElement.time[index].parameter)[0];
             });
 
             const lines = [];
 
-            lines.push(`${emoji(values.Wx, timeperiod(new Date(time.startTime)))} **${values.Wx}**`);
             lines.push(`🌡 氣溫　　 │ **${values.MinT}℃ ～ ${values.MaxT}℃**`);
             lines.push(`☔ 降雨機率 │ **${values.PoP}%**`);
             lines.push(`😀 舒適度　 │ **${values.CI}**`);
 
             // ${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"}
             forecast_embed.addFields({
-              name  : `**${timeperiod(new Date(time.startTime))}** ${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)}`,
+              name  : `${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)} __${timeperiod(new Date(time.startTime))}__ ${emoji(values.Wx, timeperiod(new Date(time.startTime)))} ${values.Wx}`,
               value : lines.join("\n") });
           });
           embeds.push(forecast_embed);
