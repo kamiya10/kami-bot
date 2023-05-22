@@ -293,7 +293,7 @@ module.exports = {
             if (!fields.length)
               for (const t of time)
                 fields.push({
-                  name  : `${timestamp(t.startTime, TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
+                  name  : `${timestamp(new Date(t.startTime), TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
                   page  : t.startTime,
                   value : "",
                 });
