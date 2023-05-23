@@ -36,6 +36,17 @@ function emoji(i, time) {
   }
 }
 
+const WindDirections = {
+  北風  : "↑",
+  東北風 : "↗",
+  東風  : "→",
+  東南風 : "↘",
+  南風  : "↓",
+  西南風 : "↙",
+  西風  : "←",
+  西北風 : "↖",
+};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("forecast")
@@ -282,8 +293,7 @@ module.exports = {
           const elements = new Map(location.weatherElement.map(weatherElement => [weatherElement.elementName, weatherElement]));
           const fields = [];
 
-          for (const key of ["Wx", "T", "AT", "PoP6h", "RH", "CI"]) {
-
+          for (const key of ["Wx", "T", "AT", "PoP6h", "RH", "CI", "WD"]) {
             /**
              * @type {{time: {}[]}}
              */
@@ -307,17 +317,32 @@ module.exports = {
 
               switch (key) {
                 case "Wx": break;
-                case "CI":
+                case "CI": {
                   str = `${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"} 舒適度　 │ **${time[ti].elementValue[1].value}** \`${time[ti].elementValue[0].value}\``;
                   break;
+                }
 
-                default: {
+                case "PoP6h":
+                case "RH": {
+                  const count = Math.round(numericValues[ti] / 10);
+                  str = `${{ PoP6h: "☔", RH: "💧" }[key]} ${{ PoP6h: "降雨機率", RH: "相對溼度" }[key]} │ ${{ PoP6h: "🟦", RH: "🟪" }[key].repeat(count)} **${time[ti].elementValue[0].value}%**`;
+                  break;
+                }
+
+                case "T":
+                case "AT": {
                   const floor = Math.min(...numericValues);
                   const ceil = Math.max(...numericValues);
                   const step = (ceil - floor) / 10;
                   const count = Math.round((numericValues[ti] - floor) / step);
-                  str = `${{ T: "🌡", AT: "👕", PoP6h: "☔", RH: "💧" }[key]} ${{ T: "氣溫　　", AT: "體感溫度", PoP6h: "降雨機率", RH: "相對溼度" }[key]} │ ${{ T: "🟧", AT: "🟨", PoP6h: "🟦", RH: "🟪" }[key].repeat(count)} **${time[ti].elementValue[0].value}${{ T: "℃", AT: "℃" }[key] ?? "%"}**`;
+                  str = `${{ T: "🌡", AT: "👕" }[key]} ${{ T: "氣溫　　", AT: "體感溫度" }[key]} │ ${{ T: "🟧", AT: "🟨" }[key].repeat(count)} **${time[ti].elementValue[0].value}${{ T: "℃", AT: "℃" }[key] ?? "%"}**`;
                   break;
+                }
+
+                case "WD": {
+                  const s = elements.get("WS").time[ti].elementValue;
+                  const d = time[ti].elementValue[0].value;
+                  str = `💨 風　　　 │ **${WindDirections[d]} ${d}** ${s[0].value} ${s[0].measures}（${1}** ${s[0].measures} ${s[1].value}）`;
                 }
               }
 
