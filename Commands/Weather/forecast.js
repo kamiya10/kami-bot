@@ -37,13 +37,13 @@ function emoji(i, time) {
 }
 
 const WindDirections = {
-  北風  : "↑",
+  偏北風 : "↑",
   東北風 : "↗",
-  東風  : "→",
+  偏東風 : "→",
   東南風 : "↘",
-  南風  : "↓",
+  偏南風 : "↓",
   西南風 : "↙",
-  西風  : "←",
+  偏西風 : "←",
   西北風 : "↖",
 };
 
@@ -342,7 +342,7 @@ module.exports = {
                 case "WD": {
                   const s = elements.get("WS").time[ti].elementValue;
                   const d = time[ti].elementValue[0].value;
-                  str = `💨 風　　　 │ **${WindDirections[d]} ${d}** ${s[0].value} ${s[0].measures}（${1}** ${s[0].measures} ${s[1].value}）`;
+                  str = `💨 風　　　 │ **${WindDirections[d]} ${d}** ${s[0].value} ${s[0].measures}（${s[1].measures} ${s[1].value}）`;
                 }
               }
 
