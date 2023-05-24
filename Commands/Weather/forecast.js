@@ -287,7 +287,7 @@ module.exports = {
               url     : "https://www.cwb.gov.tw/",
             })
             .setTitle(`${_currentCounty} ${_currentTown} ${_county_data.datasetDescription}`)
-            .setURL(`https://www.cwb.gov.tw/V8/C/W/Town/Town.html?TID=${location.geocode}`)
+            .setURL(`https://www.cwb.gov.tw/V8/C/W/Town/Town.html?TID=${location?.geocode}`)
             .setColor(Colors.Blue)
             .setImage(await cwb_Forecast.ecard(_currentCounty))
             .setTimestamp();
