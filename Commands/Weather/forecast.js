@@ -130,7 +130,7 @@ module.exports = {
 
           const embeds = [];
 
-          if (await cwb_Forecast._warns().list.has("TY_NEWS"))
+          if (await cwb_Forecast._warns().list.includes("TY_NEWS"))
             embed.push(new EmbedBuilder()
               .setColor(Colors.Red)
               .setTitle("颱風消息")
