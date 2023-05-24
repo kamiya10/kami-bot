@@ -148,7 +148,7 @@ module.exports = {
         for (const forecast of cyclone.forecastData.fix) {
           forecast.fixTime = new Date(new Date(forecast.initTime).getTime() + +forecast.tau * 60 * 60 * 1000);
 
-          if (![8, 20].includes(forecast.fixTime.getHours()) && cyclone.forecastData.fix.indexOf(forecast)) {
+          if ((new Date(Date.now()).getDate() != forecast.fixTime.getDate() && ![8, 20].includes(forecast.fixTime.getHours())) && cyclone.forecastData.fix.indexOf(forecast)) {
             if (bars.at(-1))
               bars.at(-1).push(CycloneLevelEmojis[getCycloneLevel(forecast.maxWindSpeed)]);
             continue;
@@ -160,7 +160,7 @@ module.exports = {
         cur = 0;
 
         for (const forecast of cyclone.forecastData.fix) {
-          if (![8, 20].includes(forecast.fixTime.getHours()) && cyclone.forecastData.fix.indexOf(forecast)) continue;
+          if ((new Date(Date.now()).getDate() != forecast.fixTime.getDate() && ![8, 20].includes(forecast.fixTime.getHours())) && cyclone.forecastData.fix.indexOf(forecast)) continue;
 
           switch (bars[cur].length) {
             case 3: {
