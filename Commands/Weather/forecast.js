@@ -134,7 +134,7 @@ module.exports = {
             embed.push(new EmbedBuilder()
               .setColor(Colors.Red)
               .setTitle("颱風消息")
-              .setDescription("詳細資訊請使用 `/typhoon`"));
+              .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
           const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
           for (const w of [PWS, W26, W29])
