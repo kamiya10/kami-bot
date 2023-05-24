@@ -133,7 +133,10 @@ module.exports = {
           if ((await cwb_Forecast._warns()).list.includes("TY_NEWS"))
             embeds.push(new EmbedBuilder()
               .setColor(Colors.Red)
-              .setTitle("颱風消息")
+              .setAuthor({
+                name    : "颱風消息",
+                iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+              })
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
           const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
