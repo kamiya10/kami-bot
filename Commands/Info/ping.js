@@ -6,6 +6,7 @@ module.exports = {
     .setDescription("Ping"),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    *

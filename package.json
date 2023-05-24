@@ -15,7 +15,6 @@
     "bufferutil": "^4.0.6",
     "chalk": "^4.1.2",
     "chart.js": "^3.9.1",
-    "chartjs-node-canvas": "^4.1.6",
     "chokidar": "^3.5.3",
     "common-tags": "^1.8.2",
     "discord-api-types": "^0.37.11",

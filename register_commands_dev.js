@@ -42,31 +42,32 @@ client.once("ready", async () => {
   let count = 0, errcount = 0;
 
   if (await new Promise((resolve) => {
-    progress.start(client.guilds.cache.size, 0);
+    progress.start(2, 0);
 
 
-    client.guilds.cache.forEach(v => {
-      v.commands.set(commands)
-        .then(() => {
-          count++;
-          progress.update(count + errcount);
+    for (const promise of [
+      client.guilds.cache.get("810931443206848544").commands.set(commands),
+      client.guilds.cache.get("597227484550791209").commands.set(commands),
+    ])
+      promise.then(() => {
+        count++;
+        progress.update(count + errcount);
 
-          if ((count + errcount) == client.guilds.cache.size) {
-            progress.stop();
-            resolve(true);
-          }
-        })
+        if ((count + errcount) == 2) {
+          progress.stop();
+          resolve(true);
+        }
+      })
         .catch((e) => {
-          console.error(`${v.name}(${v.id}): ${e}`);
+          console.error(`${e}`);
           errcount++;
           progress.update(count + errcount);
 
-          if ((count + errcount) == client.guilds.cache.size) {
+          if ((count + errcount) == 2) {
             progress.stop();
             resolve(true);
           }
         });
-    });
   })) {
     console.log(`\nFinished register with ${count} succeed, ${errcount} failed.`);
     process.exit(0);

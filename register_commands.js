@@ -3,13 +3,15 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const cliProgress = require("cli-progress");
 const fs = require("node:fs");
 
-const progress = new cliProgress.SingleBar({
-  hideCursor: true,
+const progress = new cliProgress.MultiBar({
+  hideCursor : true,
+  format     : "{type} | {bar} {percentage} | ETA: {eta}s | {value}/{total} | {guildname}",
 }, cliProgress.Presets.shades_classic);
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.login(process.env.KAMI_TOKEN);
 
+const globalCommands = [];
 const commands = [];
 
 const commandCategories = fs.readdirSync("./Commands");
@@ -19,7 +21,13 @@ for (const category of commandCategories) {
 
   for (const file of commandFiles) {
     const command = require(`./Commands/${category}/${file}`);
-    commands.push(command.data.toJSON());
+
+    if (command.dev) continue;
+
+    if (command.global)
+      globalCommands.push(command.data.toJSON());
+    else
+      commands.push(command.data.toJSON());
   }
 }
 
@@ -27,7 +35,11 @@ const commandFiles = fs.readdirSync("./Context").filter(file => file.endsWith(".
 
 for (const file of commandFiles) {
   const command = require(`./Context/${file}`);
-  commands.push(command.data.toJSON());
+
+  if (command.global)
+    globalCommands.push(command.data.toJSON());
+  else
+    commands.push(command.data.toJSON());
 }
 
 console.log("Starting command registration");
@@ -36,14 +48,21 @@ client.once("ready", async () => {
   let count = 0, errcount = 0;
 
   if (await new Promise((resolve) => {
-    progress.start(client.guilds.cache.size, 0);
+    const b1 = progress.create(1, 0, { type: "Global" });
+    const b2 = progress.create(client.guilds.cache.size + 1, 0, { type: "Guild" });
 
+    client.application.commands.set(globalCommands).then(() => {
+      b1.increment();
+      progress.log("Complete!\n");
+    });
 
     client.guilds.cache.forEach(v => {
+      b2.update(count + errcount, { guildname: v.name });
+
       v.commands.set(commands)
         .then(() => {
           count++;
-          progress.update(count + errcount);
+          b2.update(count + errcount);
 
           if ((count + errcount) == client.guilds.cache.size) {
             progress.stop();
@@ -51,9 +70,9 @@ client.once("ready", async () => {
           }
         })
         .catch((e) => {
-          console.error(`${v.name}(${v.id}): ${e}`);
+          progress.log(`Error: ${v.name}(${v.id}): ${e}\n`);
           errcount++;
-          progress.update(count + errcount);
+          b2.update(count + errcount);
 
           if ((count + errcount) == client.guilds.cache.size) {
             progress.stop();
@@ -64,5 +83,8 @@ client.once("ready", async () => {
   })) {
     console.log(`\nFinished register with ${count} succeed, ${errcount} failed.`);
     process.exit(0);
+  } else {
+    console.error("Command registration failed");
+    process.exit(1);
   }
 });

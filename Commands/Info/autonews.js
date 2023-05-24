@@ -9,6 +9,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    *

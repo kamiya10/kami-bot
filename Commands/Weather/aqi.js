@@ -11,6 +11,7 @@ module.exports = {
     .setDescription("查詢空氣品質"),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

@@ -12,6 +12,7 @@ module.exports = {
       .setDescription("是否顯示伺服器頭貼")),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

@@ -153,6 +153,7 @@ module.exports = {
         .setDescriptionLocalization("zh-TW", "發送強震即時警報時提及的身分組"))),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

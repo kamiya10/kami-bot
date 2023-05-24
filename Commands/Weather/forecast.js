@@ -2,12 +2,6 @@
 /* eslint-disable array-element-newline */
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, TimestampStyles, time: timestamp } = require("discord.js");
 const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
-const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
-
-const width = 400;
-const height = 400;
-const backgroundColour = "transparent";
-const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColour });
 
 function emoji(i, time) {
   try {
@@ -53,13 +47,15 @@ module.exports = {
     .setDescription("查詢氣象預報"),
   defer     : true,
   ephemeral : false,
+  global    : true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     const embed = new EmbedBuilder()
-      .setDescription("請使用下方下拉式選單選取欲查詢天氣地區");
+      .setDescription("請使用下方下拉式選單選取欲查詢天氣地區")
+      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230521174709_1.png");
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
@@ -134,16 +130,22 @@ module.exports = {
 
           const embeds = [];
 
+          if (await cwb_Forecast._warns().list.has("TY_NEWS"))
+            embed.push(new EmbedBuilder()
+              .setColor(Colors.Red)
+              .setTitle("颱風消息")
+              .setDescription("詳細資訊請使用 `/typhoon`"));
+
           const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
           for (const w of [PWS, W26, W29])
             if (w)
               embeds.push(new EmbedBuilder()
-                .setColor(Colors.Red)
+                .setColor(w.title.includes("解除") ? Colors.Green : Colors.Orange)
                 .setAuthor({
-                  name: w.title,
+                  name    : w.title,
+                  iconURL : w.title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                 })
                 .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
-
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(h => h?.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1)))?.length > 0);

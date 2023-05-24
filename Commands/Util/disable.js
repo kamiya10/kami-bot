@@ -30,6 +30,7 @@ module.exports = {
         .setRequired(true))),
   defer     : false,
   ephemeral : true,
+  global    : true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction

@@ -191,11 +191,12 @@ class CWB_Forcast {
 		+ "\nmodule.exports={WarnAll,WarnContent,WarnContent_W32,WarnContent_W33}", "warnings");
 
     return {
-      PWS : warnings.WarnContent.PWS?.C,
-      W26 : warnings.WarnContent.W26?.C,
-      W29 : warnings.WarnContent.W29?.C,
-      W32 : warnings.WarnContent_W32,
-      W33 : warnings.WarnContent_W33,
+      list : warnings.WarnAll,
+      PWS  : warnings.WarnContent.PWS?.C,
+      W26  : warnings.WarnContent.W26?.C,
+      W29  : warnings.WarnContent.W29?.C,
+      W32  : warnings.WarnContent_W32,
+      W33  : warnings.WarnContent_W33,
     };
   }
 
@@ -252,6 +253,27 @@ class CWB_Forcast {
     ).catch(e => {
       throw e;
     });
+    const data = r.json();
+    return data;
+  }
+
+  async typhoon(options) {
+    let url = CWB_Forcast.#baseurl
+                  + "W-C0034-005"
+                  + `?Authorization=${this.apikey}`;
+
+    if (options)
+      url += `&${new URLSearchParams(options)}`;
+
+    const r = await fetch(url,
+      {
+        method  : "GET",
+        headers : { "Content-Type": "application/json" },
+      },
+    ).catch(e => {
+      throw e;
+    });
+
     const data = r.json();
     return data;
   }
