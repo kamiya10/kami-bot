@@ -131,7 +131,7 @@ module.exports = {
           const embeds = [];
 
           if ((await cwb_Forecast._warns()).list.includes("TY_NEWS"))
-            embed.push(new EmbedBuilder()
+            embeds.push(new EmbedBuilder()
               .setColor(Colors.Red)
               .setTitle("颱風消息")
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
