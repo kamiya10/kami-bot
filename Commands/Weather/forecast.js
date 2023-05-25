@@ -87,7 +87,7 @@ module.exports = {
 
     const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
 
-    let _county_data, _town_data, _hazards, _currentCounty, _currentTown, _currentTownPage = 0;
+    let _county_data, _town_data, _hazards, _warns, _currentCounty, _currentTown, _currentTownPage = 0;
 
     const loading = new EmbedBuilder()
       .setDescription("<a:loading:849794359083270144> 正在獲取資料");
@@ -129,9 +129,13 @@ module.exports = {
           if (!_hazards)
             _hazards = (await cwb_Forecast.hazards())?.records;
 
-          const embeds = [];
+          if (!_warns)
+            _warns = await cwb_Forecast._warns();
 
-          if ((await cwb_Forecast._warns()).list.includes("TY_NEWS"))
+          const embeds = [];
+          const { list, PWS, W26, W29, W33 } = _warns;
+
+          if (list.includes("TY_NEWS"))
             embeds.push(new EmbedBuilder()
               .setColor(Colors.Red)
               .setAuthor({
@@ -140,13 +144,11 @@ module.exports = {
               })
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
-          const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
-
           for (const w of [PWS, W26, W29])
             if (w) {
               const results = CWBForecast.findAreasFromString(w.content);
 
-              if (!results.length || results.find(({ towns: t }) => t.includes(_currentTown)))
+              if (!results.length || results.find(({ county: c }) => c == _currentTown))
                 embeds.push(new EmbedBuilder()
                   .setColor(w.title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
@@ -272,9 +274,13 @@ module.exports = {
             _town_data = (await cwb_Forecast.forecast_county(_currentCounty))?.records;
           }
 
-          const embeds = [];
+          if (!_warns)
+            _warns = await cwb_Forecast._warns();
 
-          if ((await cwb_Forecast._warns()).list.includes("TY_NEWS"))
+          const embeds = [];
+          const { list, PWS, W26, W29, W33 } = _warns;
+
+          if (list.includes("TY_NEWS"))
             embeds.push(new EmbedBuilder()
               .setColor(Colors.Red)
               .setAuthor({
@@ -282,8 +288,6 @@ module.exports = {
                 iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
               })
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
-
-          const { PWS, W26, W29, W33 } = await cwb_Forecast._warns();
 
           for (const w of [PWS, W26, W29])
             if (w) {
