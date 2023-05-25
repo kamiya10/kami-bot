@@ -12,7 +12,7 @@ class CWB_Forcast {
   /**
 	 * @type {{ "宜蘭縣" : "F-D0047-003", "桃園市" : "F-D0047-007", "新竹縣" : "F-D0047-011", "苗栗縣" : "F-D0047-015", "彰化縣" : "F-D0047-019", "南投縣" : "F-D0047-023", "雲林縣" : "F-D0047-027", "嘉義縣" : "F-D0047-031", "屏東縣" : "F-D0047-035", "臺東縣" : "F-D0047-039", "花蓮縣" : "F-D0047-043", "澎湖縣" : "F-D0047-047", "基隆市" : "F-D0047-051", "新竹市" : "F-D0047-055", "嘉義市" : "F-D0047-059", "臺北市" : "F-D0047-063", "高雄市" : "F-D0047-067", "新北市" : "F-D0047-071", "臺中市" : "F-D0047-075", "臺南市" : "F-D0047-079", "連江縣" : "F-D0047-083", "金門縣" : "F-D0047-087",	}}
 	 */
-  county_code2 = {
+  static county_code2 = {
     宜蘭縣 : "F-D0047-001",
     桃園市 : "F-D0047-005",
     新竹縣 : "F-D0047-009",
@@ -40,7 +40,7 @@ class CWB_Forcast {
   /**
 	 * @type {{ "宜蘭縣" : "F-D0047-003", "桃園市" : "F-D0047-007", "新竹縣" : "F-D0047-011", "苗栗縣" : "F-D0047-015", "彰化縣" : "F-D0047-019", "南投縣" : "F-D0047-023", "雲林縣" : "F-D0047-027", "嘉義縣" : "F-D0047-031", "屏東縣" : "F-D0047-035", "臺東縣" : "F-D0047-039", "花蓮縣" : "F-D0047-043", "澎湖縣" : "F-D0047-047", "基隆市" : "F-D0047-051", "新竹市" : "F-D0047-055", "嘉義市" : "F-D0047-059", "臺北市" : "F-D0047-063", "高雄市" : "F-D0047-067", "新北市" : "F-D0047-071", "臺中市" : "F-D0047-075", "臺南市" : "F-D0047-079", "連江縣" : "F-D0047-083", "金門縣" : "F-D0047-087",	}}
 	 */
-  county_code7 = {
+  static county_code7 = {
     宜蘭縣 : "F-D0047-003",
     桃園市 : "F-D0047-007",
     新竹縣 : "F-D0047-011",
@@ -68,7 +68,7 @@ class CWB_Forcast {
   /**
 	 * @type {{ "宜蘭縣" : "10002", "桃園市" : "68", "新竹縣" : "10004", "苗栗縣" : "10005", "彰化縣" : "10007", "南投縣" : "10008", "雲林縣" : "10009", "嘉義縣" : "10010", "屏東縣" : "10013", "臺東縣" : "10014", "花蓮縣" : "10015", "澎湖縣" : "10016", "基隆市" : "10017", "新竹市" : "10018", "嘉義市" : "10020", "臺北市" : "63", "高雄市" : "64", "新北市" : "65", "臺中市" : "66", "臺南市" : "67", "連江縣" : "09007", "金門縣" : "09020" }}
 	 */
-  cid = {
+  static cid = {
     宜蘭縣 : "10002",
     桃園市 : "68",
     新竹縣 : "10004",
@@ -93,7 +93,7 @@ class CWB_Forcast {
     金門縣 : "09020",
   };
 
-  county_town = {
+  static county_town = {
     宜蘭縣 : [["蘇澳鎮", "頭城鎮", "宜蘭市", "南澳鄉", "羅東鎮", "三星鄉", "大同鄉", "五結鄉", "員山鄉", "冬山鄉", "礁溪鄉", "壯圍鄉"]],
     桃園市 : [["龍潭區", "八德區", "龜山區", "大園區", "蘆竹區", "楊梅區", "大溪區", "中壢區", "復興區", "桃園區", "觀音區", "新屋區", "平鎮區"]],
     新竹縣 : [["峨眉鄉", "寶山鄉", "竹東鎮", "五峰鄉", "竹北市", "尖石鄉", "橫山鄉", "芎林鄉", "北埔鄉", "關西鎮", "新埔鎮", "新豐鄉", "湖口鄉"]],
@@ -151,7 +151,7 @@ class CWB_Forcast {
    */
   async forecast_county(county, options) {
     let url = CWB_Forcast.#baseurl
-              + this.county_code2[county]
+              + CWB_Forcast.county_code2[county]
               + `?Authorization=${this.apikey}`;
 
     if (options)
@@ -202,7 +202,7 @@ class CWB_Forcast {
 
   async ecard(county) {
     const now = new Date(Date.now());
-    const url = `https://www.cwb.gov.tw/V8/C/W/County/MOD/Ecard/${this.cid[county]}_Ecard.html?T=${now.getFullYear()}${now.getMonth()}${now.getDate()}${now.getHours()}`;
+    const url = `https://www.cwb.gov.tw/V8/C/W/County/MOD/Ecard/${CWB_Forcast.cid[county]}_Ecard.html?T=${now.getFullYear()}${now.getMonth()}${now.getDate()}${now.getHours()}`;
     const r = await fetch(url);
     const data = await r.text();
     const imgurl = "https://www.cwb.gov.tw" + data.match(/src\s*=\s*'(.+?)'/mi)[1];
@@ -276,6 +276,30 @@ class CWB_Forcast {
 
     const data = r.json();
     return data;
+  }
+
+  static findAreasFromString(str) {
+    const result = [];
+
+    for (let i = 0, n = Object.keys(CWB_Forcast.county_town), county = n[i], towns = CWB_Forcast.county_town[county]; i < n;i++, county = n[i], towns = CWB_Forcast.county_town[county]) {
+      const countyRegex = new RegExp(`${county}?`, "g");
+      const resultTowns = [];
+
+      for (const town of towns) {
+        const townRegex = new RegExp(`${town}?`, "g");
+
+        if (str.includes(townRegex))
+          resultTowns.push(town);
+      }
+
+      if (str.includes(countyRegex) || resultTowns.length)
+        result.push({
+          county,
+          towns: resultTowns,
+        });
+    }
+
+    return result;
   }
 }
 
