@@ -110,7 +110,7 @@ module.exports = {
 
           town = town
             .setOptions(
-              CWBForecast.county_town[_currentCounty][_currentTownPage].map(v => ({
+              CWBForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
                 label       : v,
                 value       : v,
                 description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
@@ -240,7 +240,7 @@ module.exports = {
               _currentTownPage = 1;
 
             town = town.setOptions(
-              CWBForecast.county_town[_currentCounty][_currentTownPage].map(v => ({
+              CWBForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
                 label       : v,
                 value       : v,
                 description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
@@ -256,7 +256,7 @@ module.exports = {
 
           county = county.setDisabled(true);
           town = town.setOptions(
-            CWBForecast.county_town[_currentCounty][0].map(v => ({
+            CWBForecast.town_pages[_currentCounty][0].map(v => ({
               label       : v,
               value       : v,
               description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
