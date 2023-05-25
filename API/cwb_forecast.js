@@ -282,20 +282,21 @@ class CWB_Forcast {
   static findAreasFromString(str) {
     const result = [];
 
-    for (let i = 0, n = Object.keys(CWB_Forcast.town_pages), county = n[i], towns = CWB_Forcast.town_pages[county]; i < n;i++, county = n[i], towns = CWB_Forcast.town_pages[county]) {
+    for (let i = 0, k = Object.keys(CWB_Forcast.town_pages), n = k.length, county = k[i], towns = CWB_Forcast.town_pages[county]; i < n; i++, county = k[i], towns = CWB_Forcast.town_pages[county]) {
       const countyRegex = new RegExp(`${county}?`, "g");
       const resultTowns = [];
 
-      for (const town of towns) {
-        if (town == "...") continue;
+      for (const townarr of towns)
+        for (const town of townarr) {
+          if (town == "...") continue;
 
-        const townRegex = new RegExp(`${town}?`, "g");
+          const townRegex = new RegExp(`${town}?`, "g");
 
-        if (str.includes(townRegex))
-          resultTowns.push(town);
-      }
+          if (str.match(townRegex))
+            resultTowns.push(town);
+        }
 
-      if (str.includes(countyRegex) || resultTowns.length)
+      if (str.match(countyRegex) || resultTowns.length)
         result.push({
           county,
           towns: resultTowns,
