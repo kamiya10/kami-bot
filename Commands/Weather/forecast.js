@@ -148,7 +148,7 @@ module.exports = {
             if (w) {
               const results = CWBForecast.findAreasFromString(w.content);
 
-              if (!results.length || results.find(({ county: c }) => c == _currentTown))
+              if (!results.length || results.find(({ county: c }) => c == _currentCounty))
                 embeds.push(new EmbedBuilder()
                   .setColor(w.title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
