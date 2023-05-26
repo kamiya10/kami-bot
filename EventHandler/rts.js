@@ -107,7 +107,7 @@ module.exports = {
               const channel = client.channels.cache.get(setting[0]);
 
               if (channel instanceof TextChannel) {
-                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], components: embed_cache.end ? [] : [new ActionRowBuilder({ components: [button] })], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] } } : {}) }).catch(console.error);
+                const sent = channel.send({ content: `⚠ 地震檢知 ${setting[1] ? channel.guild.roles.cache.get(setting[1]) : ""}`, embeds: [embed_cache[data.id].embed], components: embed_cache.end ? [] : [new ActionRowBuilder({ components: [button] })], ...(setting[1] ? { allowedMentions: { roles: [setting[1]] }, parse: ["roles"] } : {}) }).catch(console.error);
                 client.data.rts_list.get(data.id).set(setting[0], sent);
                 sent.then(v => {
                   if (!(v instanceof Message)) return;

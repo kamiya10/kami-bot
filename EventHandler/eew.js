@@ -144,7 +144,7 @@ module.exports = {
               const ch = client.channels.cache.get(v[0]);
 
               if (ch) {
-                const sent = await ch.send({ content: `⚠ 強震即時警報 ${v[1] ? ch.guild.roles.cache.get(v[1]) : ""}`, embeds: [embed], ...(v[1] ? { allowedMentions: { roles: [v[1]] } } : {}) }).catch((e) => logger.error(`無法發送速報 #${client.channels.cache.get(v[0]).name} ${v[0]} ${e}`));
+                const sent = await ch.send({ content: `⚠ 強震即時警報 ${v[1] ? ch.guild.roles.cache.get(v[1]) : ""}`, embeds: [embed], ...(v[1] ? { allowedMentions: { roles: [v[1]] }, parse: ["roles"] } : {}) }).catch((e) => logger.error(`無法發送速報 #${client.channels.cache.get(v[0]).name} ${v[0]} ${e}`));
                 ongoingMsgIds[data.id] ??= [];
                 ongoingMsgIds[data.id].push(sent);
               }
