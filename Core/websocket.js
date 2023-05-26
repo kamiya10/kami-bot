@@ -38,7 +38,7 @@ function connect(client, retryTimeout) {
     ws.send(JSON.stringify({
       uuid     : `KamiBot/${process.env.BOT_VERSION} (platform; Windows NT 10.0; Win64; x64)`,
       function : "subscriptionService",
-      value    : ["earthquake-v2", "trem-eq-v1"],
+      value    : ["trem-eew-v1", "trem-eq-v1"],
       key      : process.env.WS_KEY,
     }));
   });
@@ -55,8 +55,7 @@ function connect(client, retryTimeout) {
         logger.info("WebSocket has connected");
     } else {
       switch (data.type) {
-        case "ntp":
-        case "earthquake": {
+        case "ntp": {
           break;
         }
 
