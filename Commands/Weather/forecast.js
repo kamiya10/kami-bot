@@ -424,7 +424,7 @@ module.exports = {
             const time = new Date(fields.find(v => new Date(v.page).getDate() == date).page);
             buttons.push(new ButtonBuilder()
               .setStyle(ButtonStyle.Secondary)
-              .setLabel(`${time.getMonth() + 1}/${time.getDate()}`)
+              .setLabel(`${time.getMonth() + 1}/${time.getDate()} (${[ "日", "一", "二", "三", "四", "五", "六" ][time.getDay()]})`)
               .setCustomId(`forecast-${paging.indexOf(date)}`));
           }
 
