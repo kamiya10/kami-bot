@@ -14,7 +14,7 @@ module.exports = {
     if (!client.database.GuildDatabase.has(guild.id))
       client.database.GuildDatabase.set(guild.id, GuildDatabaseModel());
 
-    guild.commands.set(client.commands.map(v => v.data.toJSON()))
+    guild.commands.set(client.commands.reduce((acc, v) => (!v.global ? acc.push(v.data.toJSON()) : void 0, acc), []))
       .then(() => console.log("Successfully registered application commands for " + guild.name))
       .catch(console.error);
   },
