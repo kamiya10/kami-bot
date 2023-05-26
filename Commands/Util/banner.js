@@ -24,8 +24,8 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const member = interaction.options.getMember("成員") || interaction.member;
-    const displayGuild = interaction.options.getBoolean("伺服器");
+    const member = interaction.options.getMember("member") || interaction.member;
+    const displayGuild = interaction.options.getBoolean("guild");
 
     if (member.partial)
       await member.fetch({ force: true });
