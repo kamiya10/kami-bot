@@ -3,13 +3,19 @@ const { Colors, EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, Sl
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("banner")
+    .setNameLocalization("zh-TW", "橫幅")
     .setDescription("顯示個人檔案橫幅")
+    .setDescriptionLocalization("zh-TW", "Display profile banner.")
     .addUserOption(new SlashCommandUserOption()
-      .setName("成員")
-      .setDescription("要顯示誰的個人檔案橫幅"))
+      .setName("member")
+      .setNameLocalization("zh-TW", "成員")
+      .setDescription("要顯示誰的個人檔案橫幅")
+      .setDescriptionLocalization("zh-TW", "The member's profile banner to display."))
     .addBooleanOption(new SlashCommandBooleanOption()
-      .setName("伺服器")
-      .setDescription("是否顯示伺服器頭貼")),
+      .setName("guild")
+      .setNameLocalization("zh-TW", "伺服器")
+      .setDescription("Show their guild specific profile banner.")
+      .setDescriptionLocalization("zh-TW", "是否顯示伺服器橫幅")),
   defer     : true,
   ephemeral : false,
   global    : true,

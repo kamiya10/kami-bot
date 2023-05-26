@@ -8,7 +8,9 @@ const aqi = new AQI();
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("aqi")
-    .setDescription("查詢空氣品質"),
+    .setNameLocalization("zh-TW", "空氣品質")
+    .setDescription("View air quality.")
+    .setDescriptionLocalization("zh-TW", "查詢空氣品質"),
   defer     : true,
   ephemeral : false,
   global    : true,

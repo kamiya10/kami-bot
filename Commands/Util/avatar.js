@@ -3,13 +3,19 @@ const { Colors, EmbedBuilder, ImageFormat, SlashCommandBooleanOption, SlashComma
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("avatar")
-    .setDescription("顯示頭貼")
+    .setNameLocalization("zh-TW", "頭貼")
+    .setDescription("Display profile avatar.")
+    .setDescriptionLocalization("zh-TW", "顯示頭貼")
     .addUserOption(new SlashCommandUserOption()
-      .setName("成員")
-      .setDescription("要顯示誰的頭貼"))
+      .setName("member")
+      .setNameLocalization("zh-TW", "成員")
+      .setDescription("The member's profile avatar to display.")
+      .setDescriptionLocalization("zh-TW", "要顯示誰的頭貼"))
     .addBooleanOption(new SlashCommandBooleanOption()
-      .setName("伺服器")
-      .setDescription("是否顯示伺服器頭貼")),
+      .setName("guild")
+      .setNameLocalization("zh-TW", "伺服器")
+      .setDescription("Show their guild specific profile avatar.")
+      .setDescriptionLocalization("zh-TW", "是否顯示伺服器頭貼")),
   defer     : true,
   ephemeral : false,
   global    : true,
@@ -18,8 +24,8 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const member = interaction.options.getMember("成員") || interaction.member;
-    const displayGuild = interaction.options.getBoolean("伺服器");
+    const member = interaction.options.getMember("member") || interaction.member;
+    const displayGuild = interaction.options.getBoolean("guild");
 
     const avatarURLs = displayGuild == null
       ? {

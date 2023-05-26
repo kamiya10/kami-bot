@@ -45,7 +45,9 @@ const WindDirections = {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("forecast")
-    .setDescription("查詢氣象預報"),
+    .setNameLocalization("zh-TW", "氣象預報")
+    .setDescription("View weather forecast.")
+    .setDescriptionLocalization("zh-TW", "查詢氣象預報"),
   defer     : true,
   ephemeral : false,
   global    : true,
