@@ -68,8 +68,7 @@ module.exports = {
         .setNameLocalization("zh-TW", "頻道")
         .setDescription("The channel earthquake reports should be sent to.")
         .setDescriptionLocalization("zh-TW", "要發送地震報告的頻道")
-        .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
-        .setRequired(true))
+        .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement))
       .addIntegerOption(new SlashCommandIntegerOption()
         .setName("style")
         .setNameLocalization("zh-TW", "樣式")
@@ -124,7 +123,7 @@ module.exports = {
         .setNameLocalization("zh-TW", "頻道")
         .setDescription("The channel RTS Detections should be sent to.")
         .setDescriptionLocalization("zh-TW", "要發送即時地震檢知的頻道")
-        .setRequired(true))
+        .addChannelTypes(ChannelType.GuildText))
       .addRoleOption(new SlashCommandRoleOption()
         .setName("mention")
         .setNameLocalization("zh-TW", "提及")
@@ -145,7 +144,7 @@ module.exports = {
         .setNameLocalization("zh-TW", "頻道")
         .setDescription("The channel Earthquake Early Warnings should be sent to.")
         .setDescriptionLocalization("zh-TW", "要發送強震即時警報的頻道")
-        .setRequired(true))
+        .addChannelTypes(ChannelType.GuildText))
       .addRoleOption(new SlashCommandRoleOption()
         .setName("mention")
         .setNameLocalization("zh-TW", "提及")
@@ -228,8 +227,8 @@ module.exports = {
           const style = interaction.options.getInteger("style");
           const small = interaction.options.getBoolean("unnumbered");
 
-          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
-
+          if (channel)
+            if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
 
           let desc = "";
 
@@ -261,7 +260,8 @@ module.exports = {
           const mention = interaction.options.getRole("mention");
           const alert = interaction.options.getBoolean("alert");
 
-          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
+          if (channel)
+            if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
 
           let desc = "";
 
@@ -290,7 +290,8 @@ module.exports = {
           const channel = interaction.options.getChannel("channel");
           const mention = interaction.options.getRole("mention");
 
-          if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
+          if (channel)
+            if (!channel.permissionsFor(interaction.guild.members.me).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) throw { message: "ERR_MISSING_PERMISSION" };
 
           let desc = "";
 
