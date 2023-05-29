@@ -241,7 +241,7 @@ class CWB_Forcast {
 
         for (const cid in areas.WarnTown)
           for (const type in areas.WarnTown[cid])
-            if (areas.WarnTown[cid][type].includes(id)) {
+            if (areas.WarnTown[cid][type].find(v => v.startsWith(id))) {
               const c = Object.keys(CWB_Forcast.cid).find(key => CWB_Forcast.cid[key] === cid);
 
               if (!value[id].affectedAreas.includes(c))
