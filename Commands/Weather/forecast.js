@@ -58,7 +58,7 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setDescription("請使用下方下拉式選單選取欲查詢天氣地區")
-      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230525165555_1.png");
+      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png");
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
