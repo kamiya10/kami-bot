@@ -38,10 +38,12 @@ module.exports = {
   async execute(interaction) {
     const subcommand = interaction.options.getSubcommand();
 
-    const UserSettings = interaction.client.database.UserDatabase.get(interaction.user.id);
+    let UserSettings = interaction.client.database.UserDatabase.get(interaction.user.id);
 
     if (!UserSettings)
       interaction.client.database.UserDatabase.set(interaction.user.id, UserDatabaseModel());
+
+    UserSettings = interaction.client.database.UserDatabase.get(interaction.user.id);
 
     switch (subcommand) {
       case "messagemention":{
