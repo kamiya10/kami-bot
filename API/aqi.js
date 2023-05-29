@@ -14,7 +14,7 @@ class AQI {
   };
 
   async getCountyNames(time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate()}${(time.getHours() - 1 < 0 ? 0 : time.getHours() - 1).toString().padStart(2, "0")}`;
+    const timeStr = `${time.getFullYear()}${(time.getDate() - 1 < 0 ? time.getMonth() : time.getMonth() + 1).toString().padStart(2, "0")}${(time.getHours() - 1 < 0 ? time.getDate() - 1 : time.getDate()).toString().padStart(2, "0")}${(time.getHours() - 1 < 0 ? 23 : time.getHours() - 1).toString().padStart(2, "0")}`;
     const url = AQI.#baseurl.json + `GetCounty/GetCounty_${timeStr}.json`;
     const res = await fetch(url);
 
