@@ -147,9 +147,7 @@ module.exports = {
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
           for (const id in warnings)
-            if (warnings[id] && !Array.isArray(warnings[id])) {
-              console.log(warnings[id].affectedAreas);
-
+            if (warnings[id] && !Array.isArray(warnings[id]))
               if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty)) {
                 const warn = new EmbedBuilder()
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
@@ -183,7 +181,6 @@ module.exports = {
                     break;
                 }
               }
-            }
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(h => h?.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1)))?.length > 0);
@@ -317,16 +314,40 @@ module.exports = {
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
           for (const id in warnings)
-            if (warnings[id])
-              if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty))
-                embeds.push(new EmbedBuilder()
+            if (warnings[id] && !Array.isArray(warnings[id]))
+              if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty)) {
+                const warn = new EmbedBuilder()
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
                     name    : CWBForecast.warn_id[id],
                     iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
-                  .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`));
+                  .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
+                embeds.push(warn);
 
+                switch (id) {
+                  case "TY_WIND":
+                  case "TY_WARN":
+                  case "TY_NEWS":
+                  case "EQ":
+                  case "PWS":
+                  case "FIFOWS":
+                  case "W33":
+                  case "W34": {
+                    break;
+                  }
+
+                  case "W37":{
+                    warn.setThumbnail("https://www.cwb.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
+                    break;
+                  }
+
+                  default:
+                    warn.setThumbnail(`https://www.cwb.gov.tw/Data/warning/${id}_C.png`);
+                    break;
+                }
+              }
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(h => h.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
