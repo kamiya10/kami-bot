@@ -215,7 +215,6 @@ module.exports = {
             messagedata = formatEarthquake(interaction.client.data.quake_data_all[i.values[0]], style);
             messagedata.components.push(new ActionRowBuilder({ components: [reports] }));
             await i.update(messagedata);
-
           });
 
           break;

@@ -118,6 +118,35 @@ class CWB_Forcast {
     金門縣 : [["金城鎮", "金沙鎮", "金湖鎮", "金寧鄉", "烈嶼鄉", "烏坵鄉"]],
   };
 
+  static warn_id = {
+    PWS     : "災防告警訊息",
+    EQ      : "地震報告",
+    TY_WIND : "颱風強風告警",
+    TY_WARN : "颱風警報",
+    TY_NEWS : "颱風消息",
+    FIFOWS  : "天氣警特報",
+    W23     : "熱帶性低氣壓特報",
+    W24     : "大規模或劇烈豪雨",
+    W25     : "陸上強風特報",
+    W26     : "豪(大)雨特報",
+    "W26-1" : "大雨",
+    "W26-2" : "豪雨",
+    "W26-3" : "大豪雨",
+    "W26-4" : "超大豪雨",
+    W27     : "濃霧特報",
+    W28     : "低溫特報",
+    "W28-1" : "低溫黃色燈號",
+    "W28-2" : "低溫橙色燈號",
+    "W28-3" : "低溫紅色燈號",
+    "W29-1" : "高溫黃色燈號",
+    "W29-2" : "高溫橙色燈號",
+    "W29-3" : "高溫紅色燈號",
+    W29     : "高溫資訊",
+    W33     : "大雷雨即時訊息",
+    W34     : "即時天氣訊息",
+    W37     : "長浪即時訊息",
+  };
+
   /**
    * @param {"宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"} county
    * @param {{limit: number,offset: number,format?: "JSON" | "XMAL",locationName: ["宜蘭縣" | "桃園市" | "新竹縣" | "苗栗縣" | "彰化縣" | "南投縣" | "雲林縣" | "嘉義縣" | "屏東縣" | "臺東縣" | "花蓮縣" | "澎湖縣" | "基隆市" | "新竹市" | "嘉義市" | "臺北市" | "高雄市" | "新北市" | "臺中市" | "臺南市" | "連江縣" | "金門縣"],elementName: ["Wx" | "PoP" | "Cl" | "MinT" | "MaxT"],sort?: "time",startTime: date,timeFrom: date,timeTo: date}} options
@@ -190,15 +219,38 @@ class CWB_Forcast {
   async _warns() {
     const warnings = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/warn/Warning_Content.js")).text())
 		+ "\nmodule.exports={WarnAll,WarnContent,WarnContent_W32,WarnContent_W33}", "warnings");
+    const areas = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/warn/Warning_Taiwan.js")).text())
+		+ "\nmodule.exports={WarnTown}", "warning_areas");
 
-    return {
+    const value = {
       list : warnings.WarnAll,
       PWS  : warnings.WarnContent.PWS?.C,
+      W25  : warnings.WarnContent.W25?.C,
       W26  : warnings.WarnContent.W26?.C,
       W29  : warnings.WarnContent.W29?.C,
       W32  : warnings.WarnContent_W32,
       W33  : warnings.WarnContent_W33,
+      W37  : warnings.WarnContent.W37?.C,
     };
+
+    Object.keys(value).map(id => {
+      if (id == "list") return;
+
+      if (value[id] != undefined && !Array.isArray(value[id])) {
+        value[id].affectedAreas = [];
+
+        for (const cid in areas.WarnTown)
+          for (const type in areas.WarnTown[cid])
+            if (areas.WarnTown[cid][type].includes(id)) {
+              const c = Object.keys(CWB_Forcast.cid).find(key => CWB_Forcast.cid[key] === cid);
+
+              if (!value[id].affectedAreas.includes(c))
+                value[id].affectedAreas.push(c);
+            }
+      }
+    });
+
+    return value;
   }
 
   async ecard(county) {
@@ -277,33 +329,6 @@ class CWB_Forcast {
 
     const data = r.json();
     return data;
-  }
-
-  static findAreasFromString(str) {
-    const result = [];
-
-    for (let i = 0, k = Object.keys(CWB_Forcast.town_pages), n = k.length, county = k[i], towns = CWB_Forcast.town_pages[county]; i < n; i++, county = k[i], towns = CWB_Forcast.town_pages[county]) {
-      const countyRegex = new RegExp(`${county}?`, "g");
-      const resultTowns = [];
-
-      for (const townarr of towns)
-        for (const town of townarr) {
-          if (town == "...") continue;
-
-          const townRegex = new RegExp(`${town}?`, "g");
-
-          if (str.match(townRegex))
-            resultTowns.push(town);
-        }
-
-      if (str.match(countyRegex) || resultTowns.length)
-        result.push({
-          county,
-          towns: resultTowns,
-        });
-    }
-
-    return result;
   }
 }
 

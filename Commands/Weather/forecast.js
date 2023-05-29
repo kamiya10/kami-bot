@@ -135,7 +135,7 @@ module.exports = {
             _warns = await cwb_Forecast._warns();
 
           const embeds = [];
-          const { list, PWS, W26, W29, W33 } = _warns;
+          const { list, ...warnings } = _warns;
 
           if (list.includes("TY_NEWS"))
             embeds.push(new EmbedBuilder()
@@ -146,18 +146,43 @@ module.exports = {
               })
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
-          for (const w of [PWS, W26, W29])
-            if (w) {
-              const results = CWBForecast.findAreasFromString(w.content);
+          for (const id in warnings)
+            if (warnings[id] && !Array.isArray(warnings[id])) {
+              console.log(warnings[id].affectedAreas);
 
-              if (!results.length || results.find(({ county: c }) => c == _currentCounty))
-                embeds.push(new EmbedBuilder()
-                  .setColor(w.title.includes("解除") ? Colors.Green : Colors.Orange)
+              if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty)) {
+                const warn = new EmbedBuilder()
+                  .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
-                    name    : w.title,
-                    iconURL : w.title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    name    : CWBForecast.warn_id[id],
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
-                  .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
+                  .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
+                embeds.push(warn);
+
+                switch (id) {
+                  case "TY_WIND":
+                  case "TY_WARN":
+                  case "TY_NEWS":
+                  case "EQ":
+                  case "PWS":
+                  case "FIFOWS":
+                  case "W33":
+                  case "W34": {
+                    break;
+                  }
+
+                  case "W37":{
+                    warn.setThumbnail("https://www.cwb.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
+                    break;
+                  }
+
+                  default:
+                    warn.setThumbnail(`https://www.cwb.gov.tw/Data/warning/${id}_C.png`);
+                    break;
+                }
+              }
             }
 
           if (_hazards.record.length > 0) {
@@ -173,8 +198,8 @@ module.exports = {
                 .setDescription(e.contents.content.contentText)));
           }
 
-          if (W33.length > 0) {
-            const hazards_W33_list = W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
+          if (warnings.W33.length > 0) {
+            const hazards_W33_list = warnings.W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
 
             if (hazards_W33_list.length > 0)
               embeds.push(...hazards_W33_list.map(e => new EmbedBuilder()
@@ -280,7 +305,7 @@ module.exports = {
             _warns = await cwb_Forecast._warns();
 
           const embeds = [];
-          const { list, PWS, W26, W29, W33 } = _warns;
+          const { list, ...warnings } = _warns;
 
           if (list.includes("TY_NEWS"))
             embeds.push(new EmbedBuilder()
@@ -291,19 +316,17 @@ module.exports = {
               })
               .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
 
-          for (const w of [PWS, W26, W29])
-            if (w) {
-              const results = CWBForecast.findAreasFromString(w.content);
-
-              if (!results.length || results.find(({ towns: t }) => t.includes(_currentTown)))
+          for (const id in warnings)
+            if (warnings[id])
+              if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty))
                 embeds.push(new EmbedBuilder()
-                  .setColor(w.title.includes("解除") ? Colors.Green : Colors.Orange)
+                  .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
-                    name    : w.title,
-                    iconURL : w.title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    name    : CWBForecast.warn_id[id],
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                   })
-                  .setDescription(`${timestamp(new Date(w.issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(w.validto), TimestampStyles.ShortDateTime)}\n\n${w.content}`));
-            }
+                  .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`));
+
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(h => h.hazardConditions?.hazards?.hazard?.info?.affectedAreas?.location?.filter(e => e.locationName.includes(_currentCounty.slice(0, -1))).length > 0);
@@ -318,8 +341,8 @@ module.exports = {
                 .setDescription(e.contents.content.contentText)));
           }
 
-          if (W33.length > 0) {
-            const hazards_W33_list = W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
+          if (warnings.W33.length > 0) {
+            const hazards_W33_list = warnings.W33.filter(e => e.WarnArea.filter(WarnArea => WarnArea.County.includes(_currentCounty.slice(0, -1))).length > 0);
 
             if (hazards_W33_list.length > 0)
               embeds.push(...hazards_W33_list.map(e => new EmbedBuilder()
