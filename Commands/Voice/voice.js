@@ -493,7 +493,15 @@ module.exports = {
             }
 
             {
-              const guildBitrate = ((bitrate ?? 64000) > interaction.guild.maximumBitrate) ? interaction.guild.maximumBitrate : bitrate ?? 64000;
+              const guildBitrate = ((
+                bitrate
+                  ? bitrate < 8000
+                    ? bitrate * 1000
+                    : bitrate
+                  : undefined ?? 64000) > interaction.guild.maximumBitrate)
+                ? interaction.guild.maximumBitrate
+                : bitrate
+                  ?? 64000;
 
               if ((bitrate != null && setting.channelSettings.bitrate != guildBitrate) || (bitrate == null && override)) {
                 voice
@@ -650,9 +658,11 @@ module.exports = {
             const defa = interaction.options.getBoolean("預設");
 
             const guildBitrate = bitrate != undefined
-              ? bitrate > interaction.guild.maximumBitrate
-                ? interaction.guild.maximumBitrate
-                : bitrate
+              ? bitrate < 8000
+                ? bitrate * 1000
+                : bitrate > interaction.guild.maximumBitrate
+                  ? interaction.guild.maximumBitrate
+                  : bitrate
               : setting.channelSettings.bitrate != undefined
                 ? setting.channelSettings.bitrate
                 : 64000;
