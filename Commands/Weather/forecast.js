@@ -57,7 +57,8 @@ module.exports = {
    */
   async execute(interaction) {
     const { list: warnList, ...warnings } = await cwb_Forecast._warns();
-
+    const now = new Date(Date.now());
+    const imageTimestamp = "" + now.getFullYear() + (now.getMonth() + 1).toString().padStart(2, "0") + now.getHours().toString().padStart(2, "2") + "00";
     const embedList = [];
 
     if (warnList.includes("TY_NEWS"))
@@ -68,7 +69,7 @@ module.exports = {
 
     embedList.push(new EmbedBuilder()
       .setDescription("請使用下方下拉式選單選取欲查詢天氣地區")
-      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png"));
+      .setImage(`https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png?T=${imageTimestamp}`));
 
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
@@ -144,6 +145,9 @@ module.exports = {
           if (warnList.includes("TY_NEWS"))
             addTyphoonNewsEmbed(embeds);
 
+          if (warnList.includes("TY_WARN"))
+            addTyphoonWarnEmbed(embeds, warnings.TY_WARN);
+
           for (const id in warnings)
             if (warnings[id] && !Array.isArray(warnings[id]))
               if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty)) {
@@ -206,7 +210,7 @@ module.exports = {
                 .setTitle(e.Title)
                 .setURL(`https://www.cwb.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
                 .setDescription(e.Description + e.Instruction)
-                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}`)));
+                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
           }
 
           const forecast_embed = new EmbedBuilder()
@@ -301,6 +305,9 @@ module.exports = {
           if (warnList.includes("TY_NEWS"))
             addTyphoonNewsEmbed(embeds);
 
+          if (warnList.includes("TY_WARN"))
+            addTyphoonWarnEmbed(embeds, warnings.TY_WARN);
+
           for (const id in warnings)
             if (warnings[id] && !Array.isArray(warnings[id]))
               if (!warnings[id].affectedAreas.length || warnings[id].affectedAreas.includes(_currentCounty)) {
@@ -363,7 +370,7 @@ module.exports = {
                 .setTitle(e.Title)
                 .setURL(`https://www.cwb.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
                 .setDescription(e.Description + e.Instruction)
-                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}`)));
+                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
           }
 
           const location = _town_data.locations[0].location.find(e => e.locationName == _currentTown);
@@ -551,6 +558,8 @@ function addTyphoonNewsEmbed(arr) {
 function addTyphoonWarnEmbed(arr, data) {
   const issue = new Date(data.issued);
   const valid = new Date(data.validto);
+  const now = new Date(Date.now());
+  const imageTimestamp = "" + now.getFullYear() + (now.getMonth() + 1).toString().padStart(2, "0") + now.getHours().toString().padStart(2, "2") + "00";
 
   const title = data.TY_WARN_LIST.C[0].TabName.split(" ");
   title.splice(1, 0, data.PTA_TYPHOON);
@@ -563,7 +572,7 @@ function addTyphoonWarnEmbed(arr, data) {
     })
     .setTitle(title.join(" ").replace(" ", "："))
     .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_WARN.html")
-    .setImage("https://www.cwb.gov.tw/Data/typhoon/TY_WARN/B20.png")
+    .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_WARN/B20.png?T=${imageTimestamp}`)
     .addFields({
       name   : "發布時間",
       value  : timestamp(issue, TimestampStyles.ShortDateTime),
