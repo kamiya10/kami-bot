@@ -58,7 +58,6 @@ module.exports = {
 
         const cTime = new Date(current.fixTime);
         const cTimeId = `${cTime.getFullYear()}${`${cTime.getMonth() + 1}`.padStart(2, "0")}${`${cTime.getDate()}`.padStart(2, "0")}0000`;
-        console.log("🚀 ~ file: typhoon.js:63 ~ execute ~ cTimeId:", cTimeId);
 
         const mainEmbed = new EmbedBuilder()
           .setColor(CycloneLevelColors[getCycloneLevel(current.maxWindSpeed)])

@@ -223,14 +223,15 @@ class CWB_Forcast {
 		+ "\nmodule.exports={WarnTown}", "warning_areas");
 
     const value = {
-      list : warnings.WarnAll,
-      PWS  : warnings.WarnContent.PWS?.C,
-      W25  : warnings.WarnContent.W25?.C,
-      W26  : warnings.WarnContent.W26?.C,
-      W29  : warnings.WarnContent.W29?.C,
-      W32  : warnings.WarnContent_W32,
-      W33  : warnings.WarnContent_W33,
-      W37  : warnings.WarnContent.W37?.C,
+      list    : warnings.WarnAll,
+      PWS     : warnings.WarnContent.PWS?.C,
+      TY_WARN : warnings.WarnContent.TY_WARN?.C,
+      W25     : warnings.WarnContent.W25?.C,
+      W26     : warnings.WarnContent.W26?.C,
+      W29     : warnings.WarnContent.W29?.C,
+      W32     : warnings.WarnContent_W32,
+      W33     : warnings.WarnContent_W33,
+      W37     : warnings.WarnContent.W37?.C,
     };
 
     Object.keys(value).map(id => {
@@ -249,6 +250,13 @@ class CWB_Forcast {
             }
       }
     });
+
+    if (value.list.includes("TY_WARN")) {
+      const warn_data = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/typhoon/TY_WARN-Data.js")).text())
+      + "\nmodule.exports={PTA_TYPHOON,TY_WARN_LIST,Movement,LandWarn,SeaWarn,HeavyRain,NoticeText,NoteText}", "warning_areas");
+
+      Object.assign(value.TY_WARN, warn_data);
+    }
 
     return value;
   }

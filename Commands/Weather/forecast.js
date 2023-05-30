@@ -56,9 +56,20 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const embed = new EmbedBuilder()
+    const { list: warnList, ...warnings } = await cwb_Forecast._warns();
+
+    const embedList = [];
+
+    if (warnList.includes("TY_NEWS"))
+      addTyphoonNewsEmbed(embedList);
+
+    if (warnList.includes("TY_WARN"))
+      addTyphoonWarnEmbed(embedList, warnings.TY_WARN);
+
+    embedList.push(new EmbedBuilder()
       .setDescription("請使用下方下拉式選單選取欲查詢天氣地區")
-      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png");
+      .setImage("https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png"));
+
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
@@ -69,27 +80,24 @@ module.exports = {
           description : CWBForecast.county_code2[k],
         })),
       );
+
     let town = new StringSelectMenuBuilder()
       .setCustomId("town")
       .setPlaceholder("請選擇鄉鎮")
       .setDisabled(true)
-      .addOptions(
-        [
-          {
-            label : "請選擇鄉鎮",
-            value : "null",
-          },
-        ],
-      );
+      .addOptions({
+        label : "請選擇鄉鎮",
+        value : "null",
+      });
+
     const sent = await interaction.editReply({
-      embeds     : [embed],
+      embeds     : embedList,
       components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
     });
-    const filter = (i) => i.user.id === interaction.user.id;
 
-    const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.SelectMenu });
+    const collector = sent.createMessageComponentCollector({ time: 5 * 60000, componentType: ComponentType.StringSelect });
 
-    let _county_data, _town_data, _hazards, _warns, _currentCounty, _currentTown, _currentTownPage = 0;
+    let _county_data, _town_data, _hazards, _currentCounty, _currentTown, _currentTownPage = 0;
 
     const loading = new EmbedBuilder()
       .setDescription("<a:loading:849794359083270144> 正在獲取資料");
@@ -131,20 +139,10 @@ module.exports = {
           if (!_hazards)
             _hazards = (await cwb_Forecast.hazards())?.records;
 
-          if (!_warns)
-            _warns = await cwb_Forecast._warns();
-
           const embeds = [];
-          const { list, ...warnings } = _warns;
 
-          if (list.includes("TY_NEWS"))
-            embeds.push(new EmbedBuilder()
-              .setColor(Colors.Red)
-              .setAuthor({
-                name    : "颱風消息",
-                iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
-              })
-              .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
+          if (warnList.includes("TY_NEWS"))
+            addTyphoonNewsEmbed(embeds);
 
           for (const id in warnings)
             if (warnings[id] && !Array.isArray(warnings[id]))
@@ -298,20 +296,10 @@ module.exports = {
             _town_data = (await cwb_Forecast.forecast_county(_currentCounty))?.records;
           }
 
-          if (!_warns)
-            _warns = await cwb_Forecast._warns();
-
           const embeds = [];
-          const { list, ...warnings } = _warns;
 
-          if (list.includes("TY_NEWS"))
-            embeds.push(new EmbedBuilder()
-              .setColor(Colors.Red)
-              .setAuthor({
-                name    : "颱風消息",
-                iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
-              })
-              .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
+          if (warnList.includes("TY_NEWS"))
+            addTyphoonNewsEmbed(embeds);
 
           for (const id in warnings)
             if (warnings[id] && !Array.isArray(warnings[id]))
@@ -548,4 +536,56 @@ function tempChart(data, symbol, measure, AT) {
 
   str += "```";
   return str;
+}
+
+function addTyphoonNewsEmbed(arr) {
+  arr.push(new EmbedBuilder()
+    .setColor(Colors.Red)
+    .setAuthor({
+      name    : "颱風消息",
+      iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+    })
+    .setDescription("詳細資訊請使用 </typhoon:1110826483016028161>"));
+}
+
+function addTyphoonWarnEmbed(arr, data) {
+  const issue = new Date(data.issued);
+  const valid = new Date(data.validto);
+
+  const title = data.TY_WARN_LIST.C[0].TabName.split(" ");
+  title.splice(1, 0, data.PTA_TYPHOON);
+
+  const embed = new EmbedBuilder()
+    .setColor(Colors.Red)
+    .setAuthor({
+      name    : data.title,
+      iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+    })
+    .setTitle(title.join(" ").replace(" ", "："))
+    .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_WARN.html")
+    .setImage("https://www.cwb.gov.tw/Data/typhoon/TY_WARN/B20.png")
+    .addFields({
+      name   : "發布時間",
+      value  : timestamp(issue, TimestampStyles.ShortDateTime),
+      inline : true,
+    }, {
+      name   : "有效至",
+      value  : `${timestamp(valid, issue.getDate() == valid.getDate() ? TimestampStyles.ShortTime : TimestampStyles.ShortDateTime)} (${timestamp(new Date(data.validto), TimestampStyles.RelativeTime)})`,
+      inline : true,
+    });
+
+  for (const key of ["Movement", "LandWarn", "SeaWarn", "HeavyRain", "NoticeText", "NoteText"])
+    if (data[key].length)
+      if (Array.isArray(data[key]))
+        embed.addFields({
+          name  : { Movement: "颱風動態", LandWarn: "陸上警戒區域", SeaWarn: "海上警戒區域", HeavyRain: "豪雨特報", NoticeText: "注意事項", NoteText: "附註" }[key],
+          value : ((key == "NoticeText") ? data[key].slice(0, -1) : data[key]).map(v => `* ${v}`).join("\n"),
+        });
+      else
+        embed.addFields({
+          name  : { Movement: "颱風動態", LandWarn: "陸上警戒區域", SeaWarn: "海上警戒區域", HeavyRain: "豪雨特報", NoticeText: "注意事項", NoteText: "附註" }[key],
+          value : data[key],
+        });
+
+  arr.push(embed);
 }
