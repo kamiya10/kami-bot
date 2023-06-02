@@ -11,6 +11,7 @@ const CycloneLevelColors = {
 };
 
 const CycloneLevelEmojis = {
+  溫帶氣旋   : "🇱",
   熱帶性低氣壓 : "🇱",
   輕度颱風   : "🟢",
   中度颱風   : "🟡",
@@ -86,7 +87,7 @@ module.exports = {
           .setTitle(`${getCycloneLevel(current.maxWindSpeed)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName} - 歷史路徑`)
           .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html");
 
-        const forecastEmbed = new EmbedBuilder(historyEmbed.data).setTitle(`${getCycloneLevel(current.maxWindSpeed)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName} - 預測路徑`);
+        const forecastEmbed = new EmbedBuilder(historyEmbed.data).setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName} - 預測路徑`);
 
         let bars = [];
 
@@ -139,7 +140,7 @@ module.exports = {
             historyEmbed.spliceFields(0, 1);
 
           historyEmbed.addFields({
-            name  : `${bars[cur][0]} **${getCycloneLevel(history.maxWindSpeed)}** ${time(history.fixTime, TimestampStyles.ShortDate)} ${time(history.fixTime, TimestampStyles.ShortTime)}`,
+            name  : `${bars[cur][0]} **${getCycloneLevel(history.maxWindSpeed, history.coordinate)}** ${time(history.fixTime, TimestampStyles.ShortDate)} ${time(history.fixTime, TimestampStyles.ShortTime)}`,
             value : str.join("\n"),
           });
 
@@ -194,7 +195,7 @@ module.exports = {
           str.push(`${bars[cur][3]} 　近中心最大風速 │ **${forecast.maxWindSpeed} m/s**`);
 
           forecastEmbed.addFields({
-            name  : `${bars[cur][0]} **${getCycloneLevel(forecast.maxWindSpeed)}** ${time(forecast.fixTime, TimestampStyles.ShortDate)} ${time(forecast.fixTime, TimestampStyles.ShortTime)}`,
+            name  : `${bars[cur][0]} **${getCycloneLevel(forecast.maxWindSpeed, forecast.coordinate)}** ${time(forecast.fixTime, TimestampStyles.ShortDate)} ${time(forecast.fixTime, TimestampStyles.ShortTime)}`,
             value : str.join("\n"),
           });
 
@@ -248,8 +249,15 @@ module.exports = {
   },
 };
 
-function getCycloneLevel(wind) {
-  return [ "熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風" ][[17.1, 32.6, 50.9].concat([+wind]).sort((a, b) => a - b).indexOf(+wind)];
+function getCycloneLevel(wind = 0, coord) {
+  const coords = parseCoordinate(coord);
+
+  const index = [17.1, 32.6, 50.9].concat([+wind]).sort((a, b) => a - b).indexOf(+wind);
+
+  if (index == 0 && coords.latitude > 23.5)
+    return "溫帶氣旋";
+  else
+    return [ "熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風" ][index];
 }
 
 function parseCoordinate(coord) {
