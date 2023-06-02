@@ -250,7 +250,10 @@ module.exports = {
 };
 
 function getCycloneLevel(wind = 0, coord) {
-  const coords = parseCoordinate(coord);
+  let coords;
+
+  if (coord)
+    coords = parseCoordinate(coord);
 
   const index = [17.1, 32.6, 50.9].concat([+wind]).sort((a, b) => a - b).indexOf(+wind);
 
