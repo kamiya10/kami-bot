@@ -92,7 +92,7 @@ module.exports = {
         for (const history of cyclone.analysisData.fix) {
           history.fixTime = new Date(history.fixTime);
 
-          if ((new Date(Date.now()).getDate() != history.fixTime.getDate() && !(((new Date(Date.now()).getDate() - history.fixTime.getDate()) >= 2) ? [8] : [8, 20]).includes(history.fixTime.getHours())) && cyclone.analysisData.fix.indexOf(history)) {
+          if ((new Date(Date.now()).getDate() != history.fixTime.getDate() && !((~~((new Date(Date.now()).getTime() - history.fixTime.getTime()) / 86400_000) >= 2) ? [8] : [8, 20]).includes(history.fixTime.getHours())) && cyclone.analysisData.fix.indexOf(history)) {
             if (bars.at(-1))
               bars.at(-1).push(CycloneLevelEmojis[getCycloneLevel(history.maxWindSpeed)]);
             continue;
@@ -104,7 +104,7 @@ module.exports = {
         let cur = 0;
 
         for (const history of cyclone.analysisData.fix) {
-          if ((new Date(Date.now()).getDate() != history.fixTime.getDate() && !(((new Date(Date.now()).getDate() - history.fixTime.getDate()) >= 2) ? [8] : [8, 20]).includes(history.fixTime.getHours())) && cyclone.analysisData.fix.indexOf(history)) continue;
+          if ((new Date(Date.now()).getDate() != history.fixTime.getDate() && !((~~((new Date(Date.now()).getTime() - history.fixTime.getTime()) / 86400_000) >= 2) ? [8] : [8, 20]).includes(history.fixTime.getHours())) && cyclone.analysisData.fix.indexOf(history)) continue;
 
           switch (bars[cur].length) {
             case 3: {
