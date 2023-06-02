@@ -192,7 +192,8 @@ module.exports = {
 
           str.push(`${bars[cur][1]} 　位置　　　　　 │ ${coordinate.latitude == 0 ? "" : coordinate.latitude > 0 ? "東經" : "西經"} **${coordinate.longitude}** 度，${coordinate.latitude == 0 ? "" : coordinate.latitude > 0 ? "北緯" : "南緯"} **${coordinate.latitude}** 度`);
           str.push(`${bars[cur][2]} 　中心氣壓　　　 │ **${forecast.pressure} 百帕**`);
-          str.push(`${bars[cur][3]} 　近中心最大風速 │ **${forecast.maxWindSpeed} m/s**`);
+
+          if (forecast.maxWindSpeed) str.push(`${bars[cur][3]} 　近中心最大風速 │ **${forecast.maxWindSpeed} m/s**`);
 
           forecastEmbed.addFields({
             name  : `${bars[cur][0]} **${getCycloneLevel(forecast.maxWindSpeed, forecast.coordinate)}** ${time(forecast.fixTime, TimestampStyles.ShortDate)} ${time(forecast.fixTime, TimestampStyles.ShortTime)}`,
