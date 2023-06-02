@@ -36,8 +36,6 @@ const Bearings = {
   NNW : "北北西",
 };
 
-const Tau = ["6", "12", "24", "48", "72", "96", "120", "120"];
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("typhoon")
@@ -72,7 +70,7 @@ module.exports = {
           .setTitle(`${getCycloneLevel(current.maxWindSpeed)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName}`)
           .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
           .setDescription(`${time(new Date(current.fixTime), TimestampStyles.ShortDateTime)} 的中心位置在${coord.latitude == 0 ? "" : coord.latitude > 0 ? "北緯" : "南緯"} ${coord.latitude} 度，${coord.latitude == 0 ? "" : coord.latitude > 0 ? "東經" : "西經"} ${coord.longitude} 度，以每小時 ${cyclone.forecastData.fix[0].movingSpeed} 公里速度，向${Bearings[cyclone.forecastData.fix[0].movingDirection]}進行。中心氣壓 ${current.pressure} 百帕，近中心最大風速每秒 ${current.maxWindSpeed} 公尺，瞬間最大陣風每秒 ${current.maxGustSpeed} 公尺，七級風暴風半徑 ${current.circleOf15Ms.radius} 公里${current.circleOf25Ms ? `，十級風暴風半徑 ${current.circleOf25Ms.radius} 公里。` : "。"}`)
-          .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_NEWS/PTA_${cTimeId}-${Tau[Tau.indexOf(lastForecast.tau) + 1]}_${cyclone.typhoonName}_zhtw.png`);
+          .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_NEWS/PTA_${cTimeId}-${lastForecast.tau}_${cyclone.typhoonName}_zhtw.png`);
 
         const mainEmbedRadiirImage = new EmbedBuilder()
           .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
