@@ -134,6 +134,9 @@ module.exports = {
           str.push(`${bars[cur][2]} 　中心氣壓　　　 │ **${history.pressure} 百帕**`);
           str.push(`${bars[cur][3]} 　近中心最大風速 │ **${history.maxWindSpeed} m/s**`);
 
+          if (historyEmbed.data.fields.length >= 25)
+            historyEmbed.spliceFields(0, 1);
+
           historyEmbed.addFields({
             name  : `${bars[cur][0]} **${getCycloneLevel(history.maxWindSpeed)}** ${time(history.fixTime, TimestampStyles.ShortDate)} ${time(history.fixTime, TimestampStyles.ShortTime)}`,
             value : str.join("\n"),
