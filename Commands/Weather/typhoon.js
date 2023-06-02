@@ -257,7 +257,7 @@ function getCycloneLevel(wind = 0, coord) {
 
   const index = [17.1, 32.6, 50.9].concat([+wind]).sort((a, b) => a - b).indexOf(+wind);
 
-  if (index == 0 && coords.latitude > 23.5)
+  if (index == 0 && (coords?.latitude ?? 0) > 23.5)
     return "溫帶氣旋";
   else
     return [ "熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風" ][index];
