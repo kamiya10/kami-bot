@@ -57,7 +57,7 @@ module.exports = {
         const coord = parseCoordinate(current.coordinate);
 
         const cTime = new Date(current.fixTime);
-        const cTimeId = `${cTime.getFullYear()}${`${cTime.getMonth() + 1}`.padStart(2, "0")}${`${cTime.getDate()}`.padStart(2, "0")}0000`;
+        const cTimeId = `${cTime.getFullYear()}${`${((new Date(current.fixTime).getHours() - 8 < 0) && (cTime.getDate() - 1 < 0)) ? cTime.getMonth() : cTime.getMonth() + 1}`.padStart(2, "0")}${`${new Date(current.fixTime).getHours() - 8 < 0 ? cTime.getDate() - 1 : cTime.getDate()}`.padStart(2, "0")}${(new Date(current.fixTime).getHours() - 8 < 0 ? 18 : new Date(current.fixTime).getHours() - 8).toString().padStart(2, "0")}00`;
 
         const mainEmbed = new EmbedBuilder()
           .setColor(CycloneLevelColors[getCycloneLevel(current.maxWindSpeed)])
