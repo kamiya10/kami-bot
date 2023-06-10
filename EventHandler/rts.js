@@ -101,8 +101,6 @@ module.exports = {
             if (message) {
               if (message instanceof Message)
                 message.edit({ embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })] }).catch(console.error);
-              else
-                message.then(m => m.edit({ embeds: [embed_cache[data.id].embed], components: [new ActionRowBuilder({ components: [button] })] }).catch(console.error));
             } else {
               const channel = client.channels.cache.get(setting[0]);
 
