@@ -1,4 +1,4 @@
-const { ChannelType, EmbedBuilder, time } = require("discord.js");
+const { ChannelType, EmbedBuilder, MessageFlags, time } = require("discord.js");
 
 module.exports = {
   name  : "messageMention",
@@ -39,9 +39,9 @@ module.exports = {
         .setAuthor({ name: mentioned.member.displayName, iconURL: mentioned.member.displayAvatarURL() })
         .setDescription(mentioned.content)
         .setTimestamp(mentioned.createdAt);
-      await message.reply({ content: `${mentioned.author} ${time(mentioned.createdAt, "F")}, 在 ${mentioned.channel}, 在 ${mentioned.guild}`, embeds: [embed, ...mentioned.embeds], allowedMentions: { parse: [] } });
+      await message.reply({ content: `${mentioned.author} ${time(mentioned.createdAt, "F")}, 在 ${mentioned.channel}, 在 ${mentioned.guild}`, embeds: [embed, ...mentioned.embeds], allowedMentions: { parse: [] }, flags: MessageFlags.SuppressNotifications });
     } else if (mentioned.embeds.length) {
-      await message.reply({ content: `${mentioned.author} ${time(mentioned.createdAt, "F")}, 在 ${mentioned.channel}, 在 ${mentioned.guild}`, embeds: mentioned.embeds, allowedMentions: { parse: [] } });
+      await message.reply({ content: `${mentioned.author} ${time(mentioned.createdAt, "F")}, 在 ${mentioned.channel}, 在 ${mentioned.guild}`, embeds: mentioned.embeds, allowedMentions: { parse: [] }, flags: MessageFlags.SuppressNotifications });
     }
   },
 };
