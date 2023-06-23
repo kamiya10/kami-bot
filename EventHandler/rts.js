@@ -168,7 +168,14 @@ module.exports = {
           const urlButton = new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
             .setLabel("檢知報告")
+            .setEmoji("📊")
             .setURL(`https://exptech.com.tw/report?id=${data.report_id}`);
+
+          const historyButton = new ButtonBuilder()
+            .setStyle(ButtonStyle.Link)
+            .setLabel("檢知紀錄")
+            .setEmoji("🗃️")
+            .setURL(`https://exptech.com.tw/api/v1/file/trem-info.html?id=${data.report_id}`);
 
           for (const setting of rts_channels) {
             const message = client.data.rts_list.get(data.id).get(setting[0]);
@@ -193,9 +200,9 @@ module.exports = {
                       value : `${ranking.length > 10 ? "*（僅展示前十位）*" : ""}\n${(ranking.length > 10 ? ranking.slice(0, 10) : ranking).join("\n")}`,
                     });
 
-                    message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
+                    message.reply({ embeds: [sendEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton, historyButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
                   } else {
-                    message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
+                    message.reply({ embeds: [endEmbed], components: embed_cache[data.id].alert ? [new ActionRowBuilder({ components: [urlButton, historyButton] })] : [], allowedMentions: { parse: [], roles: [], users: [], repliedUser: false } }).catch(() => void 0);
                   }
                 }
               }
