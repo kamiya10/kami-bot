@@ -169,13 +169,13 @@ module.exports = {
             .setStyle(ButtonStyle.Link)
             .setLabel("檢知報告")
             .setEmoji("📊")
-            .setURL(`https://exptech.com.tw/report?id=${data.report_id}`);
+            .setURL(`https://exptech.com.tw/api/v1/file/trem-report.html?id=${data.report_id}`);
 
           const historyButton = new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
             .setLabel("檢知紀錄")
             .setEmoji("🗃️")
-            .setURL(`https://exptech.com.tw/api/v1/file/trem-info.html?id=${data.report_id}`);
+            .setURL(`https://exptech.com.tw/report?id=${data.report_id}`);
 
           for (const setting of rts_channels) {
             const message = client.data.rts_list.get(data.id).get(setting[0]);
