@@ -129,3 +129,5 @@ dist
 # Database
 Database/*.json
 Database/Database.sqlite
+Dockerfile
+.dockerignore
