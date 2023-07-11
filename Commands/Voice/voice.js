@@ -340,7 +340,7 @@ module.exports = {
                 category        : cch?.id || "",
                 channelSettings : {
                   name    : "",
-                  bitrate : 64,
+                  bitrate : 64000,
                   limit   : 0,
                   region  : null,
                   quality : 1,
@@ -358,7 +358,7 @@ module.exports = {
                       category        : cch?.id || "",
                       channelSettings : {
                         name    : null,
-                        bitrate : 64,
+                        bitrate : 64000,
                         limit   : 0,
                         region  : null,
                         quality : null,
