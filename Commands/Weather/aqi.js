@@ -183,6 +183,10 @@ module.exports = {
           });
 
           nodeHtmlToImage({
+            puppeteerArgs: {
+              executablePath : "/usr/bin/google-chrome",
+              args           : ["--no-sandbox"],
+            },
             html: `
   <!DOCTYPE html>
   <html lang="zh-TW">
@@ -190,6 +194,9 @@ module.exports = {
       <meta charset="UTF-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>aqi image</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body style="height: 632px; width: 1132px; margin: 0; font-family: Lato, 'Noto Sans TC'; background-color: #F2F3F5">
       <div class="image" style="height: 600px; width: 1100px; padding: 16px; display: flex;">
@@ -200,7 +207,7 @@ module.exports = {
                   <div class="type" style="font-size: 20px; color: #14b4d0;">${data.sitetype}</div>
                   <div class="aqi" style="outline: 8px solid ${["#57f287", "#FEE75C", "#E67E22", "#ED4245", "#9B59B6", "#2C2F33", "#2C2F33"][AQI.getAQILevel(data.AQI)]}; border-radius: 192px; height: 192px; padding: 8px; margin: 20px 28px 64px; aspect-ratio: 1; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                       <div class="aqi-title" style="font-size: 18px;">空氣品質指標AQI</div>
-                      <div class="value" style="font-size: 58px; font-weight: 600; line-height: 72px;">${data.AQI}</div>
+                      <div class="value" style="font-size: 58px; font-weight: 700; line-height: 72px;">${data.AQI}</div>
                       <div class="level" style="font-size: 18px;">${["良好", "普通", "對敏感族群不健康", "對所有族群不健康", "非常不健康", "危害", "危害"][AQI.getAQILevel(data.AQI)]}</div>
                   </div>
               </div>
@@ -211,11 +218,11 @@ module.exports = {
                       <div style="color: #aaa;">μg/m<sup>3</sup></div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVPM25}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.AVPM25}</div>
                       <div class="level" style="font-size: 18px;">移動平均</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.PM25_FIX}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.PM25_FIX}</div>
                       <div class="level" style="font-size: 18px;">小時濃度</div>
                   </div>
               </div>
@@ -226,11 +233,11 @@ module.exports = {
                       <div style="color: #aaa;">μg/m<sup>3</sup></div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVPM10}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.AVPM10}</div>
                       <div class="level" style="font-size: 18px;">移動平均</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.PM10_FIX}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.PM10_FIX}</div>
                       <div class="level" style="font-size: 18px;">小時濃度</div>
                   </div>
               </div>
@@ -241,11 +248,11 @@ module.exports = {
                       <div style="color: #aaa;">ppb</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVO3}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.AVO3}</div>
                       <div class="level" style="font-size: 18px;">8小時移動平均</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.O3_FIX}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.O3_FIX}</div>
                       <div class="level" style="font-size: 18px;">小時濃度</div>
                   </div>
               </div>
@@ -256,11 +263,11 @@ module.exports = {
                       <div style="color: #aaa;">ppm</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.AVCO}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.AVCO}</div>
                       <div class="level" style="font-size: 18px;">8小時移動平均</div>
                   </div>
                   <div>
-                      <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px;">${data.CO_FIX}</div>
+                      <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px;">${data.CO_FIX}</div>
                       <div class="level" style="font-size: 18px;">小時濃度</div>
                   </div>
               </div>
@@ -271,7 +278,7 @@ module.exports = {
                       <div style="color: #aaa;">ppb</div>
                   </div>
                   <div class="level" style="font-size: 18px;">小時濃度</div>
-                  <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px; justify-self: right; margin-right: 16px;">${data.SO2_FIX}</div>
+                  <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px; justify-self: right; margin-right: 16px;">${data.SO2_FIX}</div>
               </div>
   
               <div class="co" style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 64px 84px; align-items: center; justify-items: center; text-align: center;">
@@ -280,7 +287,7 @@ module.exports = {
                       <div style="color: #aaa;">ppb</div>
                   </div>
                   <div class="level" style="font-size: 18px;">小時濃度</div>
-                  <div class="value" style="font-size: 42px; font-weight: 600; line-height: 72px; justify-self: right; margin-right: 16px;">${data.NO2_FIX}</div>
+                  <div class="value" style="font-size: 42px; font-weight: 700; line-height: 72px; justify-self: right; margin-right: 16px;">${data.NO2_FIX}</div>
               </div>
           </div>
   
@@ -383,7 +390,7 @@ module.exports = {
                     V747.3z"></path>
               </svg>
               <div class="legend" style="position: absolute; bottom: 0; right: 0;">
-                  <div class="legend-title" style="text-align: center; font-weight: 600; line-height: 34px;">AQI</div>
+                  <div class="legend-title" style="text-align: center; font-weight: 700; line-height: 34px;">AQI</div>
                   <div style="display: flex">
                       <div class="legend-values" style="text-align: right;">
                           <div style="line-height: 36px; padding-bottom: 4px;">400</div>
