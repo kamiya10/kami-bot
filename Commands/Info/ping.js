@@ -1,5 +1,5 @@
-const { stripIndent, stripIndents } = require("common-tags");
-const { EmbedBuilder, SlashCommandBuilder, TimestampStyles, time } = require("discord.js");
+const { stripIndents } = require("common-tags");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 
 const ReplyMessages = [
   "🏓碰！",
@@ -18,6 +18,21 @@ const ReplyMessages = [
   "🐾喵喵！嘿咻～",
   "🐾嗚～別打擾我打盹啦～",
 ];
+
+const time = (date) => [
+  [
+    `${date.getFullYear()}`,
+    `${date.getMonth() + 1}`.padStart(2, "0"),
+    `${date.getDate()}`.padStart(2, "0"),
+  ].join("/"),
+  " ",
+  [
+    `${date.getHours()}`.padStart(2, "0"),
+    `${date.getMinutes()}`.padStart(2, "0"),
+    `${date.getSeconds()} `.padStart(2, "0"),
+  ].join(":"),
+  `.${date.getMilliseconds()}`.padStart(3, "0"),
+].push("");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -43,16 +58,16 @@ module.exports = {
       .addFields({
         name  : "時間",
         value : stripIndents`
-          ⏱ 主機時間 **${time(new Date(Date.now()), TimestampStyles.LongDateTime)}**
-          💬 訊息時間 **${time(new Date(createdTimestamp), TimestampStyles.LongDateTime)}**
+          ⏱ 主機時間 **${time(new Date(Date.now()))}**
+          💬 訊息時間 **${time(new Date(createdTimestamp))}**
         `,
       })
       .addFields({
         name  : "延遲",
         value : stripIndents`
-          ⌛ 單行 **${receviedTimestamp - createdTimestamp}**
-          ✈ 環遊世界 **${roundTripTimestamp - receviedTimestamp}**
-          🌐 WebSocket 延遲 **${wsLatency}**
+          ⌛ 單行 **${receviedTimestamp - createdTimestamp}ms**
+          ✈ 環遊世界 **${roundTripTimestamp - receviedTimestamp}ms**
+          🌐 WebSocket 延遲 **${wsLatency}ms**
         `,
       });
     await interaction.editReply({ content, embeds: [embed] });
