@@ -565,10 +565,10 @@ function addTyphoonWarnEmbed(arr, data) {
   title.splice(1, 0, data.PTA_TYPHOON);
 
   const embed = new EmbedBuilder()
-    .setColor(Colors.Red)
+    .setColor(data.title.includes("解除") ? Colors.Green : Colors.Red)
     .setAuthor({
       name    : data.title,
-      iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+      iconURL : data.title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
     })
     .setTitle(title.join(" ").replace(" ", "："))
     .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_WARN.html")
