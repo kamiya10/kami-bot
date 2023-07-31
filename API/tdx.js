@@ -82,10 +82,11 @@ class TRA {
 }
 
 class TDX {
-  constructor(data, defaultRequestHeaders) {
+  constructor(data, auth, defaultRequestHeaders) {
     this.accessToken = data.access_token;
     this.accessTokenType = data.token_type;
-    this.accessTokenExpireTime = new Date(Date.now() + data.expires_in);
+    this.accessTokenExpireIn = data.expires_in * 1000;
+    this.accessTokenExpireAt = new Date(Date.now() + this.accessTokenExpireIn);
     this.requestHeader = {
       Authorization : `${this.accessTokenType} ${this.accessToken}`,
       Accepts       : "application/json",
@@ -93,24 +94,41 @@ class TDX {
     };
 
     this.TRA = new TRA(this.requestHeader);
+    this._auth = auth;
+    this._expireTimer = setTimeout(this.refreshToken, this.accessTokenExpireIn);
+  }
+
+  async refreshToken() {
+    const data = await TDX.getToken(this._auth);
+    this.accessToken = data.accessToken;
+    this.accessTokenType = data.token_type;
+    this.accessTokenExpireIn = data.expires_in * 1000;
+    this.accessTokenExpireAt = new Date(Date.now() + this.accessTokenExpireIn);
+    this._expireTimer.refresh();
+    this.requestHeader.Authorization = `${this.accessTokenType} ${this.accessToken}`;
+    this.TRA.requestHeader = this.requestHeader;
   }
 
   static async init(clientId, clientSecret, defaultRequestHeaders = {}) {
+    const auth = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
+    return new TDX(await TDX.getToken(auth), auth, defaultRequestHeaders);
+  }
+
+  static async getToken(auth) {
     const response = await fetch(Constants.AuthTokenUrl, {
       method  : "POST",
       headers : {
-        Authorization  : `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+        Authorization  : auth,
         "Content-Type" : "application/x-www-form-urlencoded",
+        "User-Agent"   : `KamiBot/v${process.env.BOT_VERSION}`,
       },
       body: "grant_type=client_credentials",
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return new TDX(data, defaultRequestHeaders);
-    } else {
+    if (response.ok)
+      return await response.json();
+    else
       throw new Error(`Server responeded with status code ${response.status}: ${response.statusText}`);
-    }
   }
 }
 
