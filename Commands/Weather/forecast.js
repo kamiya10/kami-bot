@@ -35,7 +35,8 @@ function emoji(i, time) {
 }
 
 const WarningIcons = {
-  豪雨特報: "https://upload.cc/i1/2023/07/31/0IG7ED.png",
+  豪雨特報      : "https://upload.cc/i1/2023/07/31/0IG7ED.png",
+  "豪(大)雨特報" : "https://upload.cc/i1/2023/07/31/0IG7ED.png",
 };
 
 const WindDirections = {
