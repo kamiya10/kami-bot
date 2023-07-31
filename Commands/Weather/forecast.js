@@ -23,6 +23,7 @@ function emoji(i, time) {
       陰時多雲短暫陣雨或雷雨 : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
       多雲午後短暫雷陣雨   : ["<:cwb_22:991295064447914105>", "<:cwb_22n:991294935913480192>"],
       陰短暫陣雨       : ["<:cwb_11:1031128863624925234>", "<:cwb_11:1031128863624925234>"],
+      短暫陣雨        : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
       多雲短暫陣雨      : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
       多雲時陰短暫陣雨    : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
     };
@@ -32,6 +33,10 @@ function emoji(i, time) {
     return ":white_sun_small_cloud:";
   }
 }
+
+const WarningIcons = {
+  豪雨特報: "https://upload.cc/i1/2023/07/31/0IG7ED.png",
+};
 
 const WindDirections = {
   偏北風 : "↑",
@@ -157,7 +162,7 @@ module.exports = {
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
                     name    : CWBForecast.warn_id[id],
-                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : WarningIcons[warnings[id].title] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                     url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
@@ -317,7 +322,7 @@ module.exports = {
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
                     name    : CWBForecast.warn_id[id],
-                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : WarningIcons[warnings[id].title] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                     url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
