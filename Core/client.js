@@ -1,5 +1,6 @@
-const { Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
+const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const KamiDatabase = require("../Database/KamiDatabase");
+const config = require("../config");
 const fs = require("fs");
 const path = require("path");
 
@@ -77,5 +78,21 @@ Kami.data = {
 };
 
 Kami.eqws - require("./websocket")(Kami, 5000);
+require("../API/tdx").TDX.init(process.env.TDX_ID, process.env.TDX_SECRET).then(tdx => {
+  Kami.tdx = tdx;
+
+  const liveboard = () => {
+    tdx.TRA.getStationLiveboard(1000).then(data => {
+      console.log(data.SrcUpdateTime.replace("T", " ").replace("+08:00", ""));
+      for (const train of data.StationLiveBoards)
+        console.log(`${train.TrainNo} ${train.TrainTypeName.Zh_tw} 往${train.EndingStationName.Zh_tw}\n  ${train.StationName.Zh_tw} 月台 ${train.Platform} | ${train.ScheduleArrivalTime} --> ${train.ScheduleDepartureTime} ${train.DelayTime > 0 ? `| 晚${train.DelayTime}分` : "| 準 點"}`);
+
+      console.log();
+    });
+  };
+
+  liveboard();
+  setTimeout(liveboard, 60000);
+});
 
 module.exports = { Kami };
