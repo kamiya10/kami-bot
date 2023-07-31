@@ -13,8 +13,20 @@ class AQI {
     api  : "https://data.epa.gov.tw/api/v2/",
   };
 
-  async getCountyNames(time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${(time.getDate() - 1 < 0 ? time.getMonth() : time.getMonth() + 1).toString().padStart(2, "0")}${(time.getHours() - 1 < 0 ? time.getDate() - 1 : time.getDate()).toString().padStart(2, "0")}${(time.getHours() - 1 < 0 ? 23 : time.getHours() - 1).toString().padStart(2, "0")}`;
+  async getSystemTime() {
+    return (await (await fetch("https://airtw.epa.gov.tw/ajax.aspx", {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      body   : "Target=system_time",
+      method : "POST",
+    })).json()).tw_time;
+  }
+
+  async getCountyNames(time) {
+    const timeStr = time != undefined
+      ? `${time.getFullYear()}${`${time.getMonth() + 1}`.padStart(2, "0")}${`${time.getDate()}`.padStart(2, "0")}${`${time.getHours() - 1 < 0 ? 0 : time.getHours() - 1}`.padStart(2, "0")}`
+      : await this.getSystemTime();
     const url = AQI.#baseurl.json + `GetCounty/GetCounty_${timeStr}.json`;
     const res = await fetch(url);
 
@@ -28,7 +40,9 @@ class AQI {
   }
 
   async getSiteIds(county, time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate()}${(time.getHours() - 1 < 0 ? 0 : time.getHours() - 1).toString().padStart(2, "0")}`;
+    const timeStr = time != undefined
+      ? `${time.getFullYear()}${`${time.getMonth() + 1}`.padStart(2, "0")}${`${time.getDate()}`.padStart(2, "0")}${`${time.getHours() - 1 < 0 ? 0 : time.getHours() - 1}`.padStart(2, "0")}`
+      : await this.getSystemTime();
     const url = AQI.#baseurl.json + `GetSite/GetSite_${county}_${timeStr}.json`;
     const res = await fetch(url);
 
@@ -42,7 +56,9 @@ class AQI {
   }
 
   async getSiteData(siteId, time = new Date(Date.now())) {
-    const timeStr = `${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${(time.getHours() - 1 < 0 ? 0 : time.getHours() - 1).toString().padStart(2, "0")}`;
+    const timeStr = time != undefined
+      ? `${time.getFullYear()}${`${time.getMonth() + 1}`.padStart(2, "0")}${`${time.getDate()}`.padStart(2, "0")}${`${time.getHours() - 1 < 0 ? 0 : time.getHours() - 1}`.padStart(2, "0")}`
+      : await this.getSystemTime();
     const url = AQI.#baseurl.json + `airlist/airlist_${siteId}_${timeStr}.json`;
     const res = await fetch(url);
 
