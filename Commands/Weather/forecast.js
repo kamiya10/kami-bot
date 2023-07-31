@@ -7,6 +7,8 @@ const cwb_Forecast = new CWBForecast(process.env.CWB_TOKEN);
 function emoji(i, time) {
   try {
     const e = {
+      晴           : ["<:cwb_01:1135494700816670721>", "<:cwb_01n:1135494738166939668>"],
+      陰           : ["<:cwb_07:986836830899032086>", "<:cwb_07:986836830899032086>"],
       陰天          : ["<:cwb_07:986836830899032086>", "<:cwb_07:986836830899032086>"],
       多雲          : ["<:cwb_04:987249051437260820>", "<:cwb_04n:986837281123999785>"],
       多雲時晴        : ["<:cwb_04:987249051437260820>", "<:cwb_04n:986837281123999785>"],
@@ -402,7 +404,7 @@ module.exports = {
             if (!fields.length)
               for (const t of time)
                 fields.push({
-                  name  : `${timestamp(new Date(t.startTime), TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value)} **${t.elementValue[0].value}**`,
+                  name  : `${timestamp(new Date(t.startTime), TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value, new Date(t.startTime).getHours >= 18 ? "晚" : "")} **${t.elementValue[0].value}**`,
                   page  : t.startTime,
                   value : "",
                 });
