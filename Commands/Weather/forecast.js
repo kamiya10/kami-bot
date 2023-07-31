@@ -462,7 +462,7 @@ module.exports = {
 
             const time = new Date(fields.find(v => new Date(v.page).getDate() == date).page);
             buttons.push(new ButtonBuilder()
-              .setStyle(ButtonStyle.Secondary)
+              .setStyle(buttons.length ? ButtonStyle.Secondary : ButtonStyle.Primary)
               .setLabel(`${time.getMonth() + 1}/${time.getDate()} (${[ "日", "一", "二", "三", "四", "五", "六" ][time.getDay()]})`)
               .setCustomId(`forecast-${paging.indexOf(date)}`));
           }
@@ -481,6 +481,9 @@ module.exports = {
           sc.on("collect", inter => {
             const newembeds = inter.message.embeds;
             newembeds.splice(forecaseembedindex, 1, pages[inter.customId.split("-")[1]]);
+            for (const index in buttons)
+              buttons[index].setStyle(index == inter.customId.split("-")[1] ? ButtonStyle.Primary : ButtonStyle.Secondary);
+            buttons[inter.customId.split("-")[1]].setStyle(ButtonStyle.Primary);
             inter.update({
               embeds     : newembeds,
               components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] }), new ActionRowBuilder({ components: buttons })],
