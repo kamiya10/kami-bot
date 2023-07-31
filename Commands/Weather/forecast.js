@@ -35,8 +35,7 @@ function emoji(i, time) {
 }
 
 const WarningIcons = {
-  豪雨特報      : "https://upload.cc/i1/2023/07/31/0IG7ED.png",
-  "豪(大)雨特報" : "https://upload.cc/i1/2023/07/31/0IG7ED.png",
+  W26: "https://upload.cc/i1/2023/07/31/0IG7ED.png",
 };
 
 const WindDirections = {
@@ -163,7 +162,7 @@ module.exports = {
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
                     name    : CWBForecast.warn_id[id],
-                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : WarningIcons[warnings[id].title] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : (WarningIcons[id] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png"),
                     url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
@@ -323,7 +322,7 @@ module.exports = {
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
                     name    : CWBForecast.warn_id[id],
-                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : WarningIcons[warnings[id].title] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png",
+                    iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : (WarningIcons[id] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png"),
                     url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
