@@ -3,6 +3,7 @@ const KamiDatabase = require("../Database/KamiDatabase");
 const config = require("../config");
 const fs = require("fs");
 const path = require("path");
+const chalk = require("chalk");
 
 const KamiIntents = [
   GatewayIntentBits.MessageContent,
@@ -82,17 +83,17 @@ require("../API/tdx").TDX.init(process.env.TDX_ID, process.env.TDX_SECRET).then(
   Kami.tdx = tdx;
 
   const liveboard = () => {
-    tdx.TRA.getStationLiveboard(1000).then(data => {
+    tdx.TRA.getStationLiveboard("1000").then(data => {
       console.log(data.SrcUpdateTime.replace("T", " ").replace("+08:00", ""));
       for (const train of data.StationLiveBoards)
-        console.log(`${train.TrainNo} ${train.TrainTypeName.Zh_tw} 往${train.EndingStationName.Zh_tw}\n  ${train.StationName.Zh_tw} 月台 ${train.Platform} | ${train.ScheduleArrivalTime} --> ${train.ScheduleDepartureTime} ${train.DelayTime > 0 ? `| 晚${train.DelayTime}分` : "| 準 點"}`);
+        console.log(`${chalk.yellow(train.TrainNo)} ${chalk.blueBright(train.TrainTypeName.Zh_tw)} ${chalk.yellow(`往${train.EndingStationName.Zh_tw}`)}\n  ${train.StationName.Zh_tw}車站 月台${train.Platform} | ${train.ScheduleArrivalTime} --> ${train.ScheduleDepartureTime} ${train.DelayTime > 0 ? `| ${chalk.redBright(`晚 ${train.DelayTime} 分`)}` : `| ${chalk.greenBright("準   點")}`}`);
 
       console.log();
     });
   };
 
   liveboard();
-  setTimeout(liveboard, 60000);
+  setInterval(liveboard, 60000);
 });
 
 module.exports = { Kami };

@@ -7,13 +7,21 @@ type LocalizedString = {
   /**
    * 英文名稱
    */
-  En: string
+  En: string,
 }
 
 /** 行駛方向  */
 const enum TrainDirection {
+  /** 順行 */
   NorthBound = "0",
-  SouthBound = "1"
+  
+  /** 逆行 */
+  SouthBound = "1",
+}
+
+const enum TrainDirectionName {
+  [TrainDirection.NorthBound] = "順行",
+  [TrainDirection.NorthBound] = "逆行",
 }
 
 /** 車種簡碼 */
@@ -46,6 +54,19 @@ const enum TrainType {
   TzeChiangLimitedExpress3000 = "11"
 }
 
+/** 車種名稱 */
+const enum TrainTypeName {
+  [TrainType.TarokoExpress]               = "太魯閣自強號列車",
+  [TrainType.PuyumaExpress]               = "普悠瑪自強號列車",
+  [TrainType.TzeChiangLimitedExpress]     = "自強號列車",
+  [TrainType.ChuKuangExpress]             = "莒光號列車",
+  [TrainType.FuHsingSemiExpress]          = "復興號列車",
+  [TrainType.LocalTrain]                  = "區間車",
+  [TrainType.OrdinaryTrain]               = "普快車",
+  [TrainType.FastLocalTrain]              = "區間快車",
+  [TrainType.TzeChiangLimitedExpress3000] = "自強號 EMU3000 型列車",
+}
+
 /** 山海線類型 */
 const enum TripLine {
   /** 不經山海線 */
@@ -58,7 +79,14 @@ const enum TripLine {
   CoastLine = "2",
   
   /** 成追線 */
-  ChengZhuiLine = "3"
+  ChengZhuiLine = "3",
+}
+
+const enum TripLineName {
+  [TripLine.None]          = "不經山海線",
+  [TripLine.MountainLine]  = "山線",
+  [TripLine.CoastLine]     = "海線",
+  [TripLine.ChengzhuiLine] = "成追線",
 }
 
 declare interface BaseRequestOptions {
@@ -513,7 +541,7 @@ declare class TRA {
    * @returns 時刻表資料
    */
   getGeneralTimetable(options?: BaseRequestOptions): Promise<Timetable>;
-  getStationLiveboard(stationId?: number, options?: BaseRequestOptions): Promise<Timetable>;
+  getStationLiveboard(stationId?: string, options?: BaseRequestOptions): Promise<Timetable>;
 }
 
 declare class TDX {
@@ -532,4 +560,4 @@ declare class TDX {
   static init(clientId: string, clientSecret: string, defaultRequestHeaders?: Record<string, string>): Promise<TDX>
 }
 
-export { TDX, TrainDirection, TrainType, TripLine, Timetable, TrainTimetable };
+export { TDX, TrainDirection, TrainDirectionName, TrainType, TrainTypeName, TripLine, TripLineName, Timetable, TrainTimetable, TrainInfo, TimetableStop };

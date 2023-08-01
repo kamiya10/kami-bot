@@ -15,7 +15,7 @@ const cache = (key, data, expire) => {
     data,
   };
 
-  writeFileSync(cacheFile, JSON.stringify(cachedData));
+  writeFileSync(cacheFile, JSON.stringify(cachedData), { encoding: "utf-8" });
 };
 
 const checkExpires = (timestamp) => timestamp && Date.now() > timestamp;
@@ -25,7 +25,7 @@ cache.get = (key) => {
     if (checkExpires(cachedData[key].expiresTimestamp))
       delete cachedData[key];
 
-  writeFileSync(cacheFile, JSON.stringify(cachedData));
+  writeFileSync(cacheFile, JSON.stringify(cachedData), { encoding: "utf-8" });
   return cachedData[key]?.data;
 };
 
@@ -39,7 +39,7 @@ if (existsSync(cacheFile)) {
     if (checkExpires(cachedData[key].expiresTimestamp))
       delete cachedData[key];
 
-  writeFileSync(cacheFile, JSON.stringify(cachedData));
+  writeFileSync(cacheFile, JSON.stringify(cachedData), { encoding: "utf-8" });
 }
 
 module.exports = { cache };

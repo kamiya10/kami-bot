@@ -7,7 +7,7 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction } interaction The interaction which was created
    */
   async execute(client, interaction) {
-    if (!(interaction.isCommand() || interaction.isMessageContextMenuCommand())) return;
+    if (!(interaction.isCommand() || interaction.isMessageContextMenuCommand() || interaction.isAutocomplete())) return;
 
     /**
      * @type {{data: import("discord.js").ApplicationCommandData, defer: boolean, execute: Promise}}
@@ -17,7 +17,14 @@ module.exports = {
     if (!command) return;
 
     try {
-      if (command.defer) await interaction.deferReply({ ephemeral: command.ephemeral });
+      if (interaction.isAutocomplete()) {
+        await command.autoComplete(interaction);
+        return;
+      }
+
+      if (command.defer)
+        await interaction.deferReply({ ephemeral: command.ephemeral });
+
       await command.execute(interaction);
     } catch (error) {
       console.error(error);

@@ -13,15 +13,33 @@ const TrainDirection = Object.freeze({
   SouthBound : "1",
 });
 
+const TrainDirectionName = Object.freeze({
+  [TrainDirection.NorthBound] : "順行",
+  [TrainDirection.SouthBound] : "逆行",
+});
+
 const TrainType = Object.freeze({
-  TarokoExpress           : "1",
-  PuyumaExpress           : "2",
-  TzeChiangLimitedExpress : "3",
-  ChuKuangExpress         : "4",
-  FuHsingSemiExpress      : "5",
-  LocalTrain              : "6",
-  FastTrain               : "7",
-  FastLocalTrain          : "10",
+  TarokoExpress               : "1",
+  PuyumaExpress               : "2",
+  TzeChiangLimitedExpress     : "3",
+  ChuKuangExpress             : "4",
+  FuHsingSemiExpress          : "5",
+  LocalTrain                  : "6",
+  OrdinaryTrain               : "7",
+  FastLocalTrain              : "10",
+  TzeChiangLimitedExpress3000 : "11",
+});
+
+const TrainTypeName = Object.freeze({
+  [TrainType.TarokoExpress]               : "太魯閣自強號列車",
+  [TrainType.PuyumaExpress]               : "普悠瑪自強號列車",
+  [TrainType.TzeChiangLimitedExpress]     : "自強號列車",
+  [TrainType.ChuKuangExpress]             : "莒光號列車",
+  [TrainType.FuHsingSemiExpress]          : "復興號列車",
+  [TrainType.LocalTrain]                  : "區間車",
+  [TrainType.OrdinaryTrain]               : "普快車",
+  [TrainType.FastLocalTrain]              : "區間快車",
+  [TrainType.TzeChiangLimitedExpress3000] : "自強號 EMU3000 型列車",
 });
 
 const TripLine = Object.freeze({
@@ -29,6 +47,13 @@ const TripLine = Object.freeze({
   MountainLine  : "1",
   CoastLine     : "2",
   ChengzhuiLine : "3",
+});
+
+const TripLineName = Object.freeze({
+  [TripLine.None]          : "不經山海線",
+  [TripLine.MountainLine]  : "山線",
+  [TripLine.CoastLine]     : "海線",
+  [TripLine.ChengzhuiLine] : "成追線",
 });
 
 class TRA {
@@ -132,4 +157,4 @@ class TDX {
   }
 }
 
-module.exports = { TDX, TrainDirection, TrainType, TripLine };
+module.exports = { TDX, TrainDirection, TrainDirectionName, TrainType, TrainTypeName, TripLine, TripLineName };
