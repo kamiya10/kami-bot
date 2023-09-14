@@ -1,31 +1,31 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, TimestampStyles, time: timestamp } = require("discord.js");
-const CWBForecast = require("../../API/cwb_forecast");
-const cwb_Forecast = new CWBForecast(process.env.CWB_TOKEN);
+const CWAForecast = require("../../API/cwa_forecast");
+const cwa_Forecast = new CWAForecast(process.env.CWA_TOKEN);
 
 function emoji(i, time) {
   try {
     const e = {
-      晴           : ["<:cwb_01:1135494700816670721>", "<:cwb_01n:1135494738166939668>"],
-      陰           : ["<:cwb_07:986836830899032086>", "<:cwb_07:986836830899032086>"],
-      陰天          : ["<:cwb_07:986836830899032086>", "<:cwb_07:986836830899032086>"],
-      多雲          : ["<:cwb_04:987249051437260820>", "<:cwb_04n:986837281123999785>"],
-      多雲時晴        : ["<:cwb_04:987249051437260820>", "<:cwb_04n:986837281123999785>"],
+      晴           : ["<:cwa_01:1135494700816670721>", "<:cwa_01n:1135494738166939668>"],
+      陰           : ["<:cwa_07:986836830899032086>", "<:cwa_07:986836830899032086>"],
+      陰天          : ["<:cwa_07:986836830899032086>", "<:cwa_07:986836830899032086>"],
+      多雲          : ["<:cwa_04:987249051437260820>", "<:cwa_04n:986837281123999785>"],
+      多雲時晴        : ["<:cwa_04:987249051437260820>", "<:cwa_04n:986837281123999785>"],
       多雲時陰        : [":cloud:", ":cloud:"],
       陰時多雲        : [":cloud:", ":cloud:"],
-      晴時多雲        : ["<:cwb_02:987252769553539102>", "<:cwb_02n:987252771189301288>"],
-      多雲晴時        : ["<:cwb_03:987252772892200970>", "<:cwb_03n:987252774473457706>"],
-      多雲時陰陣雨或雷雨   : ["<:cwb_16:979383845256319047>", "<:cwb_16:979383845256319047>"],
-      陰時多雲陣雨或雷雨   : ["<:cwb_17:978824219330768916>", "<:cwb_17:978824219330768916>"],
-      陰陣雨或雷雨      : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
-      陰短暫陣雨或雷雨    : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
-      陰時多雲短暫陣雨或雷雨 : ["<:cwb_18:978823361427800135>", "<:cwb_18:978823361427800135>"],
-      多雲午後短暫雷陣雨   : ["<:cwb_22:991295064447914105>", "<:cwb_22n:991294935913480192>"],
-      陰短暫陣雨       : ["<:cwb_11:1031128863624925234>", "<:cwb_11:1031128863624925234>"],
-      短暫陣雨        : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
-      多雲短暫陣雨      : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
-      多雲時陰短暫陣雨    : ["<:cwb_08:1031129699893645323>", "<:cwb_08:1031129699893645323>"],
+      晴時多雲        : ["<:cwa_02:987252769553539102>", "<:cwa_02n:987252771189301288>"],
+      多雲晴時        : ["<:cwa_03:987252772892200970>", "<:cwa_03n:987252774473457706>"],
+      多雲時陰陣雨或雷雨   : ["<:cwa_16:979383845256319047>", "<:cwa_16:979383845256319047>"],
+      陰時多雲陣雨或雷雨   : ["<:cwa_17:978824219330768916>", "<:cwa_17:978824219330768916>"],
+      陰陣雨或雷雨      : ["<:cwa_18:978823361427800135>", "<:cwa_18:978823361427800135>"],
+      陰短暫陣雨或雷雨    : ["<:cwa_18:978823361427800135>", "<:cwa_18:978823361427800135>"],
+      陰時多雲短暫陣雨或雷雨 : ["<:cwa_18:978823361427800135>", "<:cwa_18:978823361427800135>"],
+      多雲午後短暫雷陣雨   : ["<:cwa_22:991295064447914105>", "<:cwa_22n:991294935913480192>"],
+      陰短暫陣雨       : ["<:cwa_11:1031128863624925234>", "<:cwa_11:1031128863624925234>"],
+      短暫陣雨        : ["<:cwa_08:1031129699893645323>", "<:cwa_08:1031129699893645323>"],
+      多雲短暫陣雨      : ["<:cwa_08:1031129699893645323>", "<:cwa_08:1031129699893645323>"],
+      多雲時陰短暫陣雨    : ["<:cwa_08:1031129699893645323>", "<:cwa_08:1031129699893645323>"],
     };
 
     return e[i][time.includes("晚") ? 1 : 0] ?? ":white_sun_small_cloud:";
@@ -63,7 +63,7 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const { list: warnList, ...warnings } = await cwb_Forecast._warns();
+    const { list: warnList, ...warnings } = await cwa_Forecast._warns();
     const now = new Date(Date.now());
     const imageTimestamp = "" + now.getFullYear() + (now.getMonth() + 1).toString().padStart(2, "0") + now.getHours().toString().padStart(2, "2") + "00";
     const embedList = [];
@@ -76,16 +76,16 @@ module.exports = {
 
     embedList.push(new EmbedBuilder()
       .setDescription("請使用下方下拉式選單選取欲查詢天氣地區")
-      .setImage(`https://www.cwb.gov.tw/Data/upload/WT_L20230528174525_1.png?T=${imageTimestamp}`));
+      .setImage(`https://www.cwa.gov.tw/Data/upload/WT_L20230528174525_1.png?T=${imageTimestamp}`));
 
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
       .setOptions(
-        Object.keys(CWBForecast.county_code2).map(k => ({
+        Object.keys(CWAForecast.county_code2).map(k => ({
           label       : k,
           value       : k,
-          description : CWBForecast.county_code2[k],
+          description : CWAForecast.county_code2[k],
         })),
       );
 
@@ -118,17 +118,17 @@ module.exports = {
           await i.deferUpdate();
 
           county = county.setOptions(
-            Object.keys(CWBForecast.county_code2).map(k => ({
+            Object.keys(CWAForecast.county_code2).map(k => ({
               label       : k,
               value       : k,
-              description : CWBForecast.county_code2[k],
+              description : CWAForecast.county_code2[k],
               default     : k == _currentCounty,
             })),
           ).setDisabled(true);
 
           town = town
             .setOptions(
-              CWBForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
+              CWAForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
                 label       : v,
                 value       : v,
                 description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
@@ -142,10 +142,10 @@ module.exports = {
             });
 
           if (!_county_data)
-            _county_data = (await cwb_Forecast.forecast())?.records;
+            _county_data = (await cwa_Forecast.forecast())?.records;
 
           if (!_hazards)
-            _hazards = (await cwb_Forecast.hazards())?.records;
+            _hazards = (await cwa_Forecast.hazards())?.records;
 
           const embeds = [];
 
@@ -161,9 +161,9 @@ module.exports = {
                 const warn = new EmbedBuilder()
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
-                    name    : CWBForecast.warn_id[id],
+                    name    : CWAForecast.warn_id[id],
                     iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : (WarningIcons[id] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png"),
-                    url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
+                    url     : `https://www.cwa.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
                 embeds.push(warn);
@@ -181,12 +181,12 @@ module.exports = {
                   }
 
                   case "W37":{
-                    warn.setThumbnail("https://www.cwb.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
+                    warn.setThumbnail("https://www.cwa.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
                     break;
                   }
 
                   default:
-                    warn.setThumbnail(`https://www.cwb.gov.tw/Data/warning/${id}_C.png`);
+                    warn.setThumbnail(`https://www.cwa.gov.tw/Data/warning/${id}_C.png`);
                     break;
                 }
               }
@@ -215,21 +215,21 @@ module.exports = {
                   iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                 })
                 .setTitle(e.Title)
-                .setURL(`https://www.cwb.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
+                .setURL(`https://www.cwa.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
                 .setDescription(e.Description + e.Instruction)
-                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
+                .setImage(`https://www.cwa.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
           }
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
               name    : "中央氣象局",
               iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
-              url     : "https://www.cwb.gov.tw/",
+              url     : "https://www.cwa.gov.tw/",
             })
             .setTitle(`${_currentCounty} ${_county_data.datasetDescription}`)
-            .setURL(`https://www.cwb.gov.tw/V8/C/W/County/County.html?CID=${CWBForecast.cid[_currentCounty]}`)
+            .setURL(`https://www.cwa.gov.tw/V8/C/W/County/County.html?CID=${CWAForecast.cid[_currentCounty]}`)
             .setColor(Colors.Blue)
-            .setImage(await cwb_Forecast.ecard(_currentCounty))
+            .setImage(await cwa_Forecast.ecard(_currentCounty))
             .setTimestamp();
 
           const location = _county_data.location.find(e => e.locationName == _currentCounty);
@@ -275,7 +275,7 @@ module.exports = {
               _currentTownPage = 1;
 
             town = town.setOptions(
-              CWBForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
+              CWAForecast.town_pages[_currentCounty][_currentTownPage].map(v => ({
                 label       : v,
                 value       : v,
                 description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
@@ -291,7 +291,7 @@ module.exports = {
 
           county = county.setDisabled(true);
           town = town.setOptions(
-            CWBForecast.town_pages[_currentCounty][0].map(v => ({
+            CWAForecast.town_pages[_currentCounty][0].map(v => ({
               label       : v,
               value       : v,
               description : (v == "...") ? (_currentTownPage) ? "上一頁" : "下一頁" : _currentCounty,
@@ -304,7 +304,7 @@ module.exports = {
               embeds     : [loading],
               components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [town] })],
             });
-            _town_data = (await cwb_Forecast.forecast_county(_currentCounty))?.records;
+            _town_data = (await cwa_Forecast.forecast_county(_currentCounty))?.records;
           }
 
           const embeds = [];
@@ -321,9 +321,9 @@ module.exports = {
                 const warn = new EmbedBuilder()
                   .setColor(warnings[id].title.includes("解除") ? Colors.Green : Colors.Orange)
                   .setAuthor({
-                    name    : CWBForecast.warn_id[id],
+                    name    : CWAForecast.warn_id[id],
                     iconURL : warnings[id].title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : (WarningIcons[id] ?? "https://upload.cc/i1/2022/05/26/VuPXhM.png"),
-                    url     : `https://www.cwb.gov.tw/V8/C/P/Warning/${id}.html`,
+                    url     : `https://www.cwa.gov.tw/V8/C/P/Warning/${id}.html`,
                   })
                   .setDescription(`${timestamp(new Date(warnings[id].issued), TimestampStyles.ShortDateTime)} → ${timestamp(new Date(warnings[id].validto), TimestampStyles.ShortDateTime)}\n\n${warnings[id].content}`);
                 embeds.push(warn);
@@ -341,12 +341,12 @@ module.exports = {
                   }
 
                   case "W37":{
-                    warn.setThumbnail("https://www.cwb.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
+                    warn.setThumbnail("https://www.cwa.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
                     break;
                   }
 
                   default:
-                    warn.setThumbnail(`https://www.cwb.gov.tw/Data/warning/${id}_C.png`);
+                    warn.setThumbnail(`https://www.cwa.gov.tw/Data/warning/${id}_C.png`);
                     break;
                 }
               }
@@ -375,9 +375,9 @@ module.exports = {
                   iconURL : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
                 })
                 .setTitle(e.Title)
-                .setURL(`https://www.cwb.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
+                .setURL(`https://www.cwa.gov.tw/V8/C/P/Warning/W33_Cell.html?ID=${e.ID}`)
                 .setDescription(e.Description + e.Instruction)
-                .setImage(`https://www.cwb.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
+                .setImage(`https://www.cwa.gov.tw/Data/warning/w33/${e.ImgFile}?T=${imageTimestamp}`)));
           }
 
           const location = _town_data.locations[0].location.find(e => e.locationName == _currentTown);
@@ -386,12 +386,12 @@ module.exports = {
             .setAuthor({
               name    : "中央氣象局",
               iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
-              url     : "https://www.cwb.gov.tw/",
+              url     : "https://www.cwa.gov.tw/",
             })
             .setTitle(`${_currentCounty} ${_currentTown} ${_county_data.datasetDescription}`)
-            .setURL(`https://www.cwb.gov.tw/V8/C/W/Town/Town.html?TID=${location?.geocode}`)
+            .setURL(`https://www.cwa.gov.tw/V8/C/W/Town/Town.html?TID=${location?.geocode}`)
             .setColor(Colors.Blue)
-            .setImage(await cwb_Forecast.ecard(_currentCounty))
+            .setImage(await cwa_Forecast.ecard(_currentCounty))
             .setTimestamp();
 
           const elements = new Map(location.weatherElement.map(weatherElement => [weatherElement.elementName, weatherElement]));
@@ -581,8 +581,8 @@ function addTyphoonWarnEmbed(arr, data) {
       iconURL : data.title.includes("解除") ? "https://upload.cc/i1/2023/05/24/9q6as4.png" : "https://upload.cc/i1/2022/05/26/VuPXhM.png",
     })
     .setTitle(title.join(" ").replace(" ", "："))
-    .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_WARN.html")
-    .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_WARN/B20.png?T=${imageTimestamp}`)
+    .setURL("https://www.cwa.gov.tw/V8/C/P/Typhoon/TY_WARN.html")
+    .setImage(`https://www.cwa.gov.tw/Data/typhoon/TY_WARN/B20.png?T=${imageTimestamp}`)
     .addFields({
       name   : "發布時間",
       value  : timestamp(issue, TimestampStyles.ShortDateTime),

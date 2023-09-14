@@ -25,8 +25,8 @@ module.exports = {
 				+ (time.getHours() < 10 ? "0" : "") + time.getHours()
 				+ (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
 				+ (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
-      const cwb_image
-        = "https://www.cwb.gov.tw/Data/earthquake/img/EC"
+      const cwa_image
+        = "https://www.cwa.gov.tw/Data/earthquake/img/EC"
         + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
         + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
         + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
@@ -34,7 +34,7 @@ module.exports = {
         + "_H.png";
 
       const checker = (retryCount = 0) => {
-        fetch(cwb_image, { method: "GET" }).then(async res => {
+        fetch(cwa_image, { method: "GET" }).then(async res => {
           if (res.ok) {
             const buf = await res.buffer();
 
@@ -44,7 +44,7 @@ module.exports = {
                * @type {Message}
                */
               const sent = await client.channels.cache.get("986968207111909427").send({ files: [new AttachmentBuilder().setFile(buf)] });
-              Earthquake.cwb_image = sent.attachments.first().url;
+              Earthquake.cwa_image = sent.attachments.first().url;
               resolve(true);
             }
           } else {

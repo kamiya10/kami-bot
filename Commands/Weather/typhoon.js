@@ -1,7 +1,7 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, SlashCommandBuilder, TimestampStyles, time } = require("discord.js");
-const cwb_Forecast = new (require("../../API/cwb_forecast"))(process.env.CWB_TOKEN);
+const cwa_Forecast = new (require("../../API/cwa_forecast"))(process.env.CWA_TOKEN);
 
 const CycloneLevelColors = {
   熱帶性低氣壓 : Colors.Blue,
@@ -49,7 +49,7 @@ module.exports = {
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const data = (await cwb_Forecast.typhoon())?.records;
+    const data = (await cwa_Forecast.typhoon())?.records;
     const cyclones = [];
 
     if (data)
@@ -66,28 +66,28 @@ module.exports = {
           .setAuthor({
             name    : "中央氣象局",
             iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
-            url     : "https://www.cwb.gov.tw/",
+            url     : "https://www.cwa.gov.tw/",
           })
-          .setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName}`)
-          .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
+          .setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwaTyphoonName}`)
+          .setURL("https://www.cwa.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
           .setDescription(`${time(new Date(current.fixTime), TimestampStyles.ShortDateTime)} 的中心位置在${coord.latitude == 0 ? "" : coord.latitude > 0 ? "北緯" : "南緯"} ${coord.latitude} 度，${coord.latitude == 0 ? "" : coord.latitude > 0 ? "東經" : "西經"} ${coord.longitude} 度，以每小時 ${cyclone.forecastData.fix[0].movingSpeed} 公里速度，向${Bearings[cyclone.forecastData.fix[0].movingDirection]}進行。中心氣壓 ${current.pressure} 百帕，近中心最大風速每秒 ${current.maxWindSpeed} 公尺，瞬間最大陣風每秒 ${current.maxGustSpeed} 公尺，七級風暴風半徑 ${current.circleOf15Ms.radius} 公里${current.circleOf25Ms ? `，十級風暴風半徑 ${current.circleOf25Ms.radius} 公里。` : "。"}`)
-          .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_NEWS/PTA_${cTimeId}-${lastForecast.tau}_${cyclone.typhoonName}_zhtw.png`);
+          .setImage(`https://www.cwa.gov.tw/Data/typhoon/TY_NEWS/PTA_${cTimeId}-${lastForecast.tau}_${cyclone.typhoonName}_zhtw.png`);
 
         const mainEmbedRadiirImage = new EmbedBuilder()
-          .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
-          .setImage(`https://www.cwb.gov.tw/Data/typhoon/TY_NEWS/WSP-MAP_${cTimeId}_${cyclone.typhoonName}_zhtw.png`);
+          .setURL("https://www.cwa.gov.tw/V8/C/P/Typhoon/TY_NEWS.html")
+          .setImage(`https://www.cwa.gov.tw/Data/typhoon/TY_NEWS/WSP-MAP_${cTimeId}_${cyclone.typhoonName}_zhtw.png`);
 
         const historyEmbed = new EmbedBuilder()
           .setColor(CycloneLevelColors[getCycloneLevel(current.maxWindSpeed)])
           .setAuthor({
             name    : "中央氣象局",
             iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
-            url     : "https://www.cwb.gov.tw/",
+            url     : "https://www.cwa.gov.tw/",
           })
-          .setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName} - 歷史路徑`)
-          .setURL("https://www.cwb.gov.tw/V8/C/P/Typhoon/TY_NEWS.html");
+          .setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwaTyphoonName} - 歷史路徑`)
+          .setURL("https://www.cwa.gov.tw/V8/C/P/Typhoon/TY_NEWS.html");
 
-        const forecastEmbed = new EmbedBuilder(historyEmbed.data).setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwbTyphoonName} - 預測路徑`);
+        const forecastEmbed = new EmbedBuilder(historyEmbed.data).setTitle(`${getCycloneLevel(current.maxWindSpeed, current.coordinate)}：${cyclone.typhoonName} ${cyclone.cwaTyphoonName} - 預測路徑`);
 
         let bars = [];
 

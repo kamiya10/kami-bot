@@ -20,10 +20,10 @@ interface Forecast {
 
 }
 
-declare module "CWB_Forecast" {
-    export class CWB_Forcast {
+declare module "CWA_Forecast" {
+    export class CWA_Forcast {
         constructor(apikey: string)
-        static #baseurl = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/";
+        static #baseurl = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/";
         async forecast(options?: BaseRequestOptions): Forecast
         async forecast_county(options?: BaseRequestOptions): CountyForecast
 

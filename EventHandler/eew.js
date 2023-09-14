@@ -59,7 +59,7 @@ module.exports = {
 			 */
       const event = JSON.parse(message.content);
 
-      if (event.topic != "CWB_EEW") return;
+      if (event.topic != "CWA_EEW") return;
       logger.debug(`${this.name} triggered`);
 
       const GuildSetting = client.database.GuildDatabase.getAll(["eew_channel", "eew_mention"]);

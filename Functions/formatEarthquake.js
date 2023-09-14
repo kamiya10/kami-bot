@@ -64,7 +64,7 @@ function formatEarthquake(Earthquake, style = 0) {
     + (time.getHours() < 10 ? "0" : "") + time.getHours()
     + (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
     + (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
-  const cwb_code
+  const cwa_code
     = "EQ"
     + Earthquake.EarthquakeNo
     + "-"
@@ -74,7 +74,7 @@ function formatEarthquake(Earthquake, style = 0) {
     + (time.getHours() < 10 ? "0" : "") + time.getHours()
     + (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
     + (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
-  const cwb_codeYear
+  const cwa_codeYear
     = "EQ"
     + Earthquake.EarthquakeNo
     + "-"
@@ -86,12 +86,12 @@ function formatEarthquake(Earthquake, style = 0) {
     + (time.getHours() < 10 ? "0" : "") + time.getHours()
     + (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
     + (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
-  const cwb_url
-    = "https://www.cwb.gov.tw/V8/C/E/EQ/"
-    + cwb_code
+  const cwa_url
+    = "https://www.cwa.gov.tw/V8/C/E/EQ/"
+    + cwa_code
     + ".html";
-  const cwb_image
-    = Earthquake.cwb_image ? Earthquake.cwb_image : "https://www.cwb.gov.tw/Data/earthquake/img/EC"
+  const cwa_image
+    = Earthquake.cwa_image ? Earthquake.cwa_image : "https://www.cwa.gov.tw/Data/earthquake/img/EC"
     + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
     + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
     + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
@@ -103,7 +103,7 @@ function formatEarthquake(Earthquake, style = 0) {
       new ButtonBuilder()
         .setLabel("地震報告")
         .setStyle(ButtonStyle.Link)
-        .setURL(cwb_url),
+        .setURL(cwa_url),
       new ButtonBuilder()
         .setLabel("地震測報中心")
         .setStyle(ButtonStyle.Link)
@@ -121,7 +121,7 @@ function formatEarthquake(Earthquake, style = 0) {
       const embed = new EmbedBuilder()
         .setColor(colors[Earthquake.ReportColor])
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
-        .setThumbnail(cwb_image)
+        .setThumbnail(cwa_image)
         .setDescription(desc)
         .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
@@ -134,7 +134,7 @@ function formatEarthquake(Earthquake, style = 0) {
       const embed = new EmbedBuilder()
         .setColor(colors[Earthquake.ReportColor])
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
-        .setImage(cwb_image)
+        .setImage(cwa_image)
         .setDescription(desc)
         .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
@@ -154,7 +154,7 @@ function formatEarthquake(Earthquake, style = 0) {
       const embed = new EmbedBuilder()
         .setColor(colors[Earthquake.ReportColor])
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
-        .setImage(cwb_image)
+        .setImage(cwa_image)
         .setDescription(desc)
         .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
@@ -174,8 +174,8 @@ function formatEarthquake(Earthquake, style = 0) {
       const embed = new EmbedBuilder()
         .setColor(colors[Earthquake.ReportColor])
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
-        .setURL(cwb_url)
-        .setImage(cwb_image)
+        .setURL(cwa_url)
+        .setImage(cwa_image)
         .setDescription(desc)
         .setFields(
           ...[
@@ -204,8 +204,8 @@ function formatEarthquake(Earthquake, style = 0) {
       const embed = new EmbedBuilder()
         .setColor(colors[Earthquake.ReportColor])
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
-        .setURL(cwb_url)
-        .setImage(cwb_image)
+        .setURL(cwa_url)
+        .setImage(cwa_image)
         .setDescription(desc)
         .setFields(
           ...[
@@ -227,16 +227,16 @@ function formatEarthquake(Earthquake, style = 0) {
         .forEach(ShakingArea => embed.addFields({ name: ShakingArea.AreaDesc, value: ShakingArea.CountyName }));
 
       const shakemap = new EmbedBuilder()
-        .setURL(cwb_url)
+        .setURL(cwa_url)
         .setImage(Earthquake.ShakemapImageURI);
 
       const pgvmap = new EmbedBuilder()
-        .setURL(cwb_url)
-        .setImage(`https://www.cwb.gov.tw/Data/earthquake/zip/${cwb_codeYear}/${time.getFullYear()}${Earthquake.EarthquakeNo.toString().substring(3)}v.png`);
+        .setURL(cwa_url)
+        .setImage(`https://www.cwa.gov.tw/Data/earthquake/zip/${cwa_codeYear}/${time.getFullYear()}${Earthquake.EarthquakeNo.toString().substring(3)}v.png`);
 
       const pgamap = new EmbedBuilder()
-        .setURL(cwb_url)
-        .setImage(`https://www.cwb.gov.tw/Data/earthquake/zip/${cwb_codeYear}/${time.getFullYear()}${Earthquake.EarthquakeNo.toString().substring(3)}a.png`);
+        .setURL(cwa_url)
+        .setImage(`https://www.cwa.gov.tw/Data/earthquake/zip/${cwa_codeYear}/${time.getFullYear()}${Earthquake.EarthquakeNo.toString().substring(3)}a.png`);
 
       embeds.push(embed);
 

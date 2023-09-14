@@ -2,12 +2,12 @@
 /* eslint-disable array-element-newline */
 const fetch = require("node-fetch").default;
 
-class CWB_Forcast {
+class CWA_Forcast {
   constructor(apikey) {
     this.apikey = apikey;
   }
 
-  static #baseurl = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/";
+  static #baseurl = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/";
 
   /**
 	 * @type {{ "宜蘭縣" : "F-D0047-003", "桃園市" : "F-D0047-007", "新竹縣" : "F-D0047-011", "苗栗縣" : "F-D0047-015", "彰化縣" : "F-D0047-019", "南投縣" : "F-D0047-023", "雲林縣" : "F-D0047-027", "嘉義縣" : "F-D0047-031", "屏東縣" : "F-D0047-035", "臺東縣" : "F-D0047-039", "花蓮縣" : "F-D0047-043", "澎湖縣" : "F-D0047-047", "基隆市" : "F-D0047-051", "新竹市" : "F-D0047-055", "嘉義市" : "F-D0047-059", "臺北市" : "F-D0047-063", "高雄市" : "F-D0047-067", "新北市" : "F-D0047-071", "臺中市" : "F-D0047-075", "臺南市" : "F-D0047-079", "連江縣" : "F-D0047-083", "金門縣" : "F-D0047-087",	}}
@@ -153,7 +153,7 @@ class CWB_Forcast {
    * @returns
    */
   async forecast(options) {
-    let url = CWB_Forcast.#baseurl
+    let url = CWA_Forcast.#baseurl
                 + "F-C0032-001"
                 + `?Authorization=${this.apikey}`;
 
@@ -180,8 +180,8 @@ class CWB_Forcast {
    * @returns
    */
   async forecast_county(county, options) {
-    let url = CWB_Forcast.#baseurl
-              + CWB_Forcast.county_code2[county]
+    let url = CWA_Forcast.#baseurl
+              + CWA_Forcast.county_code2[county]
               + `?Authorization=${this.apikey}`;
 
     if (options)
@@ -202,7 +202,7 @@ class CWB_Forcast {
   }
 
   async hazards() {
-    const url = CWB_Forcast.#baseurl
+    const url = CWA_Forcast.#baseurl
                 + "W-C0033-002"
                 + `?Authorization=${this.apikey}`;
     const r = await fetch(url,
@@ -217,9 +217,9 @@ class CWB_Forcast {
   }
 
   async _warns() {
-    const warnings = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/warn/Warning_Content.js")).text())
+    const warnings = requireFromString((await (await fetch("https://www.cwa.gov.tw/Data/js/warn/Warning_Content.js")).text())
 		+ "\nmodule.exports={WarnAll,WarnContent,WarnContent_W32,WarnContent_W33}", "warnings");
-    const areas = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/warn/Warning_Taiwan.js")).text())
+    const areas = requireFromString((await (await fetch("https://www.cwa.gov.tw/Data/js/warn/Warning_Taiwan.js")).text())
 		+ "\nmodule.exports={WarnTown}", "warning_areas");
 
     const value = {
@@ -243,7 +243,7 @@ class CWB_Forcast {
         for (const cid in areas.WarnTown)
           for (const type in areas.WarnTown[cid])
             if (areas.WarnTown[cid][type].find(v => v.startsWith(id))) {
-              const c = Object.keys(CWB_Forcast.cid).find(key => CWB_Forcast.cid[key] === cid);
+              const c = Object.keys(CWA_Forcast.cid).find(key => CWA_Forcast.cid[key] === cid);
 
               if (!value[id].affectedAreas.includes(c))
                 value[id].affectedAreas.push(c);
@@ -252,7 +252,7 @@ class CWB_Forcast {
     });
 
     if (value.list.includes("TY_WARN")) {
-      const warn_data = requireFromString((await (await fetch("https://www.cwb.gov.tw/Data/js/typhoon/TY_WARN-Data.js")).text())
+      const warn_data = requireFromString((await (await fetch("https://www.cwa.gov.tw/Data/js/typhoon/TY_WARN-Data.js")).text())
       + "\nmodule.exports={PTA_TYPHOON,TY_WARN_LIST,Movement,LandWarn,SeaWarn,HeavyRain,NoticeText,NoteText}", "warning_areas");
 
       Object.assign(value.TY_WARN, warn_data);
@@ -263,15 +263,15 @@ class CWB_Forcast {
 
   async ecard(county) {
     const now = new Date(Date.now());
-    const url = `https://www.cwb.gov.tw/V8/C/W/County/MOD/Ecard/${CWB_Forcast.cid[county]}_Ecard.html?T=${now.getFullYear()}${now.getMonth()}${now.getDate()}${now.getHours()}`;
+    const url = `https://www.cwa.gov.tw/V8/C/W/County/MOD/Ecard/${CWA_Forcast.cid[county]}_Ecard.html?T=${now.getFullYear()}${now.getMonth()}${now.getDate()}${now.getHours()}`;
     const r = await fetch(url);
     const data = await r.text();
-    const imgurl = "https://www.cwb.gov.tw" + data.match(/src\s*=\s*'(.+?)'/mi)[1];
+    const imgurl = "https://www.cwa.gov.tw" + data.match(/src\s*=\s*'(.+?)'/mi)[1];
     return imgurl;
   }
 
   async earthquake_report(options) {
-    let url = CWB_Forcast.#baseurl
+    let url = CWA_Forcast.#baseurl
                   + "E-A0015-001"
                   + `?Authorization=${this.apikey}`;
 
@@ -295,7 +295,7 @@ class CWB_Forcast {
   }
 
   async earthquake_report_s(options) {
-    let url = CWB_Forcast.#baseurl
+    let url = CWA_Forcast.#baseurl
                   + "E-A0016-001"
                   + `?Authorization=${this.apikey}`;
 
@@ -319,7 +319,7 @@ class CWB_Forcast {
   }
 
   async typhoon(options) {
-    let url = CWB_Forcast.#baseurl
+    let url = CWA_Forcast.#baseurl
                   + "W-C0034-005"
                   + `?Authorization=${this.apikey}`;
 
@@ -340,7 +340,7 @@ class CWB_Forcast {
   }
 }
 
-module.exports = CWB_Forcast;
+module.exports = CWA_Forcast;
 
 function requireFromString(src, filename) {
   const m = new module.constructor();
