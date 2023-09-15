@@ -180,7 +180,7 @@ module.exports = {
                     break;
                   }
 
-                  case "W37":{
+                  case "W37": {
                     warn.setThumbnail("https://www.cwa.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
                     break;
                   }
@@ -222,7 +222,7 @@ module.exports = {
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
-              name    : "中央氣象局",
+              name    : "中央氣象署",
               iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
               url     : "https://www.cwa.gov.tw/",
             })
@@ -249,7 +249,8 @@ module.exports = {
             // ${+time[ti].elementValue[0].value < 16 ? "🥶" : time[ti].elementValue[0].value > 26 ? "🥵" : "😀"}
             forecast_embed.addFields({
               name  : `${timestamp(new Date(time.startTime), TimestampStyles.ShortDateTime)} __${timeperiod(new Date(time.startTime))}__ ${emoji(values.Wx, timeperiod(new Date(time.startTime)))} ${values.Wx}`,
-              value : lines.join("\n") });
+              value : lines.join("\n"),
+            });
           });
           embeds.push(forecast_embed);
 
@@ -340,7 +341,7 @@ module.exports = {
                     break;
                   }
 
-                  case "W37":{
+                  case "W37": {
                     warn.setThumbnail("https://www.cwa.gov.tw/Data/warning/Surge_Swell/Swell_MapTaiwan02.png");
                     break;
                   }
@@ -384,7 +385,7 @@ module.exports = {
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
-              name    : "中央氣象局",
+              name    : "中央氣象署",
               iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
               url     : "https://www.cwa.gov.tw/",
             })
@@ -470,7 +471,7 @@ module.exports = {
             const time = new Date(fields.find(v => new Date(v.page).getDate() == date).page);
             buttons.push(new ButtonBuilder()
               .setStyle(buttons.length ? ButtonStyle.Secondary : ButtonStyle.Primary)
-              .setLabel(`${time.getMonth() + 1}/${time.getDate()} (${[ "日", "一", "二", "三", "四", "五", "六" ][time.getDay()]})`)
+              .setLabel(`${time.getMonth() + 1}/${time.getDate()} (${["日", "一", "二", "三", "四", "五", "六"][time.getDay()]})`)
               .setCustomId(`forecast-${paging.indexOf(date)}`));
           }
 

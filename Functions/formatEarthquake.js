@@ -92,11 +92,11 @@ function formatEarthquake(Earthquake, style = 0) {
     + ".html";
   const cwa_image
     = Earthquake.cwa_image ? Earthquake.cwa_image : "https://www.cwa.gov.tw/Data/earthquake/img/EC"
-    + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
-    + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
-    + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
-    + (Earthquake.EarthquakeNo % 1000 == 0 ? "" : Earthquake.EarthquakeNo.toString().substring(3))
-    + "_H.png";
+      + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
+      + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
+      + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
+      + (Earthquake.EarthquakeNo % 1000 == 0 ? "" : Earthquake.EarthquakeNo.toString().substring(3))
+      + "_H.png";
 
   const url = new ActionRowBuilder()
     .addComponents([
@@ -123,7 +123,7 @@ function formatEarthquake(Earthquake, style = 0) {
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
         .setThumbnail(cwa_image)
         .setDescription(desc)
-        .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
+        .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
 
       return { embeds: [embed], components: [url] };
@@ -136,7 +136,7 @@ function formatEarthquake(Earthquake, style = 0) {
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
         .setImage(cwa_image)
         .setDescription(desc)
-        .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
+        .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
 
       return { embeds: [embed], components: [url] };
@@ -156,7 +156,7 @@ function formatEarthquake(Earthquake, style = 0) {
         .setAuthor({ name: "地震報告", iconURL: "https://i.imgur.com/qIxk1H1.png" })
         .setImage(cwa_image)
         .setDescription(desc)
-        .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
+        .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
 
       Earthquake.Intensity.ShakingArea
@@ -186,7 +186,7 @@ function formatEarthquake(Earthquake, style = 0) {
             { name: "震央", value: `${Earthquake.EarthquakeInfo.Epicenter.Location.replace("(", "（").replace(")", "）").split("（").join("\n（")}` },
           ],
         )
-        .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
+        .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
 
       Earthquake.Intensity.ShakingArea
@@ -217,7 +217,7 @@ function formatEarthquake(Earthquake, style = 0) {
             { name: "規模", value: `${magnitudeE[magnitudeI]} 芮氏 **${Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue}**\n　 ${magnitudeTW[magnitudeI]}`, inline: true },
           ],
         )
-        .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
+        .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" })
         .setTimestamp(time);
 
       Earthquake.Intensity.ShakingArea

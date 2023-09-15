@@ -44,7 +44,7 @@ module.exports = {
   once  : false,
 
   /**
-	 * @param {import("discord.js").Client} client
+   * @param {import("discord.js").Client} client
    * @param {import("discord.js").Message} message The created message
    */
   execute(client, message) {
@@ -55,8 +55,8 @@ module.exports = {
     try {
 
       /**
-			 * @type {event}
-			 */
+       * @type {event}
+       */
       const event = JSON.parse(message.content);
 
       if (event.topic != "CWA_EEW") return;
@@ -130,7 +130,7 @@ module.exports = {
             ],
           )
           .setImage("https://upload.cc/i1/2022/11/30/6DOluI.png")
-          .setFooter({ text: "交通部中央氣象局", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" }).setFooter({ text: `發布於 ${pt.getHours() < 10 ? "0" : ""}${pt.getHours()}:${pt.getMinutes() < 10 ? "0" : ""}${pt.getMinutes()}:${pt.getSeconds() < 10 ? "0" : ""}${pt.getSeconds()}` })
+          .setFooter({ text: "交通部中央氣象署", iconURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png" }).setFooter({ text: `發布於 ${pt.getHours() < 10 ? "0" : ""}${pt.getHours()}:${pt.getMinutes() < 10 ? "0" : ""}${pt.getMinutes()}:${pt.getSeconds() < 10 ? "0" : ""}${pt.getSeconds()}` })
           .setTimestamp();
 
         if (data.type == "Alert") {
@@ -212,8 +212,8 @@ function caldistance({ lat: lat1, lon: lon1 }, { lat: lat2, lon: lon2 }) {
   const p = 0.017453292519943295;
   const c = Math.cos;
   const a = 0.5 - c((lat2 - lat1) * p) / 2
-            + c(lat1 * p) * c(lat2 * p)
-            * (1 - c((lon2 - lon1) * p)) / 2;
+    + c(lat1 * p) * c(lat2 * p)
+    * (1 - c((lon2 - lon1) * p)) / 2;
 
   return 12742 * Math.asin(Math.sqrt(a));
 }
@@ -238,11 +238,11 @@ const intensesTW = [
  */
 /*
 function calIntensity(distance, magnitude, depth) {
-	const PGAs = distance.map(v => PGA(magnitude, v, depth));
-	return PGAs.map((v, index) => {
-		const value = intenses[0.8, 2.5, 8.0, 25, 80, 140, 250, 440, 800, v].sort((a, b) => a - b).indexOf(v);
-		return { pos: Object.keys(gov)[index], value, pga: v, label: intensesTW[value] };
-	});
+  const PGAs = distance.map(v => PGA(magnitude, v, depth));
+  return PGAs.map((v, index) => {
+    const value = intenses[0.8, 2.5, 8.0, 25, 80, 140, 250, 440, 800, v].sort((a, b) => a - b).indexOf(v);
+    return { pos: Object.keys(gov)[index], value, pga: v, label: intensesTW[value] };
+  });
 }
 */
 function pgaToIntensity(pga) {
@@ -272,7 +272,7 @@ function calBearing(startLat, startLng, destLat, destLng) {
 
   const y = Math.sin(destLng - startLng) * Math.cos(destLat);
   const x = Math.cos(startLat) * Math.sin(destLat)
-		- Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+    - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
   let brng = Math.atan2(y, x);
   brng = toDegrees(brng);
   return (brng + 360) % 360;

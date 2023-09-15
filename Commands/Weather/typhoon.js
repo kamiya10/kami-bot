@@ -64,7 +64,7 @@ module.exports = {
         const mainEmbed = new EmbedBuilder()
           .setColor(CycloneLevelColors[getCycloneLevel(current.maxWindSpeed)])
           .setAuthor({
-            name    : "中央氣象局",
+            name    : "中央氣象署",
             iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
             url     : "https://www.cwa.gov.tw/",
           })
@@ -80,7 +80,7 @@ module.exports = {
         const historyEmbed = new EmbedBuilder()
           .setColor(CycloneLevelColors[getCycloneLevel(current.maxWindSpeed)])
           .setAuthor({
-            name    : "中央氣象局",
+            name    : "中央氣象署",
             iconURL : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROC_Central_Weather_Bureau.svg/1200px-ROC_Central_Weather_Bureau.svg.png",
             url     : "https://www.cwa.gov.tw/",
           })
@@ -227,17 +227,17 @@ module.exports = {
 
         const cycloneIndex = 0;
 
-        const sent = await interaction.editReply({ embeds: cyclones[0].main, components: [ pages ] });
+        const sent = await interaction.editReply({ embeds: cyclones[0].main, components: [pages] });
         const collector = sent.createMessageComponentCollector({ componentType: ComponentType.Button });
         collector.on("collect", async inter => {
           if (inter.customId == "typhoon-main")
-            await inter.update({ embeds: cyclones[cycloneIndex].main, components: [ pages ] });
+            await inter.update({ embeds: cyclones[cycloneIndex].main, components: [pages] });
 
           if (inter.customId == "typhoon-history")
-            await inter.update({ embeds: cyclones[cycloneIndex].history, components: [ pages ] });
+            await inter.update({ embeds: cyclones[cycloneIndex].history, components: [pages] });
 
           if (inter.customId == "typhoon-forecast")
-            await inter.update({ embeds: cyclones[cycloneIndex].forecast, components: [ pages ] });
+            await inter.update({ embeds: cyclones[cycloneIndex].forecast, components: [pages] });
         });
       }
     else
@@ -261,7 +261,7 @@ function getCycloneLevel(wind = 0, coord) {
   if (index == 0 && (coords?.latitude ?? 0) > 23.5)
     return "溫帶氣旋";
   else
-    return [ "熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風" ][index];
+    return ["熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風"][index];
 }
 
 function parseCoordinate(coord) {

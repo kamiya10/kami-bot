@@ -6,7 +6,7 @@ const config = require("./config");
 const fetch = require("node-fetch").default;
 const readline = require("node:readline");
 const { stripIndent } = require("common-tags");
-const cwb = new (require("./API/cwb_forecast"))(process.env.CWB_TOKEN);
+const cwa = new (require("./API/cwa_forecast"))(process.env.CWA_TOKEN);
 process.env.DEBUG_MODE = config.debug;
 
 Kami.version = process.env.BOT_VERSION;
@@ -194,8 +194,8 @@ setInterval(() => {
 
 async function updateData() {
   try {
-    const fetched_data = (await cwb.earthquake_report({ format: "json" }).catch(() => void 0))?.records?.Earthquake;
-    const fetched_data_s = (await cwb.earthquake_report_s({ format: "json" }).catch(() => void 0))?.records?.Earthquake;
+    const fetched_data = (await cwa.earthquake_report({ format: "json" }).catch(() => void 0))?.records?.Earthquake;
+    const fetched_data_s = (await cwa.earthquake_report_s({ format: "json" }).catch(() => void 0))?.records?.Earthquake;
 
     if (fetched_data != undefined) {
       Kami.data.quake_last = Kami.data.quake_data;
