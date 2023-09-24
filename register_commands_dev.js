@@ -3,38 +3,29 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const cliProgress = require("cli-progress");
 const fs = require("node:fs");
 
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
 const progress = new cliProgress.SingleBar({
   hideCursor: true,
 }, cliProgress.Presets.shades_classic);
 
 const commands = [];
 
-const commandCategories = fs.readdirSync("./Commands");
+const commandCategories = fs.readdirSync("./commands");
 
 for (const category of commandCategories) {
-  const commandFiles = fs.readdirSync(`./Commands/${category}`).filter(file => file.endsWith(".js"));
+  const commandFiles = fs.readdirSync(`./commands/${category}`).filter(file => file.endsWith(".js"));
 
   for (const file of commandFiles) {
-    const command = require(`./Commands/${category}/${file}`);
+    const command = require(`./commands/${category}/${file}`)(client);
 
     if (command.dev)
-      commands.push(command.data.toJSON());
+      commands.push(command.builder.toJSON());
   }
-}
-
-const commandFiles = fs.readdirSync("./Context").filter(file => file.endsWith(".js"));
-
-for (const file of commandFiles) {
-  const command = require(`./Context/${file}`);
-
-  if (command.dev)
-    commands.push(command.data.toJSON());
 }
 
 console.log(`Commands Length: ${commands.length}`);
 console.log("Starting command registration");
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.login(process.env.DEV_TOKEN);
 

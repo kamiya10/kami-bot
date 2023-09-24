@@ -50,7 +50,7 @@
 		"no-useless-return": "warn",
 		"no-var": "error",
 		"object-curly-spacing": ["warn", "always"],
-		"operator-linebreak": ["warn", "before"],
+		"operator-linebreak": ["warn", "before", { "overrides": { "=": "after" } }],
 		"padding-line-between-statements": [
 			"warn",
 			{ "blankLine": "always", "prev": "*", "next": ["block-like","if","while"] },
