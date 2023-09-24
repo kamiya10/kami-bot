@@ -1,8 +1,0 @@
-{
-    "command": {
-        "report": {
-            "name": "地震報告",
-            "description": "查詢地震報告"
-        }
-    }
-}

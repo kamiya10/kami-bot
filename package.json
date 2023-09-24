@@ -1,6 +1,6 @@
 {
   "name": "kamiya-bot",
-  "version": "5.1.2",
+  "version": "6.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,25 +12,6 @@
   "author": "Kamiya",
   "license": "ISC",
   "dependencies": {
-    "bufferutil": "^4.0.7",
-    "chalk": "^4.1.2",
-    "chokidar": "^3.5.3",
-    "common-tags": "^1.8.2",
-    "discord-api-types": "^0.37.49",
-    "discord-censor": "^1.0.9",
-    "discord.js": "^14.11.0",
-    "dotenv": "^16.3.1",
-    "node-gyp": "^9.1.0",
-    "node-html-to-image": "^3.3.0",
-    "pino": "^7.0.0-rc.9",
-    "pino-pretty": "^9.1.0",
-    "sagiri": "^3.4.0",
-    "saucenao": "^0.0.2",
-    "sharp": "^0.32.3",
-    "tensify": "^0.0.4",
-    "tinycolor2": "^1.6.0",
-    "utf-8-validate": "^6.0.3",
-    "zlib-sync": "^0.1.8"
   },
   "devDependencies": {
     "cli-progress": "^3.11.2",
