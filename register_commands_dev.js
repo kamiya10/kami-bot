@@ -19,8 +19,9 @@ for (const category of commandCategories) {
   for (const file of commandFiles) {
     const command = require(`./commands/${category}/${file}`)(client);
 
-    if (command.dev)
+    if (command.dev) {
       commands.push(command.builder.toJSON());
+    }
   }
 }
 
@@ -39,7 +40,7 @@ client.once("ready", async () => {
     for (const promise of [
       client.guilds.cache.get("810931443206848544").commands.set(commands),
       client.guilds.cache.get("597227484550791209").commands.set(commands),
-    ])
+    ]) {
       promise.then(() => {
         count++;
         progress.update(count + errcount);
@@ -59,6 +60,7 @@ client.once("ready", async () => {
             resolve(true);
           }
         });
+    }
   })) {
     console.log(`\nFinished register with ${count} succeed, ${errcount} failed.`);
     process.exit(0);

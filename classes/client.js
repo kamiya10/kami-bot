@@ -25,10 +25,11 @@ class KamiClient extends Client {
 
       this.listeners.set(listener.name, listener);
 
-      if (listener.callOnce)
+      if (listener.callOnce) {
         this.once(listener.event, listener.callback);
-      else
+      } else {
         this.on(listener.event, listener.callback);
+      }
     }
   }
 

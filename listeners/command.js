@@ -13,8 +13,9 @@ module.exports =
       const command = client.commands.get(interaction.commandName);
 
       if (command) {
-        if (command.defer)
+        if (command.defer) {
           await interaction.deferReply();
+        }
 
         command.execute(interaction);
       }
