@@ -4,6 +4,7 @@ const { KamiIntents } = require("./constants");
 const { dirname } = require("node:path");
 const pe = require("pretty-error").start();
 
+pe.skipNodeFiles();
 pe.alias(dirname(require.main.filename).replace(/\\/g, "/"), "(kami-bot) ");
 pe.appendStyle({
   "pretty-error": {
