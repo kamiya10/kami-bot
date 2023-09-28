@@ -10,6 +10,10 @@ class KamiClient extends Client {
   constructor(options) {
     super(options);
     this.listeners = new Map();
+
+    /**
+     * @type {Map<string, import("./command").KamiCommand>}
+     */
     this.commands = new Map();
 
     this.setupListeners();
@@ -19,7 +23,7 @@ class KamiClient extends Client {
   setupListeners() {
     for (const filename of fs.readdirSync(ListenerFolder)) {
       /**
-       * @type {import("../classes/listener").KamiListener}
+       * @type {import("./listener").KamiListener}
        */
       const listener = require(path.join(ListenerFolder, filename))(this);
 
@@ -39,7 +43,7 @@ class KamiClient extends Client {
 
       for (const filename of fs.readdirSync(CategoryFolder)) {
         /**
-         * @type {import("../classes/command").KamiCommand}
+         * @type {import("./command").KamiCommand}
          */
         const command = require(path.join(CategoryFolder, filename))(this);
         this.commands.set(command.builder.name, command);
