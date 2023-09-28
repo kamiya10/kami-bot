@@ -48,14 +48,19 @@ class KamiClient extends Client {
   }
 
   reloadCommands(name) {
-    const command = this.commands.get(name);
-    delete require.cache[require.resolve(`../commands/${name}.js`)];
-
     try {
-      const commandPath = path.join(command);
-      this.commands.delete(command.data.name);
-      const newCommand = require(`./${command.data.name}.js`);
-      this.commands.set(newCommand.data.name, newCommand);
+      const command = this.commands.get(name);
+
+      if (command) {
+        delete require.cache[require.resolve(command.filePath)];
+        this.commands.delete(command.data.name);
+
+        const newCommand = require(`./${command.data.name}.js`);
+        this.commands.set(newCommand.data.name, newCommand);
+        console.log(`Reloaded command /${name}.`);
+      } else {
+        console.error(`Command /${name} not found.`);
+      }
     } catch (error) {
       console.error(error);
     }
