@@ -1,14 +1,13 @@
 const { Colors, Events } = require("discord.js");
-const { KamiListener } = require("../classes/listener");
 const { EmbedBuilder, codeBlock } = require("@discordjs/builders");
-
-module.exports =
+const { KamiListener } = require("../classes/listener");
 
 /**
+ * Slash command listener.
  * @param {import("../classes/client").KamiClient} client
  * @returns
  */
-(client) => new KamiListener("command")
+const onCommand = (client) => new KamiListener("command")
   .on(Events.InteractionCreate, async (interaction) => {
     const command = client.commands.get(interaction.commandName);
 
@@ -38,3 +37,4 @@ module.exports =
       }
     }
   });
+module.exports = onCommand;

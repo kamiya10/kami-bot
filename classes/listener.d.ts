@@ -2,6 +2,8 @@ import { ClientEvents } from "discord.js";
 import { Awaitable } from "@discordjs/util";
 
 export class KamiListener {
+  constructor(name: string);
+  
   public name: string;
   public event: string;
   public callback: (...args: any[]) => Awaitable<void>;
