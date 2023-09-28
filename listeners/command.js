@@ -1,5 +1,6 @@
-const { Events } = require("discord.js");
+const { Colors, Events } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
+const { EmbedBuilder, codeBlock } = require("@discordjs/builders");
 
 module.exports =
 
@@ -9,15 +10,31 @@ module.exports =
  */
 (client) => new KamiListener("command")
   .on(Events.InteractionCreate, async (interaction) => {
-    if (interaction.isCommand()) {
-      const command = client.commands.get(interaction.commandName);
+    const command = client.commands.get(interaction.commandName);
 
-      if (command) {
-        if (command.defer) {
-          await interaction.deferReply();
+    try {
+      if (interaction.isCommand()) {
+
+        if (command) {
+          if (command.defer) {
+            await interaction.deferReply();
+          }
+
+          await command.execute(interaction);
         }
+      }
+    } catch (error) {
+      console.error(`Failed to execute command /${interaction.commandName}`);
+      console.error(error);
+      const embed = new EmbedBuilder()
+        .setColor(Colors.Red)
+        .setTitle("🛑 Uncaught Exception")
+        .setDescription(`Error stack:\n${codeBlock("ansi", error.stack)}`);
 
-        command.execute(interaction);
+      if (command && command.defer) {
+        await interaction.editReply({ embeds: [embed] });
+      } else {
+        await interaction.reply({ embeds: [embed] });
       }
     }
   });
