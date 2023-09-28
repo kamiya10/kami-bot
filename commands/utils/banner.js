@@ -2,7 +2,12 @@ const { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashComman
 const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
 const { KamiCommand } = require("../../classes/command");
 
-module.exports = (client) => new KamiCommand({
+/**
+ * The /banner command.
+ * @param {import("../../classes/client").KamiClient} client
+ * @returns {KamiCommand}
+ */
+const banner = (client) => new KamiCommand({
   dev     : true,
   builder : new SlashCommandBuilder()
     .setName("banner")
@@ -50,6 +55,7 @@ module.exports = (client) => new KamiCommand({
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
+      console.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")
@@ -58,3 +64,5 @@ module.exports = (client) => new KamiCommand({
     }
   },
 });
+
+module.exports = banner;

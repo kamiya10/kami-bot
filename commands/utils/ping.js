@@ -2,13 +2,12 @@ const { EmbedBuilder, SlashCommandBuilder, TimestampStyles, codeBlock, time } = 
 const { Colors } = require("discord.js");
 const { KamiCommand } = require("../../classes/command");
 
-module.exports =
-
 /**
+ * The /ping command.
  * @param {import("../../classes/client").KamiClient} client
- * @returns
+ * @returns {KamiCommand}
  */
-(client) => new KamiCommand({
+const ping = (client) => new KamiCommand({
   dev      : true,
   filePath : __filename,
   builder  : new SlashCommandBuilder()
@@ -39,6 +38,7 @@ module.exports =
 
       await interaction.editReply({ content: "Pong!", embeds: [embed] });
     } catch (error) {
+      console.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")
@@ -47,3 +47,4 @@ module.exports =
     }
   },
 });
+module.exports = ping;
