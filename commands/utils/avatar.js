@@ -8,8 +8,9 @@ const { KamiCommand } = require("../../classes/command");
  * @returns {KamiCommand}
  */
 const avatar = (client) => new KamiCommand({
-  dev     : true,
-  builder : new SlashCommandBuilder()
+  dev      : true,
+  filePath : __filename,
+  builder  : new SlashCommandBuilder()
     .setName("avatar")
     .setDescription("Get the avatar of a member.")
     .addUserOption(new SlashCommandUserOption()

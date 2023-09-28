@@ -8,8 +8,9 @@ const { KamiCommand } = require("../../classes/command");
  * @returns {KamiCommand}
  */
 const banner = (client) => new KamiCommand({
-  dev     : true,
-  builder : new SlashCommandBuilder()
+  dev      : true,
+  filePath : __filename,
+  builder  : new SlashCommandBuilder()
     .setName("banner")
     .setDescription("Get the banner of a member.")
     .addUserOption(new SlashCommandUserOption()
