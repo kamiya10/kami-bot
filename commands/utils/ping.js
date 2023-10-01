@@ -26,14 +26,13 @@ const ping = (client) => new KamiCommand({
           iconURL : interaction.member.displayAvatarURL(),
         })
         .setColor(latency >= 1000 ? Colors.Red : latency >= 500 ? Colors.Yellow : Colors.Green)
-        .addFields({
+        .addFields(...[{
           name  : "Clock",
           value : `💬 **Message Time**: ${time(~~(sent.createdTimestamp / 1000), TimestampStyles.LongDate)}${time(~~(sent.createdTimestamp / 1000), TimestampStyles.LongTime)}.${`${new Date(~~(sent.createdTimestamp / 1000)).getMilliseconds()}`.padStart(3, "0")}\n🤖 **Bot Time**: ${time(~~(end / 1000), TimestampStyles.LongDate)}${time(~~(end / 1000), TimestampStyles.LongTime)}.${`${new Date(~~(end / 1000)).getMilliseconds()}`.padStart(3, "0")}`,
-        })
-        .addFields({
+        }, {
           name  : "Latency",
           value : `⌛ **Ping**: ${latency}ms\n💓 **Heartbeat**: ${client.ws.ping}ms`,
-        })
+        }])
         .setTimestamp();
 
       await interaction.editReply({ content: "Pong!", embeds: [embed] });
