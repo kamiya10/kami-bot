@@ -411,16 +411,30 @@ const voice = (client) => new KamiCommand({
             if (setAsDefault) {
               userVoiceData[setAsGlobal ? "global" : interaction.guild.id].name = name;
               embed.setDescription(`Your defaul temporary voice channel name is now ${name ? inlineCode(name) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
-            } else if (interaction.member.voice.channel) {
-              if (name) {
-                await interaction.member.voice.channel.setName(name);
+            } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
+              const channel = client.states.voice.get(interaction.member.voice.channel.id);
+
+              if (channel.ownerId == interaction.member.id) {
+                if (name) {
+                  await interaction.member.voice.channel.setName(name);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription(`Channel name has been changed to ${bold(inlineCode(name))}.`);
+                } else {
+                  await interaction.member.voice.channel.setName(channel.defaultOptions.name);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription("Channel name has been reset.");
+                }
               } else {
-                await interaction.member.voice.channel.setName(name);
+                embed
+                  .setColor(Colors.Red)
+                  .setDescription("You are not the owner of this temporary voice channel.");
               }
             } else {
               embed
                 .setColor(Colors.Red)
-                .setDescription("You must be in a voice channel to change your temporary voice channel name.");
+                .setDescription("You must be in a tracked temporary voice channel to change its name.");
             }
 
             break;
@@ -428,10 +442,35 @@ const voice = (client) => new KamiCommand({
 
           // /voice limit
           case "limit": {
-            const name = interaction.options.getString("name");
+            const limit = interaction.options.getInteger("limit");
 
             if (setAsDefault) {
-              userVoiceData[setAsGlobal ? "global" : interaction.guild.id].name = name;
+              userVoiceData[setAsGlobal ? "global" : interaction.guild.id].limit = limit;
+              embed.setDescription(`Your defaul temporary voice channel user limit is now ${limit ? inlineCode(limit || "unlimited") : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
+            } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
+              const channel = client.states.voice.get(interaction.member.voice.channel.id);
+
+              if (channel.ownerId == interaction.member.id) {
+                if (limit) {
+                  await interaction.member.voice.channel.setUserLimit(limit);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription(`Channel user limit has been changed to ${bold(inlineCode(limit || "unlimited"))}.`);
+                } else {
+                  await interaction.member.voice.channel.setUserLimit(channel.defaultOptions.limit);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription("Channel user limit has been reset.");
+                }
+              } else {
+                embed
+                  .setColor(Colors.Red)
+                  .setDescription("You are not the owner of this temporary voice channel.");
+              }
+            } else {
+              embed
+                .setColor(Colors.Red)
+                .setDescription("You must be in a tracked temporary voice channel to change its user limit.");
             }
 
             break;
@@ -439,10 +478,35 @@ const voice = (client) => new KamiCommand({
 
           // /voice bitrate
           case "bitrate": {
-            const bitrate = interaction.options.getInteger("name");
+            const bitrate = interaction.options.getInteger("bitrate");
 
             if (setAsDefault) {
               userVoiceData[setAsGlobal ? "global" : interaction.guild.id].bitrate = bitrate;
+              embed.setDescription(`Your defaul temporary voice channel bitrate is now ${bitrate ? inlineCode(bitrate) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
+            } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
+              const channel = client.states.voice.get(interaction.member.voice.channel.id);
+
+              if (channel.ownerId == interaction.member.id) {
+                if (bitrate) {
+                  await interaction.member.voice.channel.setBitrate(bitrate);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription(`Channel bitrate has been changed to ${bold(inlineCode(bitrate))}.`);
+                } else {
+                  await interaction.member.voice.channel.setBitrate(channel.defaultOptions.bitrate);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription("Channel bitrate has been reset.");
+                }
+              } else {
+                embed
+                  .setColor(Colors.Red)
+                  .setDescription("You are not the owner of this temporary voice channel.");
+              }
+            } else {
+              embed
+                .setColor(Colors.Red)
+                .setDescription("You must be in a tracked temporary voice channel to change its bitrate.");
             }
 
             break;
@@ -450,10 +514,35 @@ const voice = (client) => new KamiCommand({
 
           // /voice region
           case "region": {
-            const region = interaction.options.getString("name");
+            const region = interaction.options.getString("region");
 
             if (setAsDefault) {
               userVoiceData[setAsGlobal ? "global" : interaction.guild.id].region = region;
+              embed.setDescription(`Your defaul temporary voice channel region is now ${region ? inlineCode(region) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
+            } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
+              const channel = client.states.voice.get(interaction.member.voice.channel.id);
+
+              if (channel.ownerId == interaction.member.id) {
+                if (region) {
+                  await interaction.member.voice.channel.setRTCRegion(region);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription(`Channel region has been changed to ${bold(inlineCode(region))}.`);
+                } else {
+                  await interaction.member.voice.channel.setRTCRegion(channel.defaultOptions.region);
+                  embed
+                    .setColor(Colors.Green)
+                    .setDescription("Channel bitrate has been reset.");
+                }
+              } else {
+                embed
+                  .setColor(Colors.Red)
+                  .setDescription("You are not the owner of this temporary voice channel.");
+              }
+            } else {
+              embed
+                .setColor(Colors.Red)
+                .setDescription("You must be in a tracked temporary voice channel to change its region.");
             }
 
             break;
@@ -505,7 +594,7 @@ const voice = (client) => new KamiCommand({
         }
       }
 
-      await interaction.editReply({ content: "Pong!", embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       console.error(error);
       const embed = new EmbedBuilder()

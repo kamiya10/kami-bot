@@ -4,6 +4,12 @@ declare interface KamiVoiceState {
   creatorId: string;
   categoryId: string;
   ownerId: string;
+  defaultOptions: {
+    name: string;
+    bitrate: number;
+    limit: number;
+    region: string;
+  };
 }
 
 export class KamiStates {

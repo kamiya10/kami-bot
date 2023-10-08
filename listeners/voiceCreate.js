@@ -168,9 +168,15 @@ const onVoiceCreate = (client) => new KamiListener("voiceCreate")
           });
 
           client.states.voice.set(channel.id, {
-            categoryId : guildVoiceData[newState.channel.id].category,
-            creatorId  : newState.channel.id,
-            ownerId    : newState.member.id,
+            categoryId     : guildVoiceData[newState.channel.id].category,
+            creatorId      : newState.channel.id,
+            ownerId        : newState.member.id,
+            defaultOptions : {
+              name    : channel.name,
+              bitrate : channel.bitrate,
+              limit   : channel.userLimit,
+              region  : channel.rtcRegion,
+            },
           });
 
           await newState.member.voice.setChannel(channel, "Temporary Voice Channel");
