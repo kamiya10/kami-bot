@@ -13,6 +13,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.6.5",
     "discord.js": "^14.13.0",
+    "lowdb": "^6.0.1",
     "pretty-error": "^4.0.0"
   },
   "devDependencies": {

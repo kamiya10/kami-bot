@@ -1,5 +1,5 @@
-require("dotenv").config();
 const { Client } = require("discord.js");
+const { KamiStates } = require("./states");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -7,8 +7,11 @@ const ListenerFolder = path.join(__dirname, "..", "listeners");
 const CommandFolder = path.join(__dirname, "..", "commands");
 
 class KamiClient extends Client {
-  constructor(options) {
-    super(options);
+  constructor(database, clientOptions) {
+    super(clientOptions);
+    this.database = database;
+    this.states = new KamiStates();
+
     this.listeners = new Map();
 
     /**
