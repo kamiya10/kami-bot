@@ -1,4 +1,4 @@
-const { ChannelType, Events, Guild, GuildMember, VoiceChannel } = require("discord.js");
+const { ChannelType, Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
 
 const getName =

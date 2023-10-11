@@ -1,5 +1,5 @@
 const { ChannelType, Colors, GuildMember } = require("discord.js");
-const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, TimestampStyles, bold, codeBlock, inlineCode, time } = require("@discordjs/builders");
+const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, bold, codeBlock, inlineCode } = require("@discordjs/builders");
 const { KamiCommand } = require("../../classes/command");
 
 /**

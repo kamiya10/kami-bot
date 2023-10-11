@@ -46,7 +46,7 @@
 		"no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
 		"no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
 		"no-trailing-spaces": ["warn"],
-		"no-unused-vars": ["off"],
+		"no-unused-vars": ["warn"],
 		"no-useless-return": "warn",
 		"no-var": "error",
 		"object-curly-spacing": ["warn", "always"],

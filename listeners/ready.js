@@ -6,8 +6,8 @@ const { KamiListener } = require("../classes/listener");
  * @param {import("../classes/client").KamiClient} client
  * @returns
  */
-const onReady = (client) => new KamiListener("ready")
-  .on(Events.ClientReady, (interaction) => {
+const onReady = () => new KamiListener("ready")
+  .on(Events.ClientReady, () => {
     console.log("client ready");
   });
 

@@ -7,7 +7,7 @@ const { KamiCommand } = require("../../classes/command");
  * @param {import("../../classes/client").KamiClient} client
  * @returns {KamiCommand}
  */
-const banner = (client) => new KamiCommand({
+const banner = () => new KamiCommand({
   dev      : true,
   filePath : __filename,
   builder  : new SlashCommandBuilder()

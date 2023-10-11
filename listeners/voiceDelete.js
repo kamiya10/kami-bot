@@ -1,4 +1,4 @@
-const { ChannelType, Events, Guild, GuildMember, VoiceChannel } = require("discord.js");
+const { Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
 
 /**
@@ -7,7 +7,7 @@ const { KamiListener } = require("../classes/listener");
  * @returns
  */
 const onVoiceDelete = (client) => new KamiListener("voiceCreate")
-  .on(Events.VoiceStateUpdate, async (oldState, newState) => {
+  .on(Events.VoiceStateUpdate, async (oldState) => {
     try {
       if (oldState.channel instanceof VoiceChannel) {
         if (client.states.voice.has(oldState.channel.id)) {
