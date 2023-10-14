@@ -3,9 +3,9 @@ import { Awaitable } from "@discordjs/util";
 import { SlashCommandBuilder } from "@discordjs/builders/dist";
 
 interface KamiCommandConstructor {
-  defer: boolean;
-  global: boolean;
-  dev: boolean;
+  defer?: boolean;
+  global?: boolean;
+  dev?: boolean;
   filePath: string;
   builder: SlashCommandBuuilder;
   execute: (interaction: ChatInputCommandInteraction) => Awaitable<void>;

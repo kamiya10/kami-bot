@@ -1,3 +1,5 @@
+// @ts-check
+
 const { ChannelType, Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
 
@@ -43,7 +45,7 @@ const getBitrate =
  * @param {Record<string, import("../databases/UserDatabase").VoiceSettings>} uvd
  * @param {Record<string, import("../databases/GuildDatabase").GuildVoiceSettings>} gvd
  * @param {string} channelId
- * @param {Guild} guild
+ * @param {import("discord.js").Guild} guild
  * @return {number} bitrate
  */
 (uvd, gvd, channelId, guild) => {
@@ -132,7 +134,7 @@ const formatVoiceName =
 
 /**
  * @param {string} name
- * @param {GuildMember} member
+ * @param {import("discord.js").GuildMember} member
  * @returns {string} name
  */
 (name, member) => {
@@ -147,7 +149,7 @@ const formatVoiceName =
 /**
  * Temporary voice channel creation event listener.
  * @param {import("../classes/client").KamiClient} client
- * @returns
+ * @returns {KamiListener}
  */
 const onVoiceCreate = (client) => new KamiListener("voiceCreate")
   .on(Events.VoiceStateUpdate, async (oldState, newState) => {

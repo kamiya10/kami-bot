@@ -1,3 +1,5 @@
+// @ts-check
+
 const { EmbedBuilder, SlashCommandBuilder, TimestampStyles, codeBlock, time } = require("@discordjs/builders");
 const { Colors } = require("discord.js");
 const { KamiCommand } = require("../../classes/command");
@@ -22,8 +24,8 @@ const ping = (client) => new KamiCommand({
 
       const embed = new EmbedBuilder()
         .setAuthor({
-          name    : `Ping | ${interaction.member.displayName}`,
-          iconURL : interaction.member.displayAvatarURL(),
+          name    : `Ping | ${client.user.displayName}`,
+          iconURL : client.user.displayAvatarURL(),
         })
         .setColor(latency >= 1000 ? Colors.Red : latency >= 500 ? Colors.Yellow : Colors.Green)
         .addFields(...[{

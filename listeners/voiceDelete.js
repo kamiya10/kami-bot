@@ -1,10 +1,12 @@
+// @ts-check
+
 const { Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
 
 /**
  * Temporary voice channel deletion event listener.
  * @param {import("../classes/client").KamiClient} client
- * @returns
+ * @returns {KamiListener}
  */
 const onVoiceDelete = (client) => new KamiListener("voiceCreate")
   .on(Events.VoiceStateUpdate, async (oldState) => {

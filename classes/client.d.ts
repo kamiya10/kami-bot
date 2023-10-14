@@ -1,4 +1,4 @@
-import { Client, ClientOptions } from "discord.js";
+import { Client, ClientOptions, ClientUser } from "discord.js";
 import { KamiCommand } from "./command";
 import { KamiDatabase } from "./database";
 import { KamiListener } from "./listener";
@@ -15,4 +15,7 @@ export class KamiClient extends Client {
   private setupListeners(): void;
   private loadCommands(): void;
   private reloadCommands(name): boolean;
+
+  // overrides
+  public user: ClientUser;
 }

@@ -1,10 +1,11 @@
+// @ts-check
+
 const { Events } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
 
 /**
  * Ready event listener.
- * @param {import("../classes/client").KamiClient} client
- * @returns
+ * @returns {KamiListener}
  */
 const onReady = () => new KamiListener("ready")
   .on(Events.ClientReady, () => {

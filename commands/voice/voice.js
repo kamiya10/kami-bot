@@ -1,3 +1,5 @@
+// @ts-check
+
 const { ChannelType, Colors, GuildMember } = require("discord.js");
 const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, bold, codeBlock, inlineCode } = require("@discordjs/builders");
 const { KamiCommand } = require("../../classes/command");
@@ -306,7 +308,7 @@ const voice = (client) => new KamiCommand({
                 guildVoiceData[channel.id].limitOverride = limitOverride;
                 embed
                   .setColor(Colors.Green)
-                  .setDescription(`The default channel creation user limit has been ${limit ? `set to ${bold(inlineCode(limit || "unlimited"))} ${limitOverride ? "and will override user settings" : ""}` : `${bold("cleared")}`} for ${channel}.`);
+                  .setDescription(`The default channel creation user limit has been ${limit ? `set to ${bold(inlineCode(`${limit || "unlimited"}`))} ${limitOverride ? "and will override user settings" : ""}` : `${bold("cleared")}`} for ${channel}.`);
               } else {
                 embed
                   .setColor(Colors.Red)
@@ -316,7 +318,7 @@ const voice = (client) => new KamiCommand({
               guildVoiceData.global.limit = limit;
               embed
                 .setColor(Colors.Green)
-                .setDescription(`The default channel creation user limit has been ${limit ? `set to ${bold(inlineCode(limit || "unlimited"))}` : `${bold("cleared")}`} for this server.`);
+                .setDescription(`The default channel creation user limit has been ${limit ? `set to ${bold(inlineCode(`${limit || "unlimited"}`))}` : `${bold("cleared")}`} for this server.`);
             }
 
             break;
@@ -334,7 +336,7 @@ const voice = (client) => new KamiCommand({
                 guildVoiceData[channel.id].bitrateOverride = bitrateOverride;
                 embed
                   .setColor(Colors.Green)
-                  .setDescription(`The default channel creation bitrate has been ${bitrate ? `set to ${bold(inlineCode(bitrate))} kbps ${bitrateOverride ? "and will override user settings" : ""}` : `${bold("cleared")}`} for ${channel}.`);
+                  .setDescription(`The default channel creation bitrate has been ${bitrate ? `set to ${bold(inlineCode(`${bitrate} kbps`))} ${bitrateOverride ? "and will override user settings" : ""}` : `${bold("cleared")}`} for ${channel}.`);
               } else {
                 embed
                   .setColor(Colors.Red)
@@ -344,7 +346,7 @@ const voice = (client) => new KamiCommand({
               guildVoiceData.global.bitrate = bitrate;
               embed
                 .setColor(Colors.Green)
-                .setDescription(`The default channel creation bitrate has been ${bitrate ? `set to ${bold(inlineCode(bitrate))} kbps` : `${bold("cleared")}`} for this server.`);
+                .setDescription(`The default channel creation bitrate has been ${bitrate ? `set to ${bold(inlineCode(`${bitrate} kbps`))}` : `${bold("cleared")}`} for this server.`);
             }
 
             break;
@@ -446,7 +448,7 @@ const voice = (client) => new KamiCommand({
 
             if (setAsDefault) {
               userVoiceData[setAsGlobal ? "global" : interaction.guild.id].limit = limit;
-              embed.setDescription(`Your defaul temporary voice channel user limit is now ${limit ? inlineCode(limit || "unlimited") : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
+              embed.setDescription(`Your defaul temporary voice channel user limit is now ${limit ? inlineCode(`${limit || "unlimited"}`) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
             } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
               const channel = client.states.voice.get(interaction.member.voice.channel.id);
 
@@ -455,7 +457,7 @@ const voice = (client) => new KamiCommand({
                   await interaction.member.voice.channel.setUserLimit(limit);
                   embed
                     .setColor(Colors.Green)
-                    .setDescription(`Channel user limit has been changed to ${bold(inlineCode(limit || "unlimited"))}.`);
+                    .setDescription(`Channel user limit has been changed to ${bold(inlineCode(`${limit || "unlimited"}`))}.`);
                 } else {
                   await interaction.member.voice.channel.setUserLimit(channel.defaultOptions.limit);
                   embed
@@ -482,7 +484,7 @@ const voice = (client) => new KamiCommand({
 
             if (setAsDefault) {
               userVoiceData[setAsGlobal ? "global" : interaction.guild.id].bitrate = bitrate;
-              embed.setDescription(`Your defaul temporary voice channel bitrate is now ${bitrate ? inlineCode(bitrate) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
+              embed.setDescription(`Your defaul temporary voice channel bitrate is now ${bitrate ? inlineCode(`${bitrate} kbps`) : "cleared"}${setAsDefault ? setAsGlobal ? " for all servers." : " for this server" : ""}.`);
             } else if (client.states.voice.has(interaction.member.voice.channel.id)) {
               const channel = client.states.voice.get(interaction.member.voice.channel.id);
 
@@ -491,7 +493,7 @@ const voice = (client) => new KamiCommand({
                   await interaction.member.voice.channel.setBitrate(bitrate);
                   embed
                     .setColor(Colors.Green)
-                    .setDescription(`Channel bitrate has been changed to ${bold(inlineCode(bitrate))}.`);
+                    .setDescription(`Channel bitrate has been changed to ${bold(inlineCode(`${bitrate} kbps`))}.`);
                 } else {
                   await interaction.member.voice.channel.setBitrate(channel.defaultOptions.bitrate);
                   embed

@@ -1,10 +1,11 @@
+// @ts-check
+
 const { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
 const { KamiCommand } = require("../../classes/command");
 
 /**
  * The /avatar command.
- * @param {import("../../classes/client").KamiClient} client
  * @returns {KamiCommand}
  */
 const avatar = () => new KamiCommand({
@@ -13,6 +14,7 @@ const avatar = () => new KamiCommand({
   builder  : new SlashCommandBuilder()
     .setName("avatar")
     .setDescription("Get the avatar of a member.")
+    .setDMPermission(false)
     .addUserOption(new SlashCommandUserOption()
       .setName("member")
       .setDescription("The member to get the avatar of."))
@@ -24,13 +26,14 @@ const avatar = () => new KamiCommand({
       const member = interaction.options.getMember("member") ?? interaction.member;
       const server = interaction.options.getBoolean("server");
       const urls = {};
-      const embed = new EmbedBuilder()
-        .setAuthor({
+      const embed = new EmbedBuilder();
+
+      if (member instanceof GuildMember) {
+        embed.setAuthor({
           name    : `Avatar | ${member.displayName}`,
           iconURL : member.displayAvatarURL(),
         });
 
-      if (member instanceof GuildMember) {
         await member.fetch(true);
 
         if (typeof server == "boolean") {

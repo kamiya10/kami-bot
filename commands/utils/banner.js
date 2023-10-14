@@ -1,10 +1,11 @@
+// @ts-check
+
 const { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
 const { KamiCommand } = require("../../classes/command");
 
 /**
  * The /banner command.
- * @param {import("../../classes/client").KamiClient} client
  * @returns {KamiCommand}
  */
 const banner = () => new KamiCommand({
@@ -13,6 +14,7 @@ const banner = () => new KamiCommand({
   builder  : new SlashCommandBuilder()
     .setName("banner")
     .setDescription("Get the banner of a member.")
+    .setDMPermission(false)
     .addUserOption(new SlashCommandUserOption()
       .setName("member")
       .setDescription("The member to get the banner of."))
@@ -24,13 +26,14 @@ const banner = () => new KamiCommand({
       const member = interaction.options.getMember("member") ?? interaction.member;
 
       const urls = {};
-      const embed = new EmbedBuilder()
-        .setAuthor({
+      const embed = new EmbedBuilder();
+
+      if (member instanceof GuildMember) {
+        embed.setAuthor({
           name    : `Banner | ${member.displayName}`,
           iconURL : member.displayAvatarURL(),
         });
 
-      if (member instanceof GuildMember) {
         await member.fetch(true);
 
         if (member.user.banner) {
