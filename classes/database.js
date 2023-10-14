@@ -7,13 +7,6 @@ class KamiDatabase {
       guild,
       user,
     };
-
-    this.readDatabases();
-  }
-
-  async readDatabases() {
-    await this.database.guild.read();
-    await this.database.user.read();
   }
 
   /**
