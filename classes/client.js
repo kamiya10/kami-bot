@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client, Collection } = require("discord.js");
 const { KamiStates } = require("./states");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -11,19 +11,14 @@ class KamiClient extends Client {
     super(clientOptions);
     this.database = database;
     this.states = new KamiStates();
+    this.listeners = new Collection();
+    this.commands = new Collection();
 
-    this.listeners = new Map();
-
-    /**
-     * @type {Map<string, import("./command").KamiCommand>}
-     */
-    this.commands = new Map();
-
-    this.setupListeners();
+    this.loadListeners();
     this.loadCommands();
   }
 
-  setupListeners() {
+  loadListeners() {
     for (const filename of fs.readdirSync(ListenerFolder)) {
       /**
        * @type {import("./listener").KamiListener}
