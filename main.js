@@ -1,3 +1,5 @@
+// @ts-check
+
 require("dotenv").config();
 const { dirname, join } = require("node:path");
 const { existsSync, writeFileSync } = require("node:fs");
@@ -55,14 +57,15 @@ async function main() {
     writeFileSync(userDatabasePath, "{}", { encoding: "utf-8" });
   }
 
-  console.log(guildDatabasePath, userDatabasePath);
-
-  const database = new KamiDatabase({
+  const databases = {
     guild : new Low(new JSONFile(guildDatabasePath), {}),
     user  : new Low(new JSONFile(userDatabasePath), {}),
-  });
+  };
 
-  const client = new KamiClient(database, { intents: KamiIntents });
+  await databases.guild.read();
+  await databases.user.read();
+
+  const client = new KamiClient(new KamiDatabase(databases), { intents: KamiIntents });
 
   client.login(process.env.DEV_TOKEN);
 }

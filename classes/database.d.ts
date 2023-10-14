@@ -8,7 +8,7 @@ declare interface Databases {
 }
 
 export class KamiDatabase {
-  constructor(name: string);
+  constructor(database: Databases);
   public database: Databases;
   public guild(id: string): GuildDataModel;
   public user(id: string): UserDataModel;
