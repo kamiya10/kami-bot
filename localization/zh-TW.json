@@ -1,0 +1,49 @@
+{
+  "slash": {
+    "avatar": {
+      "NAME": "頭貼",
+      "DESC": "獲取成員頭貼。",
+      "OPTIONS": {
+        "member": {
+          "NAME": "成員",
+          "DESC": "指定成員。"
+        },
+        "server": {
+          "NAME": "伺服器",
+          "DESC": "獲取伺服器頭貼。"
+        }
+      }
+    },
+    "banner": {
+      "NAME": "橫幅",
+      "DESC": "獲取成員橫幅。",
+      "OPTIONS": {
+        "member": {
+          "NAME": "成員",
+          "DESC": "指定成員。"
+        },
+        "server": {
+          "NAME": "伺服器",
+          "DESC": "獲取伺服器橫幅。"
+        }
+      }
+    },
+    "ping": {
+      "NAME": "延遲",
+      "DESC": "敲機器人。"
+    },
+    "voice": {
+      "NAME": "個人語音頻道",
+      "DESC": "個人語音頻道相關指令。"
+    }
+  },
+  "header": {
+    "avatar": "頭貼 | {{0}}",
+    "banner": "橫幅 | {{0}}",
+    "ping": "延遲 | {{0}}",
+    "voice": "個人語音頻道 | {{0}}"
+  },
+  "common": {
+    "image_formats": "**圖片連結**\n"
+  }
+}

@@ -1,6 +1,8 @@
 // @ts-check
 
 const { EmbedBuilder, SlashCommandBuilder, TimestampStyles, codeBlock, time } = require("@discordjs/builders");
+const { $at } = require("../../classes/utils");
+const { t: $t } = require("i18next");
 const { Colors } = require("discord.js");
 const { KamiCommand } = require("../../classes/command");
 
@@ -14,7 +16,9 @@ const ping = (client) => new KamiCommand({
   filePath : __filename,
   builder  : new SlashCommandBuilder()
     .setName("ping")
-    .setDescription("Check if the bot is alive or not."),
+    .setNameLocalizations($at("slash:ping.NAME"))
+    .setDescription("Check if the bot is alive or not.")
+    .setDescriptionLocalizations($at("slash:ping.DESC")),
   async execute(interaction) {
     try {
       const start = Date.now();
@@ -24,7 +28,7 @@ const ping = (client) => new KamiCommand({
 
       const embed = new EmbedBuilder()
         .setAuthor({
-          name    : `Ping | ${client.user.displayName}`,
+          name    : $t("header:ping", { lng: interaction.locale, 0: client.user.displayName }),
           iconURL : client.user.displayAvatarURL(),
         })
         .setColor(latency >= 1000 ? Colors.Red : latency >= 500 ? Colors.Yellow : Colors.Green)

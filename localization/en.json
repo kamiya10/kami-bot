@@ -1,0 +1,49 @@
+{
+  "slash": {
+    "avatar": {
+      "NAME": "avatar",
+      "DESC": "Get the avatar of a member.",
+      "OPTIONS": {
+        "member": {
+          "NAME": "member",
+          "DESC": "The member to get the avatar of."
+        },
+        "server": {
+          "NAME": "server",
+          "DESC": "Get the server specific avatar."
+        }
+      }
+    },
+    "banner": {
+      "NAME": "banner",
+      "DESC": "Get the banner of a member.",
+      "OPTIONS": {
+        "member": {
+          "NAME": "member",
+          "DESC": "The member to get the banner of."
+        },
+        "server": {
+          "NAME": "server",
+          "DESC": "Get the server specific banner."
+        }
+      }
+    },
+    "ping": {
+      "NAME": "ping",
+      "DESC": "Check if the bot is still alive or not."
+    },
+    "voice": {
+      "NAME": "voice",
+      "DESC": "Commands for temporary voice channels."
+    }
+  },
+  "header": {
+    "avatar": "Avatar | {{0}}",
+    "banner": "Banner | {{0}}",
+    "ping": "Ping | {{0}}",
+    "voice": "Temporary Voice Channel | {{0}}"
+  },
+  "common": {
+    "image_formats": "**Image Formats**\n"
+  }
+}

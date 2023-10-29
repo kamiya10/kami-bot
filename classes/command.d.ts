@@ -1,15 +1,15 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction } from "discord.js";
 import { Awaitable } from "@discordjs/util";
-import { SlashCommandBuilder } from "@discordjs/builders/dist";
+import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders/dist";
 
 interface KamiCommandConstructor {
   defer?: boolean;
   global?: boolean;
   dev?: boolean;
   filePath: string;
-  builder: SlashCommandBuuilder;
-  execute: (interaction: ChatInputCommandInteraction) => Awaitable<void>;
-  autocomplete?: (interaction: AutocompleteInteraction) => Awaitable<void>;
+  builder: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> | SlashCommandSubcommandBuilder | SlashCommandSubcommandsOnlyBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandOptionsOnlyBuilder;
+  execute: (interaction: ChatInputCommandInteraction<"cached">) => Awaitable<void>;
+  autocomplete?: (interaction: AutocompleteInteraction<"cached">) => Awaitable<void>;
 }
 
 export class KamiCommand {
@@ -21,6 +21,6 @@ export class KamiCommand {
   public filePath: string;
   public builder: SlashCommandBuilder;
 
-  public execute(interaction: ChatInputCommandInteraction): Awaitable<void>;
-  public autocomplete?(interaction: AutocompleteInteraction): Awaitable<void>;
+  public execute(interaction: ChatInputCommandInteraction<"cached">): Awaitable<void>;
+  public autocomplete?(interaction: AutocompleteInteraction<"cached">): Awaitable<void>;
 }

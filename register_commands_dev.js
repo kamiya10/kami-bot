@@ -1,68 +1,119 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits } = require("discord.js");
-const cliProgress = require("cli-progress");
-const fs = require("node:fs");
+const { existsSync, mkdirSync, readFileSync, writeFileSync } = require("node:fs");
+const { Events } = require("discord.js");
+const { KamiClient } = require("./classes/client");
+const { KamiIntents } = require("./constants");
+const { SingleBar } = require("cli-progress");
+const { createHash } = require("node:crypto");
+const { dirname } = require("node:path");
+const i18next = require("i18next");
+const ora = require("ora");
+const pe = require("pretty-error").start();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+pe.skipNodeFiles();
+pe.alias(`${dirname(require.main.filename).replace(/\\/g, "/")}/`, "kami-bot @ ");
+pe.appendStyle({
+  "pretty-error": {
+    marginLeft: 0,
+  },
+  "pretty-error > header > message": {
+    color: "white",
+  },
+  "pretty-error > trace": {
+    marginTop  : 0,
+    marginLeft : 1,
+  },
+  "pretty-error > trace > item": {
+    marginBottom: 0,
+  },
+  "pretty-error > trace > item > header > pointer > file": {
+    color: "blue",
+  },
+  "pretty-error > trace > item > header > pointer > line": {
+    color: "yellow",
+  },
+  "pretty-error > trace > item > header > what": {
+    color: "none",
+  },
+  "pretty-error > trace > item > footer > addr": {
+    color: "black",
+  },
+  "pretty-error > trace > item > footer > extra": {
+    color: "black",
+  },
+});
 
-const progress = new cliProgress.SingleBar({
-  hideCursor: true,
-}, cliProgress.Presets.shades_classic);
-
-const commands = [];
-
-const commandCategories = fs.readdirSync("./commands");
-
-for (const category of commandCategories) {
-  const commandFiles = fs.readdirSync(`./commands/${category}`).filter(file => file.endsWith(".js"));
-
-  for (const file of commandFiles) {
-    const command = require(`./commands/${category}/${file}`)(client);
-
-    if (command.dev) {
-      commands.push(command.builder.toJSON());
-    }
-  }
+if (!existsSync("./.cache")) {
+  mkdirSync("./.cache");
 }
 
-console.log(`Commands Length: ${commands.length}`);
-console.log("Starting command registration");
+if (!existsSync("./.cache/DEV_COMMAND_VERSION")) {
+  writeFileSync("./.cache/DEV_COMMAND_VERSION", "", { encoding: "utf-8" });
+}
 
-client.login(process.env.DEV_TOKEN);
+const version = readFileSync("./.cache/DEV_COMMAND_VERSION", { encoding: "utf-8" });
 
-client.once("ready", async () => {
-  let count = 0, errcount = 0;
+async function main() {
+  const sp1 = ora({ text: "Loading localizations...", color: "cyan", spinner: "dots" });
 
-  if (await new Promise((resolve) => {
-    progress.start(2, 0);
+  sp1.start();
+  await i18next.init({
+    resources: {
+      en      : require("./localization/en.json"),
+      ja      : require("./localization/ja.json"),
+      "zh-TW" : require("./localization/zh-TW.json"),
+    },
+  });
+  sp1.succeed();
 
+  const client = new KamiClient(null, { intents: KamiIntents });
+  const commands = client.commands.map(command => command.builder.toJSON());
 
-    for (const promise of [
-      client.guilds.cache.get("810931443206848544").commands.set(commands),
-      client.guilds.cache.get("597227484550791209").commands.set(commands),
-    ]) {
-      promise.then(() => {
-        count++;
-        progress.update(count + errcount);
+  const hash = createHash("sha256").update(JSON.stringify(commands)).digest().toString();
 
-        if ((count + errcount) == 2) {
-          progress.stop();
-          resolve(true);
-        }
-      })
-        .catch((e) => {
-          console.error(`${e}`);
-          errcount++;
-          progress.update(count + errcount);
+  if (hash == version) {
+    console.log("Command Version is the same. Skipping command registration.");
+    process.exit(0);
+  } else {
+    console.log("Command Version is different! Registering commands...");
+    writeFileSync("./.cache/DEV_COMMAND_VERSION", hash, { encoding: "utf-8" });
 
-          if ((count + errcount) == 2) {
-            progress.stop();
+    if (await new Promise((resolve) => {
+      client.once(Events.ClientReady, () => {
+        const bar = new SingleBar({
+          format     : "{bar} {percentage}% | {value} of {total} Guilds",
+          hideCursor : true,
+        });
+
+        let count = 0;
+        bar.start(client.guilds.cache.size, 0);
+
+        setInterval(() => {
+          bar.updateETA();
+        }, 5000);
+
+        client.guilds.cache.forEach(async (guild) => {
+          try {
+            await guild.commands.set(commands);
+          } catch (error) {
+            console.error(error);
+          }
+
+          count++;
+          bar.update(count);
+
+          if (count == client.guilds.cache.size) {
             resolve(true);
           }
         });
+      });
+    })) {
+      console.log("Done.");
+      process.exit(0);
     }
-  })) {
-    console.log(`\nFinished register with ${count} succeed, ${errcount} failed.`);
-    process.exit(0);
   }
-});
+
+  client.login(process.env.DEV_TOKEN);
+}
+
+main();

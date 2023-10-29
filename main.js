@@ -1,11 +1,10 @@
-// @ts-check
-
 require("dotenv").config();
 const { dirname, join } = require("node:path");
 const { existsSync, writeFileSync } = require("node:fs");
 const { KamiClient } = require("./classes/client");
 const { KamiDatabase } = require("./classes/database");
 const { KamiIntents } = require("./constants");
+const i18next = require("i18next");
 const pe = require("pretty-error").start();
 
 pe.skipNodeFiles();
@@ -56,6 +55,14 @@ async function main() {
   if (!existsSync(userDatabasePath)) {
     writeFileSync(userDatabasePath, "{}", { encoding: "utf-8" });
   }
+
+  await i18next.init({
+    resources: {
+      en      : require("./localization/en.json"),
+      ja      : require("./localization/ja.json"),
+      "zh-tw" : require("./localization/zh-TW.json"),
+    },
+  });
 
   const databases = {
     guild : new Low(new JSONFile(guildDatabasePath), {}),

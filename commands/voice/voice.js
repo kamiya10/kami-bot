@@ -2,6 +2,8 @@
 
 const { ChannelType, Colors, GuildMember } = require("discord.js");
 const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, bold, codeBlock, inlineCode } = require("@discordjs/builders");
+const { $at } = require("../../classes/utils");
+const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
 
 /**
@@ -14,7 +16,9 @@ const voice = (client) => new KamiCommand({
   filePath : __filename,
   builder  : new SlashCommandBuilder()
     .setName("voice")
+    .setNameLocalizations($at("slash:voice.NAME"))
     .setDescription("Commands for temporary voice channels.")
+    .setDescriptionLocalizations($at("slash:voice.DESC"))
     .addSubcommandGroup(new SlashCommandSubcommandGroupBuilder()
       .setName("server")
       .setDescription("Server configuration commands for temporary voice channels.")
@@ -215,6 +219,10 @@ const voice = (client) => new KamiCommand({
   async execute(interaction) {
     try {
       const embed = new EmbedBuilder()
+        .setAuthor({
+          name    : $t("header:voice", { lng: interaction.locale, 0: interaction.guild.name }),
+          iconURL : interaction.guild.iconURL(),
+        })
         .setColor(Colors.Blue)
         .setDescription("✅");
 

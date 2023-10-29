@@ -2,6 +2,8 @@
 
 const { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
 const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
+const { $at } = require("../../classes/utils");
+const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
 
 /**
@@ -13,14 +15,20 @@ const avatar = () => new KamiCommand({
   filePath : __filename,
   builder  : new SlashCommandBuilder()
     .setName("avatar")
+    .setNameLocalizations($at("slash:avatar.NAME"))
     .setDescription("Get the avatar of a member.")
+    .setDescriptionLocalizations($at("slash:avatar.DESC"))
     .setDMPermission(false)
     .addUserOption(new SlashCommandUserOption()
       .setName("member")
-      .setDescription("The member to get the avatar of."))
+      .setNameLocalizations($at("slash:avatar.OPTIONS.member.NAME"))
+      .setDescription("The member to get the avatar of.")
+      .setDescriptionLocalizations($at("slash:avatar.OPTIONS.member.DESC")))
     .addBooleanOption(new SlashCommandBooleanOption()
       .setName("server")
-      .setDescription("Get the server specific avatar.")),
+      .setNameLocalizations($at("slash:avatar.OPTIONS.server.NAME"))
+      .setDescription("Get the server specific avatar.")
+      .setDescriptionLocalizations($at("slash:avatar.OPTIONS.server.DESC"))),
   async execute(interaction) {
     try {
       const member = interaction.options.getMember("member") ?? interaction.member;
@@ -30,7 +38,7 @@ const avatar = () => new KamiCommand({
 
       if (member instanceof GuildMember) {
         embed.setAuthor({
-          name    : `Avatar | ${member.displayName}`,
+          name    : $t("header:avatar", { lng: interaction.locale, 0: member.displayName }),
           iconURL : member.displayAvatarURL(),
         });
 
