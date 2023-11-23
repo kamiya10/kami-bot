@@ -5,6 +5,7 @@ const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashComma
 const { $at } = require("../../classes/utils");
 const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
+const { Logger } = require("../../classes/logger");
 
 /**
  * The /ping command.
@@ -21,95 +22,141 @@ const voice = (client) => new KamiCommand({
     .setDescriptionLocalizations($at("slash:voice.DESC"))
     .addSubcommandGroup(new SlashCommandSubcommandGroupBuilder()
       .setName("server")
+      .setNameLocalizations($at("slash:voice.server.NAME"))
       .setDescription("Server configuration commands for temporary voice channels.")
+      .setDescriptionLocalizations($at("slash:voice.server.DESC"))
       // /voice server setup
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("setup")
-        .setDescription("Setup a temporary voice channel creator."))
+        .setNameLocalizations($at("slash:voice.server.setup.NAME"))
+        .setDescription("Setup a temporary voice channel creator.")
+        .setDescriptionLocalizations($at("slash:voice.server.setup.DESC")))
       // /voice server add
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("add")
+        .setNameLocalizations($at("slash:voice.server.add.NAME"))
         .setDescription("Add a voice channel to be a temporary voice channel creator.")
+        .setDescriptionLocalizations($at("slash:voice.server.add.DESC"))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.add.OPTIONS.channel.NAME"))
           .setDescription("The channel to be a temporary voice channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.add.OPTIONS.channel.DESC"))
           .addChannelTypes(ChannelType.GuildVoice)
           .setRequired(true))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("category")
+          .setNameLocalizations($at("slash:voice.server.add.OPTIONS.category.NAME"))
           .setDescription("The category temporary voice channel should be created in.")
+          .setDescriptionLocalizations($at("slash:voice.server.add.OPTIONS.category.DESC"))
           .addChannelTypes(ChannelType.GuildCategory)
           .setRequired(true)))
       // /voice server remove
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("remove")
+        .setNameLocalizations($at("slash:voice.server.remove.NAME"))
         .setDescription("Remove a voice channel from being a temporary voice channel creator.")
+        .setDescriptionLocalizations($at("slash:voice.server.remove.DESC"))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.remove.OPTIONS.channel.NAME"))
           .setDescription("The channel to remove from being a temporary voice channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.remove.OPTIONS.channel.DESC"))
           .addChannelTypes(ChannelType.GuildVoice)
           .setRequired(true)))
       // /voice server info
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("info")
+        .setNameLocalizations($at("slash:voice.server.info.NAME"))
         .setDescription("Get currently configured temporary voice channel creators.")
+        .setDescriptionLocalizations($at("slash:voice.server.info.DESC"))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.info.OPTIONS.channel.NAME"))
           .setDescription("Show the specific temporary voice channel creator configuration.")
+          .setDescriptionLocalizations($at("slash:voice.server.info.OPTIONS.channel.DESC"))
           .addChannelTypes(ChannelType.GuildVoice)))
       // /voice server name
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("name")
+        .setNameLocalizations($at("slash:voice.name.OPTIONS.name.NAME"))
         .setDescription("Change the name of the template temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.server.name.DESC"))
         .addStringOption(new SlashCommandStringOption()
           .setName("name")
-          .setDescription("The new name of the temporary voice channel."))
+          .setNameLocalizations($at("slash:voice.name.OPTIONS.name.NAME"))
+          .setDescription("The new name of the temporary voice channel.")
+          .setDescriptionLocalizations($at("slash:voice.name.OPTIONS.name.DESC")))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.default.NAME"))
           .setDescription("Make this setting only affects the specified channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.default.DESC"))
           .addChannelTypes(ChannelType.GuildVoice))
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("override")
-          .setDescription("Override user preferences.")))
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.override.NAME"))
+          .setDescription("Override user preferences.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.override.DESC"))))
       // /voice server limit
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("limit")
+        .setNameLocalizations($at("slash:voice.limit.NAME"))
         .setDescription("Change the user limit of the template temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.server.limit.DESC"))
         .addIntegerOption(new SlashCommandIntegerOption()
           .setName("limit")
+          .setNameLocalizations($at("slash:voice.limit.OPTIONS.limit.NAME"))
           .setDescription("The new user limit of the temporary voice channel. (0 = Unlimited)")
+          .setDescriptionLocalizations($at("slash:voice.limit.OPTIONS.limit.DESC"))
           .setMinValue(0)
           .setMaxValue(99))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.default.NAME"))
           .setDescription("Make this setting only affects the specified channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.default.DESC"))
           .addChannelTypes(ChannelType.GuildVoice))
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("override")
-          .setDescription("Override user preferences.")))
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.override.NAME"))
+          .setDescription("Override user preferences.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.override.DESC"))))
       // /voice server bitrate
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("bitrate")
+        .setNameLocalizations($at("slash:voice.bitrate.OPTIONS.bitrate.NAME"))
         .setDescription("Change the bitrate of the template temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.server.bitrate.DESC"))
         .addIntegerOption(new SlashCommandIntegerOption()
           .setName("bitrate")
+          .setNameLocalizations($at("slash:voice.bitrate.OPTIONS.bitrate.NAME"))
           .setDescription("The new bitrate of the temporary voice channel. (In kbps)")
+          .setDescriptionLocalizations($at("slash:voice.bitrate.OPTIONS.bitrate.DESC"))
           .setMinValue(8)
           .setMaxValue(384))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.default.NAME"))
           .setDescription("Make this setting only affects the specified channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.default.DESC"))
           .addChannelTypes(ChannelType.GuildVoice))
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("override")
-          .setDescription("Override user preferences.")))
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.override.NAME"))
+          .setDescription("Override user preferences.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.override.DESC"))))
       // /voice server region
       .addSubcommand(new SlashCommandSubcommandBuilder()
         .setName("region")
+        .setNameLocalizations($at("slash:voice.region.OPTIONS.region.NAME"))
         .setDescription("Change the region of the template temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.server.region.DESC"))
         .addStringOption(new SlashCommandStringOption()
           .setName("region")
+          .setNameLocalizations($at("slash:voice.region.OPTIONS.region.NAME"))
           .setDescription("The new region of the temporary voice channel.")
+          .setDescriptionLocalizations($at("slash:voice.region.OPTIONS.region.DESC"))
           .addChoices(...[
             { name: "Brazil", value: "brazil" },
             { name: "Hong Kong", value: "hongkong" },
@@ -127,89 +174,129 @@ const voice = (client) => new KamiCommand({
           ]))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.default.NAME"))
           .setDescription("Make this setting only affects the specified channel creator.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.default.DESC"))
           .addChannelTypes(ChannelType.GuildVoice))
         .addBooleanOption(new SlashCommandBooleanOption()
           .setName("override")
-          .setDescription("Override user preferences."))),
+          .setNameLocalizations($at("slash:voice.server.OPTIONS.override.NAME"))
+          .setDescription("Override user preferences.")
+          .setDescriptionLocalizations($at("slash:voice.server.OPTIONS.override.DESC")))),
     )
     // /voice name
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("name")
+      .setNameLocalizations($at("slash:voice.name.NAME"))
       .setDescription("Change the name of a temporary voice channel you owned.")
+      .setDescriptionLocalizations($at("slash:voice.name.DESC"))
       .addStringOption(new SlashCommandStringOption()
         .setName("name")
-        .setDescription("The new name of the temporary voice channel."))
+        .setNameLocalizations($at("slash:voice.name.OPTIONS.name.NAME"))
+        .setDescription("The new name of the temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.name.OPTIONS.name.DESC")))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("default")
-        .setDescription("Make this name as the server default name of the temporary voice channel on channel creation."))
+        .setNameLocalizations($at("slash:voice.OPTIONS.default.NAME"))
+        .setDescription("Make this name as the server default name of the temporary voice channel on channel creation.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.default.DESC")))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("global")
-        .setDescription("Save the setting globally so it applies to all servers.")))
+        .setNameLocalizations($at("slash:voice.OPTIONS.global.NAME"))
+        .setDescription("Save the setting globally so it applies to all servers.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.global.DESC"))))
     // /voice limit
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("limit")
+      .setNameLocalizations($at("slash:voice.limit.NAME"))
       .setDescription("Change the user limit of a temporary voice channel you owned.")
+      .setDescriptionLocalizations($at("slash:voice.limit.DESC"))
       .addIntegerOption(new SlashCommandIntegerOption()
         .setName("limit")
+        .setNameLocalizations($at("slash:voice.limit.OPTIONS.limit.NAME"))
         .setDescription("The new user limit of the temporary voice channel. (0 = Unlimited)")
+        .setDescriptionLocalizations($at("slash:voice.limit.OPTIONS.limit.DESC"))
         .setMinValue(0)
         .setMaxValue(99))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("default")
-        .setDescription("Make this user limit as the server default limit of the temporary voice channel on channel creation."))
+        .setNameLocalizations($at("slash:voice.OPTIONS.default.NAME"))
+        .setDescription("Make this user limit as the server default limit of the temporary voice channel on channel creation.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.default.DESC")))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("global")
-        .setDescription("Save the setting globally so it applies to all servers.")))
+        .setNameLocalizations($at("slash:voice.OPTIONS.global.NAME"))
+        .setDescription("Save the setting globally so it applies to all servers.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.global.DESC"))))
     // /voice bitrate
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("bitrate")
+      .setNameLocalizations($at("slash:voice.bitrate.NAME"))
       .setDescription("Change the bitrate of a temporary voice channel you owned.")
+      .setDescriptionLocalizations($at("slash:voice.bitrate.DESC"))
       .addIntegerOption(new SlashCommandIntegerOption()
         .setName("bitrate")
+        .setNameLocalizations($at("slash:voice.bitrate.OPTIONS.bitrate.NAME"))
         .setDescription("The new bitrate of the temporary voice channel. (In kbps)")
+        .setDescriptionLocalizations($at("slash:voice.bitrate.OPTIONS.bitrate.DESC"))
         .setMinValue(8)
         .setMaxValue(384))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("default")
-        .setDescription("Make this bitrate as the server default of the temporary voice channel on channel creation."))
+        .setNameLocalizations($at("slash:voice.OPTIONS.default.NAME"))
+        .setDescription("Make this bitrate as the server default of the temporary voice channel on channel creation.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.default.DESC")))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("global")
-        .setDescription("Save the setting globally so it applies to all servers.")))
+        .setNameLocalizations($at("slash:voice.OPTIONS.global.NAME"))
+        .setDescription("Save the setting globally so it applies to all servers.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.global.DESC"))))
     // /voice region
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("region")
+      .setNameLocalizations($at("slash:voice.region.NAME"))
       .setDescription("Change the region of a temporary voice channel you owned.")
+      .setDescriptionLocalizations($at("slash:voice.region.DESC"))
       .addStringOption(new SlashCommandStringOption()
         .setName("region")
+        .setNameLocalizations($at("slash:voice.region.OPTIONS.region.NAME"))
         .setDescription("The new region of the temporary voice channel.")
+        .setDescriptionLocalizations($at("slash:voice.region.OPTIONS.region.DESC"))
         .addChoices(...[
-          { name: "Brazil", value: "brazil" },
-          { name: "Hong Kong", value: "hongkong" },
-          { name: "India", value: "india" },
-          { name: "Japan", value: "japan" },
-          { name: "Rotterdam", value: "rotterdam" },
-          { name: "Russia", value: "russia" },
-          { name: "Singapore", value: "singapore" },
-          { name: "South Africa", value: "southafrica" },
-          { name: "Sydney", value: "sydney" },
-          { name: "US Central", value: "us-central" },
-          { name: "US East", value: "us-east" },
-          { name: "US South", value: "us-south" },
-          { name: "US West", value: "us-west" },
+          { value: "brazil", name: "Brazil", name_localizations: $at("slash.voice.region.CHOICES.brazil") },
+          { value: "hongkong", name: "Hong Kong", name_localizations: $at("slash.voice.region.CHOICES.hongkong") },
+          { value: "india", name: "India", name_localizations: $at("slash.voice.region.CHOICES.india") },
+          { value: "japan", name: "Japan", name_localizations: $at("slash.voice.region.CHOICES.japan") },
+          { value: "rotterdam", name: "Rotterdam", name_localizations: $at("slash.voice.region.CHOICES.rotterdam") },
+          { value: "russia", name: "Russia", name_localizations: $at("slash.voice.region.CHOICES.russia") },
+          { value: "singapore", name: "Singapore", name_localizations: $at("slash.voice.region.CHOICES.singapore") },
+          { value: "southafrica", name: "South Africa", name_localizations: $at("slash.voice.region.CHOICES.southafrica") },
+          { value: "sydney", name: "Sydney", name_localizations: $at("slash.voice.region.CHOICES.sydney") },
+          { value: "us-central", name: "US Central", name_localizations: $at("slash.voice.region.CHOICES.us_central") },
+          { value: "us-east", name: "US East", name_localizations: $at("slash.voice.region.CHOICES.us_east") },
+          { value: "us-south", name: "US South", name_localizations: $at("slash.voice.region.CHOICES.us_south") },
+          { value: "us-west", name: "US West", name_localizations: $at("slash.voice.region.CHOICES.us_west") },
         ]))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("default")
-        .setDescription("Make this region as the server default of the temporary voice channel on channel creation."))
+        .setNameLocalizations($at("slash:voice.OPTIONS.default.NAME"))
+        .setDescription("Make this region as the server default of the temporary voice channel on channel creation.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.default.DESC")))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("global")
-        .setDescription("Save the setting globally so it applies to all servers.")))
+        .setNameLocalizations($at("slash:voice.OPTIONS.global.NAME"))
+        .setDescription("Save the setting globally so it applies to all servers.")
+        .setDescriptionLocalizations($at("slash:voice.OPTIONS.global.DESC"))))
     .addSubcommand(new SlashCommandSubcommandBuilder()
       .setName("clear")
+      .setNameLocalizations($at("slash:voice.clear.NAME"))
       .setDescription("Clear temporary voice channel settings.")
+      .setDescriptionLocalizations($at("slash:voice.clear.DESC"))
       .addStringOption(new SlashCommandStringOption()
         .setName("which")
+        .setNameLocalizations($at("slash:voice.clear.OPTIONS.which.NAME"))
         .setDescription("Choose which scope to clear.")
+        .setDescriptionLocalizations($at("slash:voice.clear.OPTIONS.which.NAME"))
         .addChoices(...[
           { name: "Global", value: "global" },
           { name: "This server", value: "guild" },
@@ -582,6 +669,7 @@ const voice = (client) => new KamiCommand({
 
               case "all": {
                 delete client.database.user(interaction.member.id).voice;
+
                 embed.setDescription("All your defaul temporary voice channel settings have been cleared.");
 
                 break;
@@ -606,7 +694,7 @@ const voice = (client) => new KamiCommand({
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")

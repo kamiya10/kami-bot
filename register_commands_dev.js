@@ -3,6 +3,7 @@ const { existsSync, mkdirSync, readFileSync, writeFileSync } = require("node:fs"
 const { Events } = require("discord.js");
 const { KamiClient } = require("./classes/client");
 const { KamiIntents } = require("./constants");
+const { Logger } = require("./classes/logger");
 const { SingleBar } = require("cli-progress");
 const { createHash } = require("node:crypto");
 const { dirname } = require("node:path");
@@ -78,39 +79,38 @@ async function main() {
     Logger.info("Command Version is different! Registering commands...");
     writeFileSync("./.cache/DEV_COMMAND_VERSION", hash, { encoding: "utf-8" });
 
-    if (await new Promise((resolve) => {
-      client.once(Events.ClientReady, () => {
-        const bar = new SingleBar({
-          format     : "{bar} {percentage}% | {value} of {total} Guilds",
-          hideCursor : true,
-        });
-
-        let count = 0;
-        bar.start(client.guilds.cache.size, 0);
-
-        setInterval(() => {
-          bar.updateETA();
-        }, 5000);
-
-        client.guilds.cache.forEach(async (guild) => {
-          try {
-            await guild.commands.set(commands);
-          } catch (error) {
-            Logger.error(error);
-          }
-
-          count++;
-          bar.update(count);
-
-          if (count == client.guilds.cache.size) {
-            resolve(true);
-          }
-        });
+    client.once(Events.ClientReady, () => {
+      const bar = new SingleBar({
+        format     : "{bar} {percentage}% | {value} of {total} Guilds",
+        hideCursor : true,
       });
-    })) {
-      Logger.info("Done.");
-      process.exit(0);
-    }
+
+      let count = 0;
+      bar.start(client.guilds.cache.size, 0);
+
+      setInterval(() => {
+        bar.updateETA();
+      }, 1000);
+
+      client.guilds.cache.forEach(async (guild) => {
+        try {
+          await guild.commands.set(commands);
+        } catch (error) {
+          Logger.blank();
+          Logger.error(error.toString(), commands);
+        }
+
+        count++;
+        bar.update(count);
+
+        if (count == client.guilds.cache.size) {
+          Logger.blank();
+          Logger.success("Done.");
+          process.exit(0);
+        }
+      });
+    });
+
   }
 
   client.login(process.env.DEV_TOKEN);

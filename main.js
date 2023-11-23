@@ -4,6 +4,7 @@ const { existsSync, writeFileSync } = require("node:fs");
 const { KamiClient } = require("./classes/client");
 const { KamiDatabase } = require("./classes/database");
 const { KamiIntents } = require("./constants");
+const { Logger } = require("./classes/logger");
 const i18next = require("i18next");
 const pe = require("pretty-error").start();
 
@@ -60,7 +61,7 @@ async function main() {
     resources: {
       en      : require("./localization/en.json"),
       ja      : require("./localization/ja.json"),
-      "zh-tw" : require("./localization/zh-TW.json"),
+      "zh-TW" : require("./localization/zh-TW.json"),
     },
   });
 
@@ -75,6 +76,44 @@ async function main() {
   const client = new KamiClient(new KamiDatabase(databases), { intents: KamiIntents });
 
   client.login(process.env.DEV_TOKEN);
+
+  const rl = require("readline").createInterface({
+    input  : process.stdin,
+    output : process.stdout,
+  });
+
+  rl.on("line", async (line) => {
+    const args = line.match(/[^\s"]+|"([^"]*)"/gi);
+    const command = args.shift();
+
+    switch (command) {
+      case "reload": {
+        const cmd = client.commands.get(args[0]);
+
+        if (cmd) {
+          delete require.cache[cmd.filePath];
+          client.commands.set(cmd.builder.name, require(cmd.filePath));
+          Logger.info(`Reloaded command "${cmd.builder.name}".`);
+        } else {
+          Logger.error(`Command${args[0] ? ` "${args[0]}" ` : " "}not found.`);
+        }
+
+        break;
+      }
+
+      case "exit": {
+        Logger.info("Stopping...");
+        await client.destroy();
+        process.exit(0);
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    Logger.blank();
+  });
 }
 
 main();

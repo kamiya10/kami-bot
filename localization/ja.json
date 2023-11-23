@@ -34,7 +34,146 @@
     },
     "voice": {
       "NAME": "個人ボイスチャンネル",
-      "DESC": "個人ボイスチャンネルに関するコマンド。"
+      "DESC": "個人ボイスチャンネルに関するコマンド。",
+      "server": {
+        "NAME": "サーバー設定",
+        "DESC": "Server configuration commands for temporary voice channels.",
+        "setup": {
+          "NAME": "クイックセットアップ",
+          "DESC": "Setup a temporary voice channel creator."
+        },
+        "add": {
+          "NAME": "追加",
+          "DESC": "Add a voice channel to be a temporary voice channel creator.",
+          "OPTIONS": {
+            "channel": {
+              "NAME": "チャンネル",
+              "DESC": "The channel to be a temporary voice channel creator."
+            },
+            "category": {
+              "NAME": "カテゴリー",
+              "DESC": "The category temporary voice channel should be created in."
+            }
+          }
+        },
+        "remove": {
+          "NAME": "削除",
+          "DESC": "Remove a voice channel from being a temporary voice channel creator.",
+          "OPTIONS": {
+            "channel": {
+              "NAME": "チャンネル",
+              "DESC": "The channel to remove from being a temporary voice channel creator."
+            }
+          }
+        },
+        "info": {
+          "NAME": "情報",
+          "DESC": "現在設定されている個人ボイスチャンネルの設定を表示する。",
+          "OPTIONS": {
+            "channel": {
+              "NAME": "チャンネル",
+              "DESC": "作成チャンネルを指定してその設定を表示します。"
+            }
+          }
+        },
+        "name": {
+          "DESC": "Change the name of the template temporary voice channel."
+        },
+        "limit": {
+          "DESC": "Change the user limit of the template temporary voice channel."
+        },
+        "bitrate": {
+          "DESC": "Change the bitrate of the template temporary voice channel."
+        },
+        "region": {
+          "DESC": "Change the region of the template temporary voice channel."
+        },
+        "OPTIONS": {
+          "default": {
+            "NAME": "チャンネル",
+            "DESC": "この設定を指定した作成チャンネルにのみ影響を与える。"
+          },
+          "override": {
+            "NAME": "オーバーライド",
+            "DESC": "ユーザー設定を無視してサーバーの設定を使用する。"
+          }
+        }
+      },
+      "name": {
+        "NAME": "名前",
+        "DESC": "個人ボイスチャンネルの名前を変更する。",
+        "OPTIONS": {
+          "name": {
+            "NAME": "名前",
+            "DESC": "新しい個人ボイスチャンネル名前。"
+          }
+        }
+      },
+      "limit": {
+        "NAME": "ユーサー上限",
+        "DESC": "Change the user limit of a temporary voice channel you owned.",
+        "OPTIONS": {
+          "limit": {
+            "NAME": "人数",
+            "DESC": "The new user limit of the temporary voice channel. (0 = Unlimited)"
+          }
+        }
+      },
+      "bitrate": {
+        "NAME": "ビットレート",
+        "DESC": "Change the bitrate of a temporary voice channel you owned.",
+        "OPTIONS": {
+          "bitrate": {
+            "NAME": "ビットレート",
+            "DESC": "The new bitrate of the temporary voice channel. (In kbps)"
+          }
+        }
+      },
+      "region": {
+        "NAME": "地域",
+        "DESC": "Change the region of a temporary voice channel you owned.",
+        "OPTIONS": {
+          "region": {
+            "NAME": "地域",
+            "DESC": "The new region of the temporary voice channel."
+          }
+        },
+        "CHOICES": {
+          "brazil": "ブラジル",
+          "hongkong": "香港",
+          "india": "インド",
+          "japan": "日本",
+          "rotterdam": "ロッテルダム",
+          "russia": "ロシア",
+          "singapore": "シンガポール",
+          "southafrica": "South Africa",
+          "sydney": "シドニー",
+          "us_central": "アメリカ中部",
+          "us_east": "アメリカ東部",
+          "us_south": "アメリカ南部",
+          "us_west": "アメリカ西部"
+        }
+      },
+      "clear": {
+        "NAME": "リセット",
+        "DESC": "Clear temporary voice channel settings.",
+        "OPTIONS": {
+          "which": {
+            "NAME": "which",
+            "DESC": "Choose which scope to clear."
+          }
+        }
+      },
+      "OPTIONS": {
+        "default": {
+          "NAME": "default",
+          "DESC": "Make this name as the server default name of the temporary voice channel on channel creation."
+        },
+        "global": {
+          "NAME": "global",
+          "DESC": "Save the setting globally so it applies to all servers."
+        }
+      }
     }
   },
   "header": {
