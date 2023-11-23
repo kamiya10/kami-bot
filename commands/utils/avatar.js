@@ -5,6 +5,7 @@ const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
 const { $at } = require("../../classes/utils");
 const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
+const { Logger } = require("../../classes/logger");
 
 /**
  * The /avatar command.
@@ -83,7 +84,7 @@ const avatar = () => new KamiCommand({
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")

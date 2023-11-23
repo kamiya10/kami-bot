@@ -5,6 +5,7 @@ const { $at } = require("../../classes/utils");
 const { t: $t } = require("i18next");
 const { Colors } = require("discord.js");
 const { KamiCommand } = require("../../classes/command");
+const { Logger } = require("../../classes/logger");
 
 /**
  * The /ping command.
@@ -43,7 +44,7 @@ const ping = (client) => new KamiCommand({
 
       await interaction.editReply({ content: "Pong!", embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")

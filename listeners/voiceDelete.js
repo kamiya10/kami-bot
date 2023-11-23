@@ -2,6 +2,7 @@
 
 const { Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
+const { Logger } = require("../classes/logger");
 
 /**
  * Temporary voice channel deletion event listener.
@@ -22,7 +23,7 @@ const onVoiceDelete = (client) => new KamiListener("voiceCreate")
         }
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   });
 

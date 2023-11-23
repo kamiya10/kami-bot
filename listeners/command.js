@@ -3,6 +3,7 @@
 const { Colors, Events } = require("discord.js");
 const { EmbedBuilder, codeBlock } = require("@discordjs/builders");
 const { KamiListener } = require("../classes/listener");
+const { Logger } = require("../classes/logger");
 
 /**
  * Slash command listener.
@@ -16,7 +17,6 @@ const onCommand = (client) => new KamiListener("command")
 
       try {
         if (interaction.isCommand()) {
-
           if (command) {
             if (command.defer) {
               await interaction.deferReply();
@@ -26,8 +26,8 @@ const onCommand = (client) => new KamiListener("command")
           }
         }
       } catch (error) {
-        console.error(`Failed to execute command /${interaction.commandName}`);
-        console.error(error);
+        Logger.error(`Failed to execute command /${interaction.commandName}`);
+        Logger.error(error);
         const embed = new EmbedBuilder()
           .setColor(Colors.Red)
           .setTitle("🛑 Uncaught Exception")

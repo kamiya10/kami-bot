@@ -1,5 +1,6 @@
 const { Client, Collection } = require("discord.js");
 const { KamiStates } = require("./states");
+const { Logger } = require("./logger");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -59,12 +60,12 @@ class KamiClient extends Client {
 
         const newCommand = require(`./${command.data.name}.js`);
         this.commands.set(newCommand.data.name, newCommand);
-        console.log(`Reloaded command /${name}.`);
+        Logger.info(`Reloaded command /${name}.`);
       } else {
-        console.error(`Command /${name} not found.`);
+        Logger.error(`Command /${name} not found.`);
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   }
 }

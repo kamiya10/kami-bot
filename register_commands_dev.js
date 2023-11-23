@@ -72,10 +72,10 @@ async function main() {
   const hash = createHash("sha256").update(JSON.stringify(commands)).digest().toString();
 
   if (hash == version) {
-    console.log("Command Version is the same. Skipping command registration.");
+    Logger.info("Command Version is the same. Skipping command registration.");
     process.exit(0);
   } else {
-    console.log("Command Version is different! Registering commands...");
+    Logger.info("Command Version is different! Registering commands...");
     writeFileSync("./.cache/DEV_COMMAND_VERSION", hash, { encoding: "utf-8" });
 
     if (await new Promise((resolve) => {
@@ -96,7 +96,7 @@ async function main() {
           try {
             await guild.commands.set(commands);
           } catch (error) {
-            console.error(error);
+            Logger.error(error);
           }
 
           count++;
@@ -108,7 +108,7 @@ async function main() {
         });
       });
     })) {
-      console.log("Done.");
+      Logger.info("Done.");
       process.exit(0);
     }
   }

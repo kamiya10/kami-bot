@@ -2,6 +2,7 @@
 
 const { Events } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
+const { Logger } = require("../classes/logger");
 
 /**
  * Ready event listener.
@@ -9,7 +10,7 @@ const { KamiListener } = require("../classes/listener");
  */
 const onReady = () => new KamiListener("ready")
   .on(Events.ClientReady, () => {
-    console.log("client ready");
+    Logger.info("client ready");
   });
 
 module.exports = onReady;

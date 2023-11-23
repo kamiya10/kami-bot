@@ -2,6 +2,7 @@
 
 const { ChannelType, Events, VoiceChannel } = require("discord.js");
 const { KamiListener } = require("../classes/listener");
+const { Logger } = require("../classes/logger");
 
 const getName =
 
@@ -185,7 +186,7 @@ const onVoiceCreate = (client) => new KamiListener("voiceCreate")
         }
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   });
 

@@ -46,7 +46,7 @@ for (const file of commandFiles) {
   }
 }
 
-console.log("Starting command registration");
+Logger.info("Starting command registration");
 
 client.once("ready", async () => {
   let count = 0, errcount = 0;
@@ -85,10 +85,10 @@ client.once("ready", async () => {
         });
     });
   })) {
-    console.log(`\nFinished register with ${count} succeed, ${errcount} failed.`);
+    Logger.info(`\nFinished register with ${count} succeed, ${errcount} failed.`);
     process.exit(0);
   } else {
-    console.error("Command registration failed");
+    Logger.error("Command registration failed");
     process.exit(1);
   }
 });
