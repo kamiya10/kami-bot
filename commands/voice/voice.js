@@ -7,6 +7,28 @@ const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
 const { Logger } = require("../../classes/logger");
 
+const voiceRegionChoices = [
+  { value: "brazil", name: "Brazil", name_localizations: $at("slash:voice.region.CHOICES.brazil") },
+  { value: "hongkong", name: "Hong Kong", name_localizations: $at("slash:voice.region.CHOICES.hongkong") },
+  { value: "india", name: "India", name_localizations: $at("slash:voice.region.CHOICES.india") },
+  { value: "japan", name: "Japan", name_localizations: $at("slash:voice.region.CHOICES.japan") },
+  { value: "rotterdam", name: "Rotterdam", name_localizations: $at("slash:voice.region.CHOICES.rotterdam") },
+  { value: "russia", name: "Russia", name_localizations: $at("slash:voice.region.CHOICES.russia") },
+  { value: "singapore", name: "Singapore", name_localizations: $at("slash:voice.region.CHOICES.singapore") },
+  { value: "southafrica", name: "South Africa", name_localizations: $at("slash:voice.region.CHOICES.southafrica") },
+  { value: "sydney", name: "Sydney", name_localizations: $at("slash:voice.region.CHOICES.sydney") },
+  { value: "us-central", name: "US Central", name_localizations: $at("slash:voice.region.CHOICES.us_central") },
+  { value: "us-east", name: "US East", name_localizations: $at("slash:voice.region.CHOICES.us_east") },
+  { value: "us-south", name: "US South", name_localizations: $at("slash:voice.region.CHOICES.us_south") },
+  { value: "us-west", name: "US West", name_localizations: $at("slash:voice.region.CHOICES.us_west") },
+];
+
+const settingClearChoices = [
+  { value: "global", name: "Global", name_localizations: $at("slash:voice.clear.CHOICES.global") },
+  { value: "guild", name: "This server", name_localizations: $at("slash:voice.clear.CHOICES.guild") },
+  { value: "all", name: "All", name_localizations: $at("slash:voice.clear.CHOICES.all") },
+];
+
 /**
  * The /ping command.
  * @param {import("../../classes/client").KamiClient} client
@@ -157,21 +179,7 @@ const voice = (client) => new KamiCommand({
           .setNameLocalizations($at("slash:voice.region.OPTIONS.region.NAME"))
           .setDescription("The new region of the temporary voice channel.")
           .setDescriptionLocalizations($at("slash:voice.region.OPTIONS.region.DESC"))
-          .addChoices(...[
-            { name: "Brazil", value: "brazil" },
-            { name: "Hong Kong", value: "hongkong" },
-            { name: "India", value: "india" },
-            { name: "Japan", value: "japan" },
-            { name: "Rotterdam", value: "rotterdam" },
-            { name: "Russia", value: "russia" },
-            { name: "Singapore", value: "singapore" },
-            { name: "South Africa", value: "southafrica" },
-            { name: "Sydney", value: "sydney" },
-            { name: "US Central", value: "us-central" },
-            { name: "US East", value: "us-east" },
-            { name: "US South", value: "us-south" },
-            { name: "US West", value: "us-west" },
-          ]))
+          .addChoices(...voiceRegionChoices))
         .addChannelOption(new SlashCommandChannelOption()
           .setName("channel")
           .setNameLocalizations($at("slash:voice.server.OPTIONS.default.NAME"))
@@ -262,21 +270,7 @@ const voice = (client) => new KamiCommand({
         .setNameLocalizations($at("slash:voice.region.OPTIONS.region.NAME"))
         .setDescription("The new region of the temporary voice channel.")
         .setDescriptionLocalizations($at("slash:voice.region.OPTIONS.region.DESC"))
-        .addChoices(...[
-          { value: "brazil", name: "Brazil", name_localizations: $at("slash.voice.region.CHOICES.brazil") },
-          { value: "hongkong", name: "Hong Kong", name_localizations: $at("slash.voice.region.CHOICES.hongkong") },
-          { value: "india", name: "India", name_localizations: $at("slash.voice.region.CHOICES.india") },
-          { value: "japan", name: "Japan", name_localizations: $at("slash.voice.region.CHOICES.japan") },
-          { value: "rotterdam", name: "Rotterdam", name_localizations: $at("slash.voice.region.CHOICES.rotterdam") },
-          { value: "russia", name: "Russia", name_localizations: $at("slash.voice.region.CHOICES.russia") },
-          { value: "singapore", name: "Singapore", name_localizations: $at("slash.voice.region.CHOICES.singapore") },
-          { value: "southafrica", name: "South Africa", name_localizations: $at("slash.voice.region.CHOICES.southafrica") },
-          { value: "sydney", name: "Sydney", name_localizations: $at("slash.voice.region.CHOICES.sydney") },
-          { value: "us-central", name: "US Central", name_localizations: $at("slash.voice.region.CHOICES.us_central") },
-          { value: "us-east", name: "US East", name_localizations: $at("slash.voice.region.CHOICES.us_east") },
-          { value: "us-south", name: "US South", name_localizations: $at("slash.voice.region.CHOICES.us_south") },
-          { value: "us-west", name: "US West", name_localizations: $at("slash.voice.region.CHOICES.us_west") },
-        ]))
+        .addChoices(...voiceRegionChoices))
       .addBooleanOption(new SlashCommandBooleanOption()
         .setName("default")
         .setNameLocalizations($at("slash:voice.OPTIONS.default.NAME"))
@@ -296,12 +290,8 @@ const voice = (client) => new KamiCommand({
         .setName("which")
         .setNameLocalizations($at("slash:voice.clear.OPTIONS.which.NAME"))
         .setDescription("Choose which scope to clear.")
-        .setDescriptionLocalizations($at("slash:voice.clear.OPTIONS.which.NAME"))
-        .addChoices(...[
-          { name: "Global", value: "global" },
-          { name: "This server", value: "guild" },
-          { name: "All", value: "all" },
-        ])
+        .setDescriptionLocalizations($at("slash:voice.clear.OPTIONS.which.DESC"))
+        .addChoices(...settingClearChoices)
         .setRequired(true))),
   async execute(interaction) {
     try {

@@ -146,7 +146,7 @@
           "rotterdam": "ロッテルダム",
           "russia": "ロシア",
           "singapore": "シンガポール",
-          "southafrica": "South Africa",
+          "southafrica": "南アフリカ",
           "sydney": "シドニー",
           "us_central": "アメリカ中部",
           "us_east": "アメリカ東部",
@@ -162,6 +162,11 @@
             "NAME": "which",
             "DESC": "Choose which scope to clear."
           }
+        },
+        "CHOICES": {
+          "global": "全域設定",
+          "guild": "このサーバーの設定",
+          "all": "デフォルトに戻す（全域設定とすべてのサーバーの設定）"
         }
       },
       "OPTIONS": {

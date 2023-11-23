@@ -162,6 +162,11 @@
             "NAME": "which",
             "DESC": "Choose which scope to clear."
           }
+        },
+        "CHOICES": {
+          "global": "Global",
+          "guild": "This server",
+          "all": "All"
         }
       },
       "OPTIONS": {
