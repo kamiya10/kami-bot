@@ -70,7 +70,10 @@ async function main() {
   const client = new KamiClient(null, { intents: KamiIntents });
   const commands = client.commands.map(command => command.builder.toJSON());
 
-  const hash = createHash("sha256").update(JSON.stringify(commands)).digest().toString();
+  const hash = createHash("sha256")
+    .update(JSON.stringify(commands))
+    .digest()
+    .toString();
 
   if (hash == version) {
     Logger.info("Command Version is the same. Skipping command registration.");

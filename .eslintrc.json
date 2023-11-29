@@ -8,8 +8,12 @@
 	"parserOptions": {
 		"ecmaVersion": "latest"
 	},
-	"plugins": ["require-sort"],
+	"plugins": [
+    "require-sort",
+    "@stylistic/js"
+  ],
 	"rules": {
+    "@stylistic/js/newline-per-chained-call": "warn",
 		"require-sort/require-sort": "warn",
 		"arrow-body-style": "warn",
 		"arrow-spacing": ["warn", { "before": true, "after": true }],
