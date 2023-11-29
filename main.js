@@ -84,6 +84,11 @@ async function main() {
 
   rl.on("line", async (line) => {
     const args = line.match(/[^\s"]+|"([^"]*)"/gi);
+
+    if (!args) {
+      return;
+    }
+
     const command = args.shift();
 
     switch (command) {
