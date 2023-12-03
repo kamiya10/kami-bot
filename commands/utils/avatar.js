@@ -1,7 +1,6 @@
 // @ts-check
 
-const { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } = require("discord.js");
-const { EmbedBuilder, codeBlock, hyperlink } = require("@discordjs/builders");
+const { Colors, EmbedBuilder, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption, codeBlock, hyperlink } = require("discord.js");
 const { $at } = require("../../classes/utils");
 const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
