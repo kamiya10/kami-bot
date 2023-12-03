@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
+const { Logger } = require("./classes/logger");
 const cliProgress = require("cli-progress");
 const fs = require("node:fs");
 
