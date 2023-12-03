@@ -1,7 +1,6 @@
 // @ts-check
 
-const { ChannelType, Colors, GuildMember } = require("discord.js");
-const { EmbedBuilder, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, bold, codeBlock, inlineCode } = require("@discordjs/builders");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, Colors, ComponentType, EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, bold, codeBlock, inlineCode } = require("discord.js");
 const { $at } = require("../../classes/utils");
 const { t: $t } = require("i18next");
 const { KamiCommand } = require("../../classes/command");
@@ -28,6 +27,164 @@ const settingClearChoices = [
   { value: "guild", name: "This server", name_localizations: $at("slash:voice.clear.CHOICES.guild") },
   { value: "all", name: "All", name_localizations: $at("slash:voice.clear.CHOICES.all") },
 ];
+
+const ChannelIcons = {
+  [ChannelType.GuildAnnouncement] : "📢",
+  [ChannelType.GuildCategory]     : "📁",
+  [ChannelType.GuildForum]        : "💬",
+  [ChannelType.GuildMedia]        : "🖼️",
+  [ChannelType.GuildStageVoice]   : "🎤",
+  [ChannelType.GuildText]         : "#️⃣",
+  [ChannelType.GuildVoice]        : "🔊",
+};
+
+const handleSetupProgress =
+
+/**
+ * @param {import("discord.js").ChatInputCommandInteraction<import("discord.js").CacheType>} interaction
+ * @param {import("../../classes/client").KamiClient} client
+ * @param {Record<string, import("../../databases/GuildDatabase").GuildVoiceSettings>} guildVoiceData
+ */
+async (interaction, client, guildVoiceData) => {
+  const permissions = interaction.guild?.members.me?.permissions;
+
+  if (!permissions || !permissions.has([PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers])) {
+    const permissionEmbed = new EmbedBuilder()
+      .setColor(Colors.Red)
+      .setDescription(`Insufficient Permissions. (Missing ${permissions.missing([PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers]).join(" ")})`);
+
+    await interaction.editReply({ embeds: [permissionEmbed] });
+
+    return;
+  }
+
+  /**
+   * @type {import("discord.js").Collection<string, import("discord.js").GuildBasedChannel>}
+   */
+  const lastCategoryChildren = interaction.guild.channels.cache
+    .filter(ch => ch instanceof CategoryChannel)
+    // @ts-ignore
+    .sort((a, b) => b.position - a.position)
+    // @ts-ignore
+    .first().children.cache
+    .sort((a, b) => ((a.position + 1) << ([ChannelType.GuildVoice, ChannelType.GuildStageVoice].includes(a.type) ? 8 : 0)) - ((b.position + 2) << ([ChannelType.GuildVoice, ChannelType.GuildStageVoice].includes(b.type) ? 8 : 0)));
+
+  const diffTree = [];
+
+  if (lastCategoryChildren.size) {
+    diffTree.push(`  ${ChannelIcons[lastCategoryChildren.first().parent.type]} ${lastCategoryChildren.first().parent.name}`);
+    diffTree.push(...lastCategoryChildren
+      .map(ch => `${ChannelIcons[ch.type]} ${ch.name}`)
+      .map((v, i, a) => `${(i == a.length - 1) ? "   └" : "   ├"} ${v}`));
+
+  }
+
+  diffTree.push("+ Temporary Voice Channels\n+  └ 🔊 Create Channel");
+
+  const confirmationEmbed = new EmbedBuilder()
+    .setColor(Colors.Blue)
+    .setDescription("Doing this will create a category channel and a voice channel to your server. Do you want to proceed?\nThis can be undone by deleting the created channels.")
+    .addFields({
+      name  : "Diff Changes",
+      value : codeBlock("diff", diffTree.join("\n")),
+    });
+
+  const actions = new ActionRowBuilder()
+    .setComponents(
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Primary)
+        .setCustomId("cancel")
+        .setLabel("Cancel"),
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Secondary)
+        .setCustomId("proceed")
+        .setLabel("Proceed"),
+    );
+
+  // @ts-ignore this error is a false positive
+  const sent = await interaction.editReply({ embeds: [confirmationEmbed], components: [actions] });
+
+  try {
+    const decision = await sent.awaitMessageComponent({
+      componentType : ComponentType.Button,
+      time          : 30000,
+    });
+
+    if (decision.customId == "cancel") {
+      await decision.update({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Blue)
+            .setDescription("Temporary Voice Channel Setup has been cancelled."),
+        ],
+        components: [],
+      });
+
+      setTimeout(() => sent.delete(), 5000);
+      return;
+    }
+
+    const progressEmbed = new EmbedBuilder()
+      .setColor(Colors.Yellow)
+      .setDescription("Setting up Temporary Voice Channel...");
+
+    await decision.update({ embeds: [progressEmbed], components: [] });
+
+    const category = await interaction.guild.channels.create({
+      name                 : "Temporary Voice Channel",
+      type                 : ChannelType.GuildCategory,
+      permissionOverwrites : [
+        {
+          id   : interaction.guild.roles.everyone.id,
+          deny : [PermissionFlagsBits.Speak, PermissionFlagsBits.Stream],
+        },
+        {
+          id    : interaction.user.id,
+          allow : [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers],
+        },
+      ],
+    });
+
+    const channel = await interaction.guild.channels.create({
+      name      : "Create Channel",
+      parent    : category,
+      type      : ChannelType.GuildVoice,
+      userLimit : 1,
+    });
+
+    guildVoiceData[channel.id] = {
+      category        : category?.id || null,
+      name            : null,
+      nameOverride    : false,
+      bitrate         : null,
+      bitrateOverride : false,
+      limit           : null,
+      limitOverride   : false,
+      region          : null,
+      regionOverride  : false,
+    };
+
+    await client.database.database.guild.write();
+
+    const doneEmbed = new EmbedBuilder()
+      .setColor(Colors.Green)
+      .setDescription("Temporary Voice Channel has been added to the server.");
+
+    await decision.editReply({ embeds: [doneEmbed], components: [] });
+
+  } catch (error) {
+    await interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(Colors.Blue)
+          .setDescription("Temporary Voice Channel Setup has timed out.\nPlease try again. </voice server setup:1157680405907001487>"),
+      ],
+      components: [],
+    });
+
+    setTimeout(() => sent.delete(), 5000);
+  }
+};
 
 /**
  * The /ping command.
@@ -310,8 +467,8 @@ const voice = (client) => new KamiCommand({
         switch (interaction.options.getSubcommand(false)) {
           // /voice server setup
           case "setup": {
-
-            break;
+            await handleSetupProgress(interaction, client, guildVoiceData);
+            return;
           }
 
           // /voice server info
@@ -673,8 +830,9 @@ const voice = (client) => new KamiCommand({
             break;
           }
 
-          default:
+          default: {
             break;
+          }
         }
 
         if (setAsDefault || subcommand == "clear") {
@@ -683,12 +841,14 @@ const voice = (client) => new KamiCommand({
       }
 
       await interaction.editReply({ embeds: [embed] });
+
     } catch (error) {
       Logger.error(error);
       const embed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("🛑 Uncaught Exception")
         .setDescription(`Error stack:\n${codeBlock("ansi", error.stack)}`);
+
       await interaction.editReply({ embeds: [embed] });
     }
   },
