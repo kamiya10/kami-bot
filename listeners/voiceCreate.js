@@ -73,7 +73,7 @@ const getBitrate =
   return bitrate;
 };
 
-const getLimit =
+const getUserLimit =
 
 /**
  * Gets a user's voice channel user limit.
@@ -102,7 +102,7 @@ const getLimit =
   return limit;
 };
 
-const getRegion =
+const getVoiceRegion =
 
 /**
  * Gets a user's voice channel region.
@@ -164,8 +164,8 @@ const onVoiceCreate = (client) => new KamiListener("voiceCreate")
             name      : formatVoiceName(getName(userVoiceData, guildVoiceData, newState.channel.id, newState.guild.id), newState.member),
             type      : ChannelType.GuildVoice,
             bitrate   : getBitrate(userVoiceData, guildVoiceData, newState.channel.id, newState.guild),
-            userLimit : getLimit(userVoiceData, guildVoiceData, newState.channel.id),
-            rtcRegion : getRegion(userVoiceData, guildVoiceData, newState.channel.id),
+            userLimit : getUserLimit(userVoiceData, guildVoiceData, newState.channel.id),
+            rtcRegion : getVoiceRegion(userVoiceData, guildVoiceData, newState.channel.id),
             parent    : guildVoiceData[newState.channel.id].category,
             reason    : "Temporary Voice Channel",
           });

@@ -13,8 +13,9 @@ declare interface KamiVoiceState {
 }
 
 export class KamiStates {
-  constructor();
+  constructor(data?: { voice: KamiVoiceState });
   public voice: Collection<string, KamiVoiceState>;
 
+  public save(): Promise<void>;
   public toJSON(): object;
 }

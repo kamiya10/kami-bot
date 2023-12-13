@@ -1,7 +1,7 @@
-const { Client, Collection } = require("discord.js");
+const { Client, Collection, Events } = require("discord.js");
+const { existsSync, readFileSync, readdirSync } = require("node:fs");
 const { KamiStates } = require("./states");
 const { Logger } = require("./logger");
-const fs = require("node:fs");
 const path = require("node:path");
 
 const ListenerFolder = path.join(__dirname, "..", "listeners");
@@ -11,16 +11,27 @@ class KamiClient extends Client {
   constructor(database, clientOptions) {
     super(clientOptions);
     this.database = database;
-    this.states = new KamiStates();
+
+    let cachedState;
+
+    if (existsSync("./.cache/states.json")) {
+      cachedState = JSON.parse(readFileSync("./.cache/states.json", { encoding: "utf-8" }));
+    }
+
+    this.states = new KamiStates(cachedState);
     this.listeners = new Collection();
     this.commands = new Collection();
 
     this.loadListeners();
     this.loadCommands();
+
+    this.once(Events.ClientReady, () => {
+      this.sweepStates();
+    });
   }
 
   loadListeners() {
-    for (const filename of fs.readdirSync(ListenerFolder)) {
+    for (const filename of readdirSync(ListenerFolder)) {
       /**
        * @type {import("./listener").KamiListener}
        */
@@ -37,10 +48,10 @@ class KamiClient extends Client {
   }
 
   loadCommands() {
-    for (const category of fs.readdirSync(CommandFolder)) {
+    for (const category of readdirSync(CommandFolder)) {
       const CategoryFolder = path.join(CommandFolder, category);
 
-      for (const filename of fs.readdirSync(CategoryFolder)) {
+      for (const filename of readdirSync(CategoryFolder)) {
         /**
          * @type {import("./command").KamiCommand}
          */
@@ -58,7 +69,7 @@ class KamiClient extends Client {
         delete require.cache[require.resolve(command.filePath)];
         this.commands.delete(command.data.name);
 
-        const newCommand = require(`./${command.data.name}.js`);
+        const newCommand = require(command.filePath);
         this.commands.set(newCommand.data.name, newCommand);
         Logger.info(`Reloaded command /${name}.`);
       } else {
@@ -66,6 +77,14 @@ class KamiClient extends Client {
       }
     } catch (error) {
       Logger.error(error);
+    }
+  }
+
+  sweepStates() {
+    for (const [id] of this.states.voice) {
+      if (!this.channels.cache.has(id)) {
+        this.states.voice.delete(id);
+      }
     }
   }
 }

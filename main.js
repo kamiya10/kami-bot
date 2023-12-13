@@ -108,6 +108,7 @@ async function main() {
 
       case "exit": {
         Logger.info("Stopping...");
+        await client.states.save();
         await client.destroy();
         process.exit(0);
         break;

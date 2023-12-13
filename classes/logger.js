@@ -18,6 +18,10 @@ class Logger {
     console.log(chalk.blackBright(now()), chalk.greenBright("SUCCESS:"), ...args);
   }
 
+  static warn(...args) {
+    console.warn(chalk.blackBright(now()), chalk.yellow("INFO:"), ...args);
+  }
+
   static error(...args) {
     console.error(chalk.blackBright(now()), chalk.redBright("ERROR:"), ...args);
   }
