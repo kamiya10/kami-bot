@@ -28,6 +28,16 @@
         }
       }
     },
+    "color": {
+      "NAME": "color",
+      "DESC": "Converts a color into many forms.",
+      "OPTIONS": {
+        "color": {
+          "NAME": "color",
+          "DESC": "The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color."
+        }
+      }
+    },
     "ping": {
       "NAME": "ping",
       "DESC": "Check if the bot is still alive or not."
@@ -184,6 +194,7 @@
   "header": {
     "avatar": "Avatar | {{0}}",
     "banner": "Banner | {{0}}",
+    "color": "Color | {{0}}",
     "ping": "Ping | {{0}}",
     "voice": "Temporary Voice Channel | {{0}}"
   },

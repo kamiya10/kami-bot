@@ -13,11 +13,13 @@
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "chalk": "^4.1.2",
+    "color-convert": "^2.0.1",
     "discord.js": "^14.14.1",
     "i18next": "^23.7.6",
     "lowdb": "^6.1.1",
     "ora": "^5.4.1",
-    "pretty-error": "^4.0.0"
+    "pretty-error": "^4.0.0",
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^1.4.1",
