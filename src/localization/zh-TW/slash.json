@@ -1,0 +1,192 @@
+{
+  "avatar": {
+    "NAME": "頭貼",
+    "DESC": "獲取成員頭貼。",
+    "OPTIONS": {
+      "member": {
+        "NAME": "成員",
+        "DESC": "指定成員。"
+      },
+      "server": {
+        "NAME": "伺服器",
+        "DESC": "獲取伺服器頭貼。"
+      }
+    }
+  },
+  "banner": {
+    "NAME": "橫幅",
+    "DESC": "獲取成員橫幅。",
+    "OPTIONS": {
+      "member": {
+        "NAME": "成員",
+        "DESC": "指定成員。"
+      },
+      "server": {
+        "NAME": "伺服器",
+        "DESC": "獲取伺服器橫幅。"
+      }
+    }
+  },
+  "color": {
+    "NAME": "顏色",
+    "DESC": "將顏色轉換成各種表示法。",
+    "OPTIONS": {
+      "color": {
+        "NAME": "顏色",
+        "DESC": "要賺患的顏色。支援十六進位、rgb、hsl、hsv、cmyk、或顏色英文名稱。忽略此選項來隨機取得一個顏色。"
+      }
+    }
+  },
+  "ping": {
+    "NAME": "延遲",
+    "DESC": "敲機器人。"
+  },
+  "voice": {
+    "NAME": "個人語音頻道",
+    "DESC": "個人語音頻道相關指令。",
+    "server": {
+      "NAME": "伺服器設定",
+      "DESC": "Server configuration commands for temporary voice channels.",
+      "setup": {
+        "NAME": "快速設定",
+        "DESC": "Setup a temporary voice channel creator."
+      },
+      "add": {
+        "NAME": "新增",
+        "DESC": "Add a voice channel to be a temporary voice channel creator.",
+        "OPTIONS": {
+          "channel": {
+            "NAME": "頻道",
+            "DESC": "The channel to be a temporary voice channel creator."
+          },
+          "category": {
+            "NAME": "類別",
+            "DESC": "The category temporary voice channel should be created in."
+          }
+        }
+      },
+      "remove": {
+        "NAME": "移除",
+        "DESC": "Remove a voice channel from being a temporary voice channel creator.",
+        "OPTIONS": {
+          "channel": {
+            "NAME": "channel",
+            "DESC": "The channel to remove from being a temporary voice channel creator."
+          }
+        }
+      },
+      "info": {
+        "NAME": "資訊",
+        "DESC": "Get currently configured temporary voice channel creators.",
+        "OPTIONS": {
+          "channel": {
+            "NAME": "channel",
+            "DESC": "Show the specific temporary voice channel creator configuration."
+          }
+        }
+      },
+      "name": {
+        "DESC": "Change the name of the template temporary voice channel."
+      },
+      "limit": {
+        "DESC": "Change the user limit of the template temporary voice channel."
+      },
+      "bitrate": {
+        "DESC": "Change the bitrate of the template temporary voice channel."
+      },
+      "region": {
+        "DESC": "Change the region of the template temporary voice channel."
+      },
+      "OPTIONS": {
+        "default": {
+          "NAME": "頻道",
+          "DESC": "Make this setting only affects the specified channel creator."
+        },
+        "override": {
+          "NAME": "覆寫",
+          "DESC": "Override user preferences."
+        }
+      }
+    },
+    "name": {
+      "NAME": "名稱",
+      "DESC": "Change the name of a temporary voice channel you owned.",
+      "OPTIONS": {
+        "name": {
+          "NAME": "名稱",
+          "DESC": "The new name of the temporary voice channel."
+        }
+      }
+    },
+    "limit": {
+      "NAME": "人數上限",
+      "DESC": "Change the user limit of a temporary voice channel you owned.",
+      "OPTIONS": {
+        "limit": {
+          "NAME": "人數",
+          "DESC": "The new user limit of the temporary voice channel. (0 = Unlimited)"
+        }
+      }
+    },
+    "bitrate": {
+      "NAME": "位元率",
+      "DESC": "Change the bitrate of a temporary voice channel you owned.",
+      "OPTIONS": {
+        "bitrate": {
+          "NAME": "位元率",
+          "DESC": "The new bitrate of the temporary voice channel. (In kbps)"
+        }
+      }
+    },
+    "region": {
+      "NAME": "區域",
+      "DESC": "Change the region of a temporary voice channel you owned.",
+      "OPTIONS": {
+        "region": {
+          "NAME": "區域",
+          "DESC": "The new region of the temporary voice channel."
+        }
+      },
+      "CHOICES": {
+        "brazil": "巴西",
+        "hongkong": "香港",
+        "india": "印度",
+        "japan": "日本",
+        "rotterdam": "鹿特丹",
+        "russia": "俄羅斯",
+        "singapore": "新加坡",
+        "southafrica": "南非",
+        "sydney": "雪梨",
+        "us_central": "美國中部",
+        "us_east": "美國東部",
+        "us_south": "美國南部",
+        "us_west": "美國西部"
+      }
+    },
+    "clear": {
+      "NAME": "清除設定",
+      "DESC": "Clear temporary voice channel settings.",
+      "OPTIONS": {
+        "which": {
+          "NAME": "範圍",
+          "DESC": "Choose which scope to clear."
+        }
+      },
+      "CHOICES": {
+        "global": "全域設定",
+        "guild": "目前所在伺服器的設定",
+        "all": "所有設定（全域設定和所有伺服器的個別設定）"
+      }
+    },
+    "OPTIONS": {
+      "default": {
+        "NAME": "設為預設",
+        "DESC": "Make this name as the server default name of the temporary voice channel on channel creation."
+      },
+      "global": {
+        "NAME": "全域",
+        "DESC": "Save the setting globally so it applies to all servers."
+      }
+    }
+  }
+}

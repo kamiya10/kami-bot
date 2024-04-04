@@ -1,0 +1,7 @@
+{
+  "avatar": "Avatar | {{0}}",
+  "banner": "Banner | {{0}}",
+  "color": "Color | {{0}}",
+  "ping": "Ping | {{0}}",
+  "voice": "Temporary Voice Channel | {{0}}"
+}
