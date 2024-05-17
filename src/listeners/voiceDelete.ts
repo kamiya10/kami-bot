@@ -1,5 +1,3 @@
-// @ts-check
-
 import { Events, VoiceChannel } from "discord.js";
 import { KamiListener } from "../classes/listener";
 import { Logger } from "../classes/logger";

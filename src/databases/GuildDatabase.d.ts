@@ -10,8 +10,17 @@ declare interface GuildVoiceSettings {
   regionOverride: boolean;
 }
 
+export interface EarthquakeReportPushSetting {
+  channelId: string;
+  numbered: boolean;
+  style: string;
+}
+
 export interface GuildDataModel {
   voice: Record<string, GuildVoiceSettings>;
+  earthquake: {
+    report: EarthquakeReportPushSetting[];
+  };
 }
 
 export type GuildDatabase = Record<string, GuildDataModel>;

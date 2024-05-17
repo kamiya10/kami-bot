@@ -1,5 +1,3 @@
-// @ts-check
-
 import { Colors, Events } from "discord.js";
 import { EmbedBuilder, codeBlock } from "@discordjs/builders";
 import { KamiListener } from "../classes/listener";

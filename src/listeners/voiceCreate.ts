@@ -1,5 +1,3 @@
-// @ts-check
-
 import { ChannelType, Events, GuildMember, VoiceChannel, type Guild } from "discord.js";
 import { KamiListener } from "../classes/listener";
 import { Logger } from "../classes/logger";
