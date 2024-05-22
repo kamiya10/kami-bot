@@ -19,11 +19,9 @@ export const build = (client: KamiClient): KamiCommand => new KamiCommand({
   async execute(interaction) {
     try {
       const report = client.states.report[0];
-      console.log(client.states.report.length);
-      console.log(client.states.numberedReport.length);
 
       if (report) {
-        const m = buildEarthquakeReportMessage(report);
+        const m = buildEarthquakeReportMessage(report, "simple");
         await interaction.editReply(m);
       }
     } catch (error) {

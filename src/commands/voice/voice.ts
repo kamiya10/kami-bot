@@ -1,6 +1,6 @@
 // @ts-check
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, Colors, ComponentType, EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, VoiceChannel, bold, codeBlock, inlineCode, type CacheType, type ChatInputCommandInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, Colors, ComponentType, EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandChannelOption, SlashCommandIntegerOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, VoiceChannel, bold, codeBlock, inlineCode, type CacheType, type ChatInputCommandInteraction, type Collection } from "discord.js";
 import { $at } from "../../classes/utils";
 import { t as $t } from "i18next";
 import { KamiCommand } from "../../classes/command";
@@ -70,8 +70,8 @@ const handleSetupProgress =
       return;
     }
 
-    const lastCategory = interaction.guild.channels.cache
-      .filter(ch => ch instanceof CategoryChannel)
+    const lastCategory = (interaction.guild.channels.cache
+      .filter(ch => ch instanceof CategoryChannel) as Collection<string, CategoryChannel>)
       .sort((a, b) => b.position - a.position)
       .first();
 

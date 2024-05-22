@@ -5,7 +5,7 @@ import { EarthquakeReportColor, type EarthquakeReport } from "../api/cwa";
 export const $at = (key: string): Record<Locale, string> =>
   ([Locale.Japanese, Locale.ChineseTW] as const)
     .reduce((msg, lng) => {
-      msg[lng] = i18next.t(key, { lng });
+      msg[lng] = i18next.t(key, key, { lng });
       return msg;
     }, <Record<Locale, string>>{});
 
@@ -16,6 +16,19 @@ const reportColor = {
   [EarthquakeReportColor.Orange]: Colors.Orange,
   [EarthquakeReportColor.Red]: Colors.Red,
 };
+
+const intensityThumbnail = [
+  null,
+  "https://i.imgur.com/CCOJNVJ.png",
+  "https://i.imgur.com/5kIjOZu.png",
+  "https://i.imgur.com/70Xw6Hr.png",
+  "https://i.imgur.com/JCWivZ9.png",
+  "https://i.imgur.com/5UkRVPO.png",
+  "https://i.imgur.com/CetfQEn.png",
+  "https://i.imgur.com/I77vToX.png",
+  "https://i.imgur.com/zYFj64D.png",
+  "https://i.imgur.com/SNsfr5g.png",
+] as const;
 
 export const buildEarthquakeReportMessage = (report: EarthquakeReport, style: string = "cwa-simple"): MessageCreateOptions => {
   const time = timestamp(new Date(report.EarthquakeInfo.OriginTime), TimestampStyles.LongDateTime);
@@ -33,14 +46,26 @@ export const buildEarthquakeReportMessage = (report: EarthquakeReport, style: st
   const embed = new EmbedBuilder().setColor(reportColor[report.ReportColor]);
 
   switch (style) {
+
+    /**
+     * **[小區域]** 2024年5月17日 13:30
+     * 花蓮縣近海發生規模3.6有感地震，最大震度花蓮縣鹽寮、花蓮縣花蓮市、南投縣合歡山1級。
+     */
     case "cwa-text":
       return {
         content: `**[${type}]** ${time} ${content}`
       };
 
     /**
-     * **[小區域]** 2024年5月17日 13:30
-     * 花蓮縣近海發生規模3.6有感地震，最大震度花蓮縣鹽寮、花蓮縣花蓮市、南投縣合歡山1級。
+     * Embed
+     *   
+     *   ■ 地震報告
+     *   
+     *   **[小區域]** 2024年5月17日 13:30
+     *   花蓮縣近海發生規模3.6有感地震，最大震度花蓮縣鹽寮、花蓮
+     *   縣花蓮市、南投縣合歡山1級。
+     *   
+     *   ■ 交通部中央氣象署 - 2024/05/17 13:30
      */
     case "cwa-simple":
       embed
@@ -50,10 +75,49 @@ export const buildEarthquakeReportMessage = (report: EarthquakeReport, style: st
         .setFooter(footer);
       break;
 
+    case "cwa-simple-large":
+      embed
+        .setAuthor(author)
+        .setDescription(`**[${type}]** ${time}\n${content}`)
+        .setImage(report.ReportImageURI)
+        .setFooter(footer);
+      break;
+
+    case "cwa-detail":
+      embed
+        .setAuthor(author)
+        .setDescription(`**[${type}]** ${time}\n${content}`)
+        .setImage(report.ReportImageURI)
+        .setFooter(footer);
+      break;
+
+    case "simple":
+      embed
+        .setAuthor(author)
+        .setDescription(`${time}\n${content.replace("，", "，\n")}`)
+        .setFields(
+          {
+            name: "震源位置",
+            value: content.split("發生")[0],
+            inline: true,
+          },
+          {
+            name: "規模",
+            value: `M${report.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue}`,
+            inline: true,
+          },
+          {
+            name: "深度",
+            value: `${report.EarthquakeInfo.FocalDepth}km`,
+            inline: true,
+          },
+        )
+        .setThumbnail(intensityThumbnail[report.intensity]);
+      break;
+
     default:
       break;
   }
-
 
   const actions = new ActionRowBuilder<ButtonBuilder>()
     .addComponents(

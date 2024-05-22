@@ -7,7 +7,6 @@ export class KamiDatabase {
 
   constructor(database: ClientDatabase) {
     this.database = database;
-
   }
 
   get guild() {
@@ -35,6 +34,10 @@ export class KamiDatabase {
           },
           earthquake: {
             report: [],
+            rts: {
+              channelId: null,
+              autoDelete: true,
+            },
           }
         };
       }

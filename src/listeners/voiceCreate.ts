@@ -23,7 +23,7 @@ const getName =
     }
 
     if (gvd[channelId].name != null) {
-      name = gvd[channelId].name;
+      name = gvd[channelId].name!;
     }
 
     if (uvd.global.name != null) {
@@ -31,11 +31,11 @@ const getName =
     }
 
     if (uvd[guildId] && uvd[guildId].name != null) {
-      name = uvd[guildId].name;
+      name = uvd[guildId].name!;
     }
 
     if (gvd[channelId].name != null && gvd[channelId].nameOverride == true) {
-      name = gvd[channelId].name;
+      name = gvd[channelId].name!;
     }
 
     return name;
@@ -57,15 +57,15 @@ const getBitrate =
     if (gvd.global.bitrate != null) {
       bitrate = gvd.global.bitrate * 1000;
     } else if (gvd[channelId].bitrate != null) {
-      bitrate = gvd[channelId].bitrate * 1000;
+      bitrate = gvd[channelId].bitrate! * 1000;
     } else if (uvd.global.bitrate != null) {
       bitrate = uvd.global.bitrate * 1000;
     } else if (uvd[channelId] && uvd[channelId].bitrate != null) {
-      bitrate = uvd[channelId].bitrate * 1000;
+      bitrate = uvd[channelId].bitrate! * 1000;
     }
 
     if (gvd[channelId].bitrate != null && gvd[channelId].bitrateOverride == true) {
-      bitrate = gvd[channelId].bitrate * 1000;
+      bitrate = gvd[channelId].bitrate! * 1000;
     }
 
     if (bitrate > guild.maximumBitrate) {
@@ -90,15 +90,15 @@ const getUserLimit =
     if (gvd.global.limit != null) {
       limit = gvd.global.limit;
     } else if (gvd[channelId].limit != null) {
-      limit = gvd[channelId].limit;
+      limit = gvd[channelId].limit!;
     } else if (uvd.global.limit != null) {
       limit = uvd.global.limit;
     } else if (uvd[channelId] && uvd[channelId].limit != null) {
-      limit = uvd[channelId].limit;
+      limit = uvd[channelId].limit!;
     }
 
     if (gvd[channelId].limit != null && gvd[channelId].limitOverride == true) {
-      limit = gvd[channelId].limit;
+      limit = gvd[channelId].limit!;
     }
 
     return limit;
@@ -114,20 +114,20 @@ const getVoiceRegion =
    * @return {string} region
    */
   (uvd: Record<string, VoiceSettings>, gvd: Record<string, GuildVoiceSettings>, channelId: string): string | undefined => {
-    let region;
+    let region: string | undefined;
 
     if (gvd.global.region != null) {
       region = gvd.global.region;
     } else if (gvd[channelId].region != null) {
-      region = gvd[channelId].region;
+      region = gvd[channelId].region!;
     } else if (uvd.global.region != null) {
       region = uvd.global.region;
     } else if (uvd[channelId] && uvd[channelId].region != null) {
-      region = uvd[channelId].region;
+      region = uvd[channelId].region!;
     }
 
     if (gvd[channelId].region != null && gvd[channelId].regionOverride == true) {
-      region = gvd[channelId].region;
+      region = gvd[channelId].region!;
     }
 
     return region;

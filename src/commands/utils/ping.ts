@@ -1,6 +1,6 @@
 // @ts-check
 
-import { EmbedBuilder, SlashCommandBuilder, TimestampStyles, codeBlock, time } from "@discordjs/builders";
+import { EmbedBuilder, SlashCommandBuilder, TimestampStyles, codeBlock, time } from "discord.js";
 import { $at } from "../../classes/utils";
 import { t as $t } from "i18next";
 import { Colors } from "discord.js";

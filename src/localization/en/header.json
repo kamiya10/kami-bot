@@ -3,5 +3,6 @@
   "banner": "Banner | {{0}}",
   "color": "Color | {{0}}",
   "ping": "Ping | {{0}}",
+  "rts": "RTS | {{0}}",
   "voice": "Temporary Voice Channel | {{0}}"
 }

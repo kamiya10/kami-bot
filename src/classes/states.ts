@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { writeFile } from "node:fs/promises";
 import { CwaApi, type EarthquakeReport } from "../api/cwa";
 import type { KamiClient } from "./client";
+import { ExpTechApi, ExpTechWebsocket, SupportedService, WebSocketEvent, type Station } from "@exptechtw/api-wrapper";
 
 const cwa = new CwaApi(process.env.CWA_TOKEN);
 
@@ -27,22 +28,39 @@ export interface KamiStatesOptions {
 export class KamiStates {
   public client: KamiClient;
   public voice: Collection<string, KamiVoiceState>;
-  public report: EarthquakeReport[];
-  public numberedReport: EarthquakeReport[];
+  public report: EarthquakeReport[] = [];
+  public numberedReport: EarthquakeReport[] = [];
+  public exptech: ExpTechWebsocket | null;
+  public data: {
+    stations: Record<string, Station> | null,
+  } = { stations: null };
 
   constructor(client: KamiClient, data?: KamiStatesOptions) {
     this.client = client;
     this.voice = new Collection(data?.voice);
-    this.report = [];
-    this.numberedReport = [];
 
-    this.setupTimer();
+    if (process.env.EXPTECH_TOKEN) {
+      this.exptech = new ExpTechWebsocket({
+        key: process.env.EXPTECH_TOKEN,
+        service: [
+          SupportedService.RealtimeStation,
+          SupportedService.Eew
+        ],
+      });
+    } else {
+      this.exptech = null;
+      Logger.warn("Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)");
+    }
+
+    this.setup();
   }
 
-  private setupTimer() {
+  private setup() {
     setInterval(() => {
       void cwa.getEarthquakeReport()
         .then(v => {
+          if (!v.length) { return; }
+
           if (this.report.length && this.report[0].EarthquakeInfo.OriginTime != v[0].EarthquakeInfo.OriginTime) {
             this.client.emit("report", v[0]);
           }
@@ -52,6 +70,8 @@ export class KamiStates {
 
       void cwa.getNumberedEarthquakeReport()
         .then(v => {
+          if (!v.length) { return; }
+
           if (this.numberedReport.length && this.numberedReport[0].EarthquakeInfo.OriginTime != v[0].EarthquakeInfo.OriginTime) {
             this.client.emit("report", v[0]);
           }
@@ -59,6 +79,36 @@ export class KamiStates {
           this.numberedReport = v;
         });
     }, 1000);
+
+    setInterval(() => {
+      void new ExpTechApi().getStations()
+        .then(v => {
+          this.data.stations = v;
+        });
+    }, 5_000);
+
+
+    if (this.exptech) {
+      this.exptech.on(WebSocketEvent.Rts, (rts) => {
+        const entries = Object.entries(rts.station);
+
+        let alertCount = 0;
+
+        for (let index = 0; index < entries.length; index++) {
+          const [, data] = entries[index];
+          if (data.alert) {
+            alertCount++;
+          }
+        }
+
+        if (alertCount < 2) {
+          return;
+        }
+
+        this.client.emit("rts", rts);
+      });
+
+    }
   }
 
   async save() {

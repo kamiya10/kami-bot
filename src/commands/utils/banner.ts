@@ -1,7 +1,7 @@
 // @ts-check
 
 import { Colors, GuildMember, ImageFormat, SlashCommandBooleanOption, SlashCommandBuilder, SlashCommandUserOption } from "discord.js";
-import { EmbedBuilder, codeBlock, hyperlink } from "@discordjs/builders";
+import { EmbedBuilder, codeBlock, hyperlink } from "discord.js";
 import { $at } from "../../classes/utils";
 import { t as $t } from "i18next";
 import { KamiCommand } from "../../classes/command";

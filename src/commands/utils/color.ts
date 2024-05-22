@@ -1,7 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 // @ts-check
 
-import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, codeBlock } from "@discordjs/builders";
+import { EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption, codeBlock } from "discord.js";
 import { $at } from "../../classes/utils";
 import { t as $t } from "i18next";
 import { Colors } from "discord.js";

@@ -16,10 +16,16 @@ export interface EarthquakeReportPushSetting {
   style: string;
 }
 
+export interface RtsPushSetting {
+  channelId: string | null;
+  autoDelete: boolean;
+}
+
 export interface GuildDataModel {
   voice: Record<string, GuildVoiceSettings>;
   earthquake: {
     report: EarthquakeReportPushSetting[];
+    rts: RtsPushSetting;
   };
 }
 

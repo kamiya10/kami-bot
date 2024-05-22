@@ -14,7 +14,7 @@
     "project": true,
     "tsconfigRootDir": "src"
 	},
-  "ignorePatterns":["*.cjs"],
+  "ignorePatterns":["*.cjs","types/*"],
 	"plugins": [
     "require-sort",
     "@typescript-eslint",
@@ -22,6 +22,6 @@
   ],
 	"rules": {
 		"require-sort/require-sort": "warn",
-		"@stylistic/indent": ["warn", 2, { "SwitchCase": 1}]
+		"@stylistic/indent": ["warn", 2, { "SwitchCase": 1 }]
   }
 }

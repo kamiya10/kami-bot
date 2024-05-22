@@ -48,15 +48,18 @@ export class KamiClient extends Client {
   }
 
   async loadListeners() {
-    for (const filename of readdirSync("./src/listeners")) {
-      const listener = (await import(`../listeners/${filename}`) as ListenerBuilder).build(this);
+    const __dirname = new URL("..", import.meta.url).href;
+    const listenersDir = path.join(__dirname.slice(8), "listeners");
+
+    for (const filename of readdirSync(listenersDir)) {
+      const listener = (await import(path.join(__dirname, "listeners", filename)) as ListenerBuilder).build(this);
 
       this.eventListeners.set(listener.name, listener);
 
       if (listener.callOnce) {
-        this.once(listener.event, () => void listener.callback());
+        this.once(listener.event, (...args) => void listener.callback(...args));
       } else {
-        this.on(listener.event, () => void listener.callback());
+        this.on(listener.event, (...args) => void listener.callback(...args));
       }
     }
   }

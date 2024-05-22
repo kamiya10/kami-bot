@@ -1,8 +1,9 @@
 import { Events } from "discord.js";
 import { KamiListener } from "../classes/listener";
 import { Logger } from "../classes/logger";
+import type { KamiClient } from "../classes/client";
 
-export const build = (): KamiListener => new KamiListener("ready")
+export const build = (client: KamiClient): KamiListener => new KamiListener("ready")
   .on(Events.ClientReady, () => {
-    Logger.info("client ready");
+    Logger.info(`Client is ready as ${client.user?.tag} with ${client.guilds.cache.size} guild${client.guilds.cache.size > 1 ? 's' : ''}.`);
   });

@@ -1,5 +1,5 @@
 import { Colors, Events } from "discord.js";
-import { EmbedBuilder, codeBlock } from "@discordjs/builders";
+import { EmbedBuilder, codeBlock } from "discord.js";
 import { KamiListener } from "../classes/listener";
 import { Logger } from "../classes/logger";
 import type { KamiClient } from "../classes/client";
@@ -18,7 +18,7 @@ export const build = (client: KamiClient) => new KamiListener("command")
         if (interaction.isCommand()) {
           if (command) {
             if (command.defer) {
-              await interaction.deferReply();
+              await interaction.deferReply({ ephemeral: command.ephemeral });
             }
 
             await command.execute(interaction);

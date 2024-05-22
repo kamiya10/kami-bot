@@ -22,7 +22,7 @@ export class Logger {
   }
 
   static warn(...args: any[]) {
-    console.warn(chalk.blackBright(now()), chalk.yellow("INFO:"), ...args);
+    console.warn(chalk.blackBright(now()), chalk.yellow("WARN:"), ...args);
   }
 
   static error(...args: any[]) {

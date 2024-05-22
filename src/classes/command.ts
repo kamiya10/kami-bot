@@ -10,6 +10,7 @@ interface KamiCommandOptions {
   defer?: boolean;
   global?: boolean;
   dev?: boolean;
+  ephemeral?: boolean;
   filePath: string;
   builder: AnySlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction<CacheType>) => Awaitable<void>;
@@ -24,6 +25,7 @@ export class KamiCommand implements KamiCommandOptions {
   defer: boolean;
   global: boolean;
   dev: boolean;
+  ephemeral: boolean;
   filePath: string;
   builder: AnySlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction<CacheType>) => Awaitable<void>;
@@ -33,6 +35,7 @@ export class KamiCommand implements KamiCommandOptions {
     this.defer = options.defer ?? true;
     this.global = options.global ?? false;
     this.dev = options.dev ?? false;
+    this.ephemeral = options.ephemeral ?? false;
     this.filePath = options.filePath;
     this.builder = options.builder;
     this.execute = options.execute;

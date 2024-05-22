@@ -163,6 +163,11 @@ export class EarthquakeReport {
       + (this.EarthquakeNo % 1000 == 0 ? "" : this.EarthquakeNo.toString().substring(3))
       + "_H.png";
   }
+
+  get intensity() {
+    return [null, "1級", "2級", "3級", "4級", "5弱", "5強", "6弱", "6強", "7級"]
+      .indexOf(this.Intensity.ShakingArea[0].AreaIntensity);
+  }
 }
 
 export class CwaApi {

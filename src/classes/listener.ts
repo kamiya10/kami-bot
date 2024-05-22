@@ -10,7 +10,7 @@ export interface ListenerBuilder {
 export class KamiListener {
   name: string;
   event!: keyof ClientEvents;
-  callback!: (...args: any[]) => Awaitable<void>;
+  callback!: (...args: any) => Awaitable<void>;
   callOnce = false;
 
   constructor(name: string) {
