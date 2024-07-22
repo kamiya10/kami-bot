@@ -78,7 +78,7 @@ Kami.data = {
   rts_list     : new Collection(),
 };
 
-Kami.eqws - require("./websocket")(Kami, 5000);
+// Kami.eqws - require("./websocket")(Kami, 5000);
 require("../API/tdx").TDX.init(process.env.TDX_ID, process.env.TDX_SECRET).then(tdx => {
   Kami.tdx = tdx;
 
