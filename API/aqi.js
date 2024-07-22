@@ -9,12 +9,12 @@ class AQI {
   }
 
   static #baseurl = {
-    json : "https://airtw.epa.gov.tw/json/",
-    api  : "https://data.epa.gov.tw/api/v2/",
+    json : "https://airtw.moenv.gov.tw/json/",
+    api  : "https://data.moenv.gov.tw/api/v2/",
   };
 
   async getSystemTime() {
-    return (await (await fetch("https://airtw.epa.gov.tw/ajax.aspx", {
+    return (await (await fetch("https://airtw.moenv.gov.tw/ajax.aspx", {
       headers: {
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
       },
@@ -71,7 +71,7 @@ class AQI {
   }
 
   getAQIMapImageURL(time = new Date(Date.now())) {
-    return `https://airtw.epa.gov.tw/ModelSimulate/${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}/output_AQI_${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${(time.getHours() - 1 < 0 ? 0 : time.getHours() - 1).toString().padStart(2, "0")}0000.png`;
+    return `https://airtw.moenv.gov.tw/ModelSimulate/${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}/output_AQI_${time.getFullYear()}${((time.getMonth() + 1) < 10) ? `0${time.getMonth() + 1}` : time.getMonth() + 1}${time.getDate()}${(time.getHours() - 1 < 0 ? 0 : time.getHours() - 1).toString().padStart(2, "0")}0000.png`;
   }
 
   static getAQILevel(aqi) {
