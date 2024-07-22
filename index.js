@@ -3,7 +3,6 @@ const { Collection } = require("discord.js");
 const { Kami } = require("./Core/client");
 const chalk = require("chalk");
 const config = require("./config");
-const fetch = require("node-fetch").default;
 const readline = require("node:readline");
 const { stripIndent } = require("common-tags");
 const cwa = new (require("./API/cwa_forecast"))(process.env.CWA_TOKEN);

@@ -1,5 +1,3 @@
-const fetch = require("node-fetch").default;
-
 class AQI {
   constructor(apikey) {
     this.apikey = apikey;

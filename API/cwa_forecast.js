@@ -1,7 +1,5 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
-const fetch = require("node-fetch").default;
-
 class CWA_Forcast {
   constructor(apikey) {
     this.apikey = apikey;

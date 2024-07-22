@@ -1,5 +1,4 @@
 const { AttachmentBuilder, Message } = require("discord.js");
-const fetch = require("node-fetch").default;
 const formatEarthquake = require("../Functions/formatEarthquake");
 const logger = require("../Core/logger");
 
