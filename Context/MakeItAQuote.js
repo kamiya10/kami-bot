@@ -1,4 +1,9 @@
-const { ApplicationCommandType, Colors, EmbedBuilder, ContextMenuCommandBuilder } = require("discord.js");
+const {
+  ApplicationCommandType,
+  Colors,
+  EmbedBuilder,
+  ContextMenuCommandBuilder,
+} = require("discord.js");
 
 module.exports = {
   data: new ContextMenuCommandBuilder()
@@ -6,8 +11,8 @@ module.exports = {
     .setNameLocalization("zh-TW", "讓他變名言")
     .setType(ApplicationCommandType.Message)
     .setDMPermission(false),
-  defer     : true,
-  ephemeral : true,
+  defer: true,
+  ephemeral: true,
 
   /**
    * @param {import("discord.js").MessageContextMenuCommandInteraction} interaction
@@ -15,7 +20,11 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder();
 
-    if ((interaction.client.database.UserDatabase.get(interaction.targetMessage.author.id)?.allow_quote ?? true) != true) {
+    if (
+      (interaction.client.database.UserDatabase.get(
+        interaction.targetMessage.author.id,
+      )?.allow_quote ?? true) != true
+    ) {
       embed
         .setColor(Colors.Red)
         .setDescription("❌ 這個訊息的作者不允許任何人把它變成名言");
@@ -29,15 +38,17 @@ module.exports = {
       await interaction.guild.members.fetch({ force: true });
 
     if (!content.length) {
-      embed
-        .setColor(Colors.Red)
-        .setDescription("沒有可以變成名言的東西");
+      embed.setColor(Colors.Red).setDescription("沒有可以變成名言的東西");
 
       await interaction.editReply({ embeds: [embed] });
       return;
     }
 
-    const quote = "***❝  " + content.split("\n").join("***\n***　") + " ❞***" + `\n　　　　　　　　—— ${interaction.targetMessage.member?.displayName ?? interaction.targetMessage.author.username} (${new Date(Date.now()).getFullYear()})`;
+    const quote =
+      "***❝  " +
+      content.split("\n").join("***\n***　") +
+      " ❞***" +
+      `\n　　　　　　　　—— ${interaction.targetMessage.member?.displayName ?? interaction.targetMessage.author.username} (${new Date(Date.now()).getFullYear()})`;
     embed
       .setColor(interaction.targetMessage.member.displayHexColor)
       .setDescription(quote)

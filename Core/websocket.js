@@ -5,7 +5,9 @@ const logger = require("./logger");
 module.exports = connect;
 
 function connect(client, retryTimeout) {
-  let ws = new WebSocket("wss://exptech.com.tw/api", { handshakeTimeout: 3000 });
+  let ws = new WebSocket("wss://exptech.com.tw/api", {
+    handshakeTimeout: 3000,
+  });
 
   let ping, heartbeat;
 
@@ -18,8 +20,7 @@ function connect(client, retryTimeout) {
   });
 
   ws.on("error", (err) => {
-    if (!err.message.includes("521"))
-      logger.error(err);
+    if (!err.message.includes("521")) logger.error(err);
   });
 
   ws.on("open", () => {
@@ -30,17 +31,18 @@ function connect(client, retryTimeout) {
         clearInterval(ping);
         clearTimeout(heartbeat);
 
-        if (ws instanceof WebSocket)
-          ws.terminate();
+        if (ws instanceof WebSocket) ws.terminate();
       }, 5_000);
     }, 20_000);
 
-    ws.send(JSON.stringify({
-      uuid     : `KamiBot/${process.env.BOT_VERSION} (platform; Windows NT 10.0; Win64; x64)`,
-      function : "subscriptionService",
-      value    : ["trem-eew-v1", "trem-eq-v1"],
-      key      : process.env.WS_KEY,
-    }));
+    ws.send(
+      JSON.stringify({
+        uuid: `KamiBot/${process.env.BOT_VERSION} (platform; Windows NT 10.0; Win64; x64)`,
+        function: "subscriptionService",
+        value: ["trem-eew-v1", "trem-eq-v1"],
+        key: process.env.WS_KEY,
+      }),
+    );
   });
 
   ws.on("pong", () => {

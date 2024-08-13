@@ -21,20 +21,18 @@ module.exports = (
 });
 
 module.exports.typing = {
-  voice: Array(
-    {
-      creator         : String,
-      category        : String,
-      channelSettings : {
-        name    : String,
-        bitrate : Number,
-        limit   : Number,
-      },
+  voice: Array({
+    creator: String,
+    category: String,
+    channelSettings: {
+      name: String,
+      bitrate: Number,
+      limit: Number,
     },
-  ),
-  eew_channel   : String,
-  eew_mention   : String,
-  quake_channel : String,
-  quake_style   : Number,
-  quake_small   : Boolean,
+  }),
+  eew_channel: String,
+  eew_mention: String,
+  quake_channel: String,
+  quake_style: Number,
+  quake_small: Boolean,
 };

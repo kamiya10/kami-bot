@@ -35,7 +35,9 @@
   "devDependencies": {
     "cli-progress": "^3.11.2",
     "eslint": "^8.49.0",
-    "eslint-plugin-require-sort": "^1.3.0"
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-require-sort": "^1.3.0",
+    "prettier": "^3.3.3"
   },
   "packageManager": "yarn@4.3.1"
 }

@@ -1,9 +1,9 @@
 const { ChannelType } = require("discord.js");
 
 module.exports = {
-  name  : "autoNews",
-  event : "messageCreate",
-  once  : false,
+  name: "autoNews",
+  event: "messageCreate",
+  once: false,
 
   /**
    * @param {import("discord.js").Message} message

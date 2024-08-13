@@ -11,7 +11,9 @@ class KamiDatabase {
       if (!fs.existsSync(this._path))
         fs.writeFileSync(this._path, "{}", { encoding: "utf-8" });
 
-      this._data = JSON.parse(fs.readFileSync(this._path, { encoding: "utf-8" }));
+      this._data = JSON.parse(
+        fs.readFileSync(this._path, { encoding: "utf-8" }),
+      );
 
       this.backup();
 
@@ -40,17 +42,28 @@ class KamiDatabase {
   }
 
   backup() {
-    const files = fs.readdirSync(this._folder).filter(filename => filename.startsWith("backup~") && filename.endsWith(`${this.name}.json`));
+    const files = fs
+      .readdirSync(this._folder)
+      .filter(
+        (filename) =>
+          filename.startsWith("backup~") &&
+          filename.endsWith(`${this.name}.json`),
+      );
 
     if (files.length)
-      for (const file of files)
-        fs.rmSync(path.join(this._folder, file));
+      for (const file of files) fs.rmSync(path.join(this._folder, file));
 
-    fs.writeFileSync(path.join(this._folder, `backup~${Date.now()}_${this.name}.json`), JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
+    fs.writeFileSync(
+      path.join(this._folder, `backup~${Date.now()}_${this.name}.json`),
+      JSON.stringify(this._data, null, 2),
+      { encoding: "utf-8" },
+    );
   }
 
   save() {
-    fs.writeFileSync(this._path, JSON.stringify(this._data, null, 2), { encoding: "utf-8" });
+    fs.writeFileSync(this._path, JSON.stringify(this._data, null, 2), {
+      encoding: "utf-8",
+    });
   }
 
   get(id) {

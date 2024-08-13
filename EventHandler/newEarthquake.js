@@ -3,53 +3,66 @@ const formatEarthquake = require("../Functions/formatEarthquake");
 const logger = require("../Core/logger");
 
 module.exports = {
-  name  : "newEarthquake",
-  event : "newEarthquake",
-  once  : false,
+  name: "newEarthquake",
+  event: "newEarthquake",
+  once: false,
 
   /**
-    * @param {import("discord.js").Client<boolean>} client
-    * @param {Earthquake} Earthquake
-    */
+   * @param {import("discord.js").Client<boolean>} client
+   * @param {Earthquake} Earthquake
+   */
   async execute(client, Earthquake) {
     logger.debug(`${this.name} triggered`);
 
     // check image is accessable
     await new Promise((resolve) => {
       const time = new Date(Earthquake.EarthquakeInfo.OriginTime);
-      const timecode = ""
-        + time.getFullYear()
-				+ (time.getMonth() + 1 < 10 ? "0" : "") + (time.getMonth() + 1)
-				+ (time.getDate() < 10 ? "0" : "") + time.getDate()
-				+ (time.getHours() < 10 ? "0" : "") + time.getHours()
-				+ (time.getMinutes() < 10 ? "0" : "") + time.getMinutes()
-				+ (time.getSeconds() < 10 ? "0" : "") + time.getSeconds();
-      const cwa_image
-        = "https://www.cwa.gov.tw/Data/earthquake/img/EC"
-        + (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "")
-        + (Earthquake.EarthquakeNo % 1000 == 0 ? timecode : timecode.slice(4, timecode.length - 2))
-        + (Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
-        + (Earthquake.EarthquakeNo % 1000 == 0 ? "" : Earthquake.EarthquakeNo.toString().substring(3))
-        + "_H.png";
+      const timecode =
+        "" +
+        time.getFullYear() +
+        (time.getMonth() + 1 < 10 ? "0" : "") +
+        (time.getMonth() + 1) +
+        (time.getDate() < 10 ? "0" : "") +
+        time.getDate() +
+        (time.getHours() < 10 ? "0" : "") +
+        time.getHours() +
+        (time.getMinutes() < 10 ? "0" : "") +
+        time.getMinutes() +
+        (time.getSeconds() < 10 ? "0" : "") +
+        time.getSeconds();
+      const cwa_image =
+        "https://www.cwa.gov.tw/Data/earthquake/img/EC" +
+        (Earthquake.EarthquakeNo % 1000 == 0 ? "L" : "") +
+        (Earthquake.EarthquakeNo % 1000 == 0
+          ? timecode
+          : timecode.slice(4, timecode.length - 2)) +
+        Earthquake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10 +
+        (Earthquake.EarthquakeNo % 1000 == 0
+          ? ""
+          : Earthquake.EarthquakeNo.toString().substring(3)) +
+        "_H.png";
 
       const checker = (retryCount = 0) => {
-        fetch(cwa_image, { method: "GET" }).then(async res => {
-          if (res.ok) {
-            const buf = await res.buffer();
+        fetch(cwa_image, { method: "GET" })
+          .then(async (res) => {
+            if (res.ok) {
+              const buf = await res.buffer();
 
-            if (buf.byteLength > 0) {
-
-              /**
-               * @type {Message}
-               */
-              const sent = await client.channels.cache.get("986968207111909427").send({ files: [new AttachmentBuilder().setFile(buf)] });
-              Earthquake.cwa_image = sent.attachments.first().url;
-              resolve(true);
+              if (buf.byteLength > 0) {
+                /**
+                 * @type {Message}
+                 */
+                const sent = await client.channels.cache
+                  .get("986968207111909427")
+                  .send({ files: [new AttachmentBuilder().setFile(buf)] });
+                Earthquake.cwa_image = sent.attachments.first().url;
+                resolve(true);
+              }
+            } else {
+              setTimeout(checker, 8000, retryCount + 1);
             }
-          } else {
-            setTimeout(checker, 8000, retryCount + 1);
-          }
-        }).catch(() => setTimeout(checker, 8000, retryCount + 1));
+          })
+          .catch(() => setTimeout(checker, 8000, retryCount + 1));
       };
 
       checker();
@@ -60,12 +73,17 @@ module.exports = {
       "quake_small",
       "quake_style",
     ]);
-    const channels = Object.keys(GuildSetting).filter(v => GuildSetting[v].quake_channel != null).map(v => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
+    const channels = Object.keys(GuildSetting)
+      .filter((v) => GuildSetting[v].quake_channel != null)
+      .map((v) => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
 
     if (channels?.length)
-      channels.forEach(async ch => {
+      channels.forEach(async (ch) => {
         try {
-          await client.channels.cache.get(ch[0])?.send(formatEarthquake(Earthquake, ch[1])).catch(() => void 0);
+          await client.channels.cache
+            .get(ch[0])
+            ?.send(formatEarthquake(Earthquake, ch[1]))
+            .catch(() => void 0);
         } catch (e) {
           console.error(e);
         }

@@ -2,19 +2,19 @@ type LocalizedString = {
   /**
    * 中文繁體名稱
    */
-  Zh_tw: string,
+  Zh_tw: string;
 
   /**
    * 英文名稱
    */
-  En: string,
-}
+  En: string;
+};
 
 /** 行駛方向  */
 const enum TrainDirection {
   /** 順行 */
   NorthBound = "0",
-  
+
   /** 逆行 */
   SouthBound = "1",
 }
@@ -34,36 +34,36 @@ const enum TrainType {
 
   /** 自強號列車 */
   TzeChiangLimitedExpress = "3",
-  
+
   /** 莒光號列車 */
   ChuKuangExpress = "4",
 
   /** 復興號列車 */
   FuHsingSemiExpress = "5",
-  
+
   /** 區間車 */
   LocalTrain = "6",
-  
+
   /** 普快車 */
   OrdinaryTrain = "7",
-  
+
   /** 區間快車 */
   FastLocalTrain = "10",
 
   /** 自強號 EMU3000 型列車 */
-  TzeChiangLimitedExpress3000 = "11"
+  TzeChiangLimitedExpress3000 = "11",
 }
 
 /** 車種名稱 */
 const enum TrainTypeName {
-  [TrainType.TarokoExpress]               = "太魯閣自強號列車",
-  [TrainType.PuyumaExpress]               = "普悠瑪自強號列車",
-  [TrainType.TzeChiangLimitedExpress]     = "自強號列車",
-  [TrainType.ChuKuangExpress]             = "莒光號列車",
-  [TrainType.FuHsingSemiExpress]          = "復興號列車",
-  [TrainType.LocalTrain]                  = "區間車",
-  [TrainType.OrdinaryTrain]               = "普快車",
-  [TrainType.FastLocalTrain]              = "區間快車",
+  [TrainType.TarokoExpress] = "太魯閣自強號列車",
+  [TrainType.PuyumaExpress] = "普悠瑪自強號列車",
+  [TrainType.TzeChiangLimitedExpress] = "自強號列車",
+  [TrainType.ChuKuangExpress] = "莒光號列車",
+  [TrainType.FuHsingSemiExpress] = "復興號列車",
+  [TrainType.LocalTrain] = "區間車",
+  [TrainType.OrdinaryTrain] = "普快車",
+  [TrainType.FastLocalTrain] = "區間快車",
   [TrainType.TzeChiangLimitedExpress3000] = "自強號 EMU3000 型列車",
 }
 
@@ -71,21 +71,21 @@ const enum TrainTypeName {
 const enum TripLine {
   /** 不經山海線 */
   None = "0",
-  
+
   /** 山線 */
   MountainLine = "1",
-  
+
   /** 海線 */
   CoastLine = "2",
-  
+
   /** 成追線 */
   ChengZhuiLine = "3",
 }
 
 const enum TripLineName {
-  [TripLine.None]          = "不經山海線",
-  [TripLine.MountainLine]  = "山線",
-  [TripLine.CoastLine]     = "海線",
+  [TripLine.None] = "不經山海線",
+  [TripLine.MountainLine] = "山線",
+  [TripLine.CoastLine] = "海線",
   [TripLine.ChengzhuiLine] = "成追線",
 }
 
@@ -384,17 +384,17 @@ declare interface TimetableStop {
   StationID: string;
 
   /** 車站名稱 */
-  StationName: LocalizedString,
+  StationName: LocalizedString;
 
   /** 到站時間（格式：`HH:mm`） */
-  ArrivalTime: string,
+  ArrivalTime: string;
 
   /** 離站時間（格式：`HH:mm`） */
-  DepartureTime: string
+  DepartureTime: string;
 }
 
 /** 營運日型態 */
-declare interface ServiceDay {  
+declare interface ServiceDay {
   /** 服務日標籤 */
   ServiceTag: string;
 
@@ -406,7 +406,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Monday: number;
-  
+
   /**
    * 星期二是否營運
    * | 代碼 | 營運 |
@@ -415,7 +415,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Tuesday: number;
-  
+
   /**
    * 星期三是否營運
    * | 代碼 | 營運 |
@@ -424,7 +424,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Wednesday: number;
-  
+
   /**
    * 星期四是否營運
    * | 代碼 | 營運 |
@@ -433,7 +433,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Thursday: number;
-  
+
   /**
    * 星期五是否營運
    * | 代碼 | 營運 |
@@ -442,7 +442,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Friday: number;
-  
+
   /**
    * 星期六是否營運
    * | 代碼 | 營運 |
@@ -451,7 +451,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Saturday: number;
-  
+
   /**
    * 星期日是否營運
    * | 代碼 | 營運 |
@@ -460,7 +460,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   Sunday: number;
-  
+
   /**
    * 國定假日是否營運
    * | 代碼 | 營運 |
@@ -469,7 +469,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   NationalHolidays: number;
-  
+
   /**
    * 假日前一日是否營運
    * | 代碼 | 營運 |
@@ -478,7 +478,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   DayBeforeHoliday: number;
-  
+
   /**
    * 假日後一日是否營運
    * | 代碼 | 營運 |
@@ -487,7 +487,7 @@ declare interface ServiceDay {
    * | `1` | 是   |
    */
   DayAfterHoliday: number;
-  
+
   /**
    * 颱風停止上班上課期間營運營運
    * | 代碼 | 營運 |
@@ -519,12 +519,12 @@ declare interface Timetable extends BaseResponse {
   ValidityDesciption?: string;
 
   /** 資料（陣列） */
-  TrainTimetables: TrainTimetable[]
+  TrainTimetables: TrainTimetable[];
 }
 
 /** 公共運輸-軌道 API 節點 */
 declare class TRA {
-  constructor(header)
+  constructor(header);
   requestHeader: header;
 
   /**
@@ -533,7 +533,10 @@ declare class TRA {
    * @param options 資料請求選項
    * @returns 時刻表資料
    */
-  getDailyTimetable(date?: string, options?: BaseRequestOptions): Promise<Timetable>;
+  getDailyTimetable(
+    date?: string,
+    options?: BaseRequestOptions,
+  ): Promise<Timetable>;
 
   /**
    * 取得所有車次的定期時刻表資料
@@ -541,12 +544,15 @@ declare class TRA {
    * @returns 時刻表資料
    */
   getGeneralTimetable(options?: BaseRequestOptions): Promise<Timetable>;
-  getStationLiveboard(stationId?: string, options?: BaseRequestOptions): Promise<Timetable>;
+  getStationLiveboard(
+    stationId?: string,
+    options?: BaseRequestOptions,
+  ): Promise<Timetable>;
 }
 
 declare class TDX {
-  constructor(data, defaultRequestHeaders)
-  
+  constructor(data, defaultRequestHeaders);
+
   /** 公共運輸-軌道 v3 API 節點 */
   TRA: TRA;
 
@@ -557,7 +563,23 @@ declare class TDX {
    * @param defaultRequestHeaders 預設 API 請求 Headers
    * @returns TDX 實例
    */
-  static init(clientId: string, clientSecret: string, defaultRequestHeaders?: Record<string, string>): Promise<TDX>
+  static init(
+    clientId: string,
+    clientSecret: string,
+    defaultRequestHeaders?: Record<string, string>,
+  ): Promise<TDX>;
 }
 
-export { TDX, TrainDirection, TrainDirectionName, TrainType, TrainTypeName, TripLine, TripLineName, Timetable, TrainTimetable, TrainInfo, TimetableStop };
+export {
+  TDX,
+  TrainDirection,
+  TrainDirectionName,
+  TrainType,
+  TrainTypeName,
+  TripLine,
+  TripLineName,
+  Timetable,
+  TrainTimetable,
+  TrainInfo,
+  TimetableStop,
+};

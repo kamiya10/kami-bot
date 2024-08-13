@@ -1,4 +1,9 @@
-const { Colors, EmbedBuilder, SlashCommandBuilder, SlashCommandStringOption } = require("discord.js");
+const {
+  Colors,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  SlashCommandStringOption,
+} = require("discord.js");
 const logger = require("../../Core/logger");
 
 const e = [
@@ -44,17 +49,21 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("poll")
     .setDescription("發起投票")
-    .addStringOption(new SlashCommandStringOption()
-      .setName("問題")
-      .setDescription("要提問的問題")
-      .setRequired(true))
-    .addStringOption(new SlashCommandStringOption()
-      .setName("選項")
-      .setDescription("要提問的問題，使用半形逗號分隔")
-      .setRequired(true)),
-  defer     : true,
-  ephemeral : false,
-  global    : true,
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("問題")
+        .setDescription("要提問的問題")
+        .setRequired(true),
+    )
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("選項")
+        .setDescription("要提問的問題，使用半形逗號分隔")
+        .setRequired(true),
+    ),
+  defer: true,
+  ephemeral: false,
+  global: true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
@@ -65,12 +74,15 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setColor(Colors.Blue)
-      .setAuthor({ name: interaction.member.displayName, iconURL: interaction.member.displayAvatarURL({ dynamic: true }) })
+      .setAuthor({
+        name: interaction.member.displayName,
+        iconURL: interaction.member.displayAvatarURL({ dynamic: true }),
+      })
       .setTitle(question)
       .setDescription(option.map((v, i) => `${e[i]} ${v}`).join("\n"))
       .setTimestamp();
 
-    const sent = await interaction.editReply({ embeds: [ embed ] });
+    const sent = await interaction.editReply({ embeds: [embed] });
 
     try {
       option.forEach(async (v, i) => await sent.react(e[i]));

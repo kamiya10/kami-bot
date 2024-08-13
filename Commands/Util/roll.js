@@ -1,4 +1,9 @@
-const { Colors, EmbedBuilder, SlashCommandBuilder, SlashCommandIntegerOption } = require("discord.js");
+const {
+  Colors,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  SlashCommandIntegerOption,
+} = require("discord.js");
 
 const dice_emoji = [
   undefined,
@@ -14,17 +19,21 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("roll")
     .setDescription("擲骰子")
-    .addIntegerOption(new SlashCommandIntegerOption()
-      .setName("面")
-      .setDescription("要擲的骰子的面數")
-      .setMinValue(1))
-    .addIntegerOption(new SlashCommandIntegerOption()
-      .setName("數量")
-      .setDescription("要投擲的數量")
-      .setMinValue(1)),
-  defer     : true,
-  ephemeral : false,
-  global    : true,
+    .addIntegerOption(
+      new SlashCommandIntegerOption()
+        .setName("面")
+        .setDescription("要擲的骰子的面數")
+        .setMinValue(1),
+    )
+    .addIntegerOption(
+      new SlashCommandIntegerOption()
+        .setName("數量")
+        .setDescription("要投擲的數量")
+        .setMinValue(1),
+    ),
+  defer: true,
+  ephemeral: false,
+  global: true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
@@ -34,7 +43,7 @@ module.exports = {
     const count = interaction.options.getInteger("數量") ?? 1;
 
     const result = [];
-    for (let i = 0;i < count;i++)
+    for (let i = 0; i < count; i++)
       result.push(Math.round(Math.random() * dice));
 
     const desc = [];
@@ -42,7 +51,9 @@ module.exports = {
     if (count > 10) {
       desc.push(`總和 **${result.reduce((acc, v) => acc + v, 0)}**`);
     } else {
-      desc.push(`${result.map(v => `${dice_emoji[v] ?? "<:dice_question:886444618126868500>"} ${v}`).join("　")}`);
+      desc.push(
+        `${result.map((v) => `${dice_emoji[v] ?? "<:dice_question:886444618126868500>"} ${v}`).join("　")}`,
+      );
       desc.push(`總和 **${result.reduce((acc, v) => acc + v, 0)}**`);
     }
 
@@ -51,6 +62,6 @@ module.exports = {
       .setTitle("🎲 骰子")
       .setDescription(desc.join("\n"));
 
-    await interaction.editReply({ embeds: [ embed ] });
+    await interaction.editReply({ embeds: [embed] });
   },
 };

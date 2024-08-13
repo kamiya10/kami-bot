@@ -2,9 +2,9 @@ const { ChannelType, Collection, Colors, EmbedBuilder } = require("discord.js");
 const logger = require("../Core/logger");
 
 module.exports = {
-  name  : "voiceCreate",
-  event : "voiceStateUpdate",
-  once  : false,
+  name: "voiceCreate",
+  event: "voiceStateUpdate",
+  once: false,
 
   /**
    *

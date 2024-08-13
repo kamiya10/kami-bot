@@ -1,6 +1,14 @@
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
-const { ActionRowBuilder, AttachmentBuilder, Colors, ComponentType, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder } = require("discord.js");
+const {
+  ActionRowBuilder,
+  AttachmentBuilder,
+  Colors,
+  ComponentType,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  StringSelectMenuBuilder,
+} = require("discord.js");
 const AQI = require("../../API/aqi");
 const nodeHtmlToImage = require("node-html-to-image");
 const aqi = new AQI();
@@ -11,86 +19,102 @@ module.exports = {
     .setNameLocalization("zh-TW", "空氣品質")
     .setDescription("View air quality.")
     .setDescriptionLocalization("zh-TW", "查詢空氣品質"),
-  defer     : true,
-  ephemeral : false,
-  global    : true,
+  defer: true,
+  ephemeral: false,
+  global: true,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
-    const embed = new EmbedBuilder()
-      .setDescription("請使用下方下拉式選單選取欲查詢空氣品質地區");
+    const embed = new EmbedBuilder().setDescription(
+      "請使用下方下拉式選單選取欲查詢空氣品質地區",
+    );
 
     let county = new StringSelectMenuBuilder()
       .setCustomId("county")
       .setPlaceholder("請選擇縣市")
       .setOptions(
-        Object.keys(aqi.countyNames).map(k => ({
-          label       : k,
-          value       : k,
-          description : aqi.countyNames[k],
+        Object.keys(aqi.countyNames).map((k) => ({
+          label: k,
+          value: k,
+          description: aqi.countyNames[k],
         })),
       );
     let site = new StringSelectMenuBuilder()
       .setCustomId("site")
       .setPlaceholder("請選擇測站")
       .setDisabled(true)
-      .addOptions(
-        [
-          {
-            label : "請選擇鄉鎮",
-            value : "null",
-          },
-        ],
-      );
+      .addOptions([
+        {
+          label: "請選擇鄉鎮",
+          value: "null",
+        },
+      ]);
     const sent = await interaction.editReply({
-      embeds     : [embed],
-      components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
+      embeds: [embed],
+      components: [
+        new ActionRowBuilder({ components: [county] }),
+        new ActionRowBuilder({ components: [site] }),
+      ],
     });
     const filter = (i) => i.user.id === interaction.user.id;
 
-    const collector = sent.createMessageComponentCollector({ filter, time: 5 * 60000, componentType: ComponentType.StringSelect });
+    const collector = sent.createMessageComponentCollector({
+      filter,
+      time: 5 * 60000,
+      componentType: ComponentType.StringSelect,
+    });
 
     let _currentCounty, _currentSite;
 
-    const loading = new EmbedBuilder()
-      .setDescription("<a:loading:849794359083270144> 正在獲取資料");
+    const loading = new EmbedBuilder().setDescription(
+      "<a:loading:849794359083270144> 正在獲取資料",
+    );
 
-    collector.on("collect", async i => {
+    collector.on("collect", async (i) => {
       switch (i.customId) {
         case "county": {
           _currentCounty = i.values[0];
           await i.deferUpdate();
 
-          county = county.setOptions(
-            Object.keys(aqi.countyNames).map(k => ({
-              label       : k,
-              value       : k,
-              description : aqi.countyNames[k],
-              default     : k == _currentCounty,
-            })),
-          ).setDisabled(true);
+          county = county
+            .setOptions(
+              Object.keys(aqi.countyNames).map((k) => ({
+                label: k,
+                value: k,
+                description: aqi.countyNames[k],
+                default: k == _currentCounty,
+              })),
+            )
+            .setDisabled(true);
 
           await i.editReply({
-            embeds     : [loading],
-            components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
+            embeds: [loading],
+            components: [
+              new ActionRowBuilder({ components: [county] }),
+              new ActionRowBuilder({ components: [site] }),
+            ],
           });
 
-          const sites = aqi.sites[aqi.countyNames[_currentCounty]] ?? await aqi.getSiteIds(aqi.countyNames[_currentCounty]);
+          const sites =
+            aqi.sites[aqi.countyNames[_currentCounty]] ??
+            (await aqi.getSiteIds(aqi.countyNames[_currentCounty]));
 
           site = site
             .setOptions(
-              Object.keys(sites).map(k => ({
-                label       : k,
-                value       : k,
-                description : sites[k],
+              Object.keys(sites).map((k) => ({
+                label: k,
+                value: k,
+                description: sites[k],
               })),
-            ).setDisabled(true);
+            )
+            .setDisabled(true);
 
           const embeds = [
-            new EmbedBuilder()
-              .setDescription("請使用下方下拉式選單選取欲查詢空氣品質測站"),
+            new EmbedBuilder().setDescription(
+              "請使用下方下拉式選單選取欲查詢空氣品質測站",
+            ),
           ];
 
           county = county.setDisabled(false);
@@ -98,7 +122,10 @@ module.exports = {
 
           await i.editReply({
             embeds,
-            components: [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
+            components: [
+              new ActionRowBuilder({ components: [county] }),
+              new ActionRowBuilder({ components: [site] }),
+            ],
           });
           break;
         }
@@ -110,82 +137,111 @@ module.exports = {
 
           county = county.setDisabled(true);
 
-          const sites = aqi.sites[aqi.countyNames[_currentCounty]] ?? await aqi.getSiteIds(aqi.countyNames[_currentCounty]);
+          const sites =
+            aqi.sites[aqi.countyNames[_currentCounty]] ??
+            (await aqi.getSiteIds(aqi.countyNames[_currentCounty]));
 
-          site = site.setOptions(
-            Object.keys(sites).map(k => ({
-              label       : k,
-              value       : k,
-              description : sites[k],
-              default     : k == _currentSite,
-            })),
-          ).setDisabled(true);
+          site = site
+            .setOptions(
+              Object.keys(sites).map((k) => ({
+                label: k,
+                value: k,
+                description: sites[k],
+                default: k == _currentSite,
+              })),
+            )
+            .setDisabled(true);
 
           await i.editReply({
-            embeds     : [loading],
-            components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
+            embeds: [loading],
+            components: [
+              new ActionRowBuilder({ components: [county] }),
+              new ActionRowBuilder({ components: [site] }),
+            ],
           });
 
-          const data = await aqi.getSiteData(aqi.sites[aqi.countyNames[_currentCounty]][_currentSite]);
+          const data = await aqi.getSiteData(
+            aqi.sites[aqi.countyNames[_currentCounty]][_currentSite],
+          );
 
           const embeds = [];
 
           const forecast_embed = new EmbedBuilder()
             .setAuthor({
-              name    : "環境保護署",
-              iconURL : "https://www.epa.gov.tw/Template/epa/images/epa.png",
-              url     : "https://www.epa.gov.tw/",
+              name: "環境保護署",
+              iconURL: "https://www.epa.gov.tw/Template/epa/images/epa.png",
+              url: "https://www.epa.gov.tw/",
             })
             .setTitle(`${_currentCounty} ${_currentSite} ${data.date} 空氣品質`)
             .setURL("https://airtw.epa.gov.tw/")
-            .setColor([Colors.Green, Colors.Yellow, Colors.Orange, Colors.Red, Colors.Purple, Colors.DarkButNotBlack, Colors.DarkButNotBlack][AQI.getAQILevel(+data.AQI)])
-            .addFields({
-              name   : "**AQI 空氣品質指標**",
-              value  : `**${["🟢 良好", "🟡 普通", "🟠 對敏感族群不健康", "🔴 對所有族群不健康", "🟣 非常不健康", "🟤 危害", "🟤 危害"][AQI.getAQILevel(data.AQI)]}** ${data.AQI}`,
-              inline : true,
-            }, {
-              name   : "PM₂.₅ 細懸浮微粒 (μg/m³)",
-              value  : `移動平均 **${data.AVPM25}**\n小時濃度 **${data.PM25_FIX}**`,
-              inline : true,
-            }, {
-              name   : "PM₁₀ 懸浮微粒 (μg/m³)",
-              value  : `移動平均 **${data.AVPM10}**\n小時濃度 **${data.PM10_FIX}**`,
-              inline : true,
-            }, {
-              name   : "O₃ 臭氧 (ppb)",
-              value  : `8小時移動平均 **${data.AVO3}**\n小時濃度 **${data.O3_FIX}**`,
-              inline : true,
-            }, {
-              name   : "CO 一氧化碳 (ppm)",
-              value  : `8小時移動平均 **${data.AVCO}**\n小時濃度 **${data.CO_FIX}**`,
-              inline : true,
-            }, {
-              name   : "SO₂ 二氧化硫 (ppb)",
-              value  : `小時濃度 **${data.SO2_FIX}**`,
-              inline : true,
-            }, {
-              name   : "NO₂ 二氧化氮 (ppb)",
-              value  : `小時濃度 **${data.NO2_FIX}**`,
-              inline : true,
-            })
+            .setColor(
+              [
+                Colors.Green,
+                Colors.Yellow,
+                Colors.Orange,
+                Colors.Red,
+                Colors.Purple,
+                Colors.DarkButNotBlack,
+                Colors.DarkButNotBlack,
+              ][AQI.getAQILevel(+data.AQI)],
+            )
+            .addFields(
+              {
+                name: "**AQI 空氣品質指標**",
+                value: `**${["🟢 良好", "🟡 普通", "🟠 對敏感族群不健康", "🔴 對所有族群不健康", "🟣 非常不健康", "🟤 危害", "🟤 危害"][AQI.getAQILevel(data.AQI)]}** ${data.AQI}`,
+                inline: true,
+              },
+              {
+                name: "PM₂.₅ 細懸浮微粒 (μg/m³)",
+                value: `移動平均 **${data.AVPM25}**\n小時濃度 **${data.PM25_FIX}**`,
+                inline: true,
+              },
+              {
+                name: "PM₁₀ 懸浮微粒 (μg/m³)",
+                value: `移動平均 **${data.AVPM10}**\n小時濃度 **${data.PM10_FIX}**`,
+                inline: true,
+              },
+              {
+                name: "O₃ 臭氧 (ppb)",
+                value: `8小時移動平均 **${data.AVO3}**\n小時濃度 **${data.O3_FIX}**`,
+                inline: true,
+              },
+              {
+                name: "CO 一氧化碳 (ppm)",
+                value: `8小時移動平均 **${data.AVCO}**\n小時濃度 **${data.CO_FIX}**`,
+                inline: true,
+              },
+              {
+                name: "SO₂ 二氧化硫 (ppb)",
+                value: `小時濃度 **${data.SO2_FIX}**`,
+                inline: true,
+              },
+              {
+                name: "NO₂ 二氧化氮 (ppb)",
+                value: `小時濃度 **${data.NO2_FIX}**`,
+                inline: true,
+              },
+            )
             .setTimestamp();
 
           embeds.push(forecast_embed);
 
           // - image
 
-          loading
-            .setDescription("<a:loading:849794359083270144> 正在產生圖片");
+          loading.setDescription("<a:loading:849794359083270144> 正在產生圖片");
 
           await i.editReply({
-            embeds     : [loading],
-            components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
+            embeds: [loading],
+            components: [
+              new ActionRowBuilder({ components: [county] }),
+              new ActionRowBuilder({ components: [site] }),
+            ],
           });
 
           nodeHtmlToImage({
             puppeteerArgs: {
-              executablePath : "/usr/bin/google-chrome",
-              args           : ["--no-sandbox"],
+              executablePath: "/usr/bin/google-chrome",
+              args: ["--no-sandbox"],
             },
             html: `
   <!DOCTYPE html>
@@ -408,29 +464,32 @@ module.exports = {
   </body>
   </html>
 `,
-          })
-            .then(async (buf) => {
-              const attachment = new AttachmentBuilder()
-                .setFile(buf)
-                .setName("aqi.png")
-                .setDescription(`${data.date} ${data.county}${data.sitename} AQI 圖`);
+          }).then(async (buf) => {
+            const attachment = new AttachmentBuilder()
+              .setFile(buf)
+              .setName("aqi.png")
+              .setDescription(
+                `${data.date} ${data.county}${data.sitename} AQI 圖`,
+              );
 
-              forecast_embed.setImage("attachment://aqi.png");
+            forecast_embed.setImage("attachment://aqi.png");
 
-              county = county.setDisabled(false);
-              site = site.setDisabled(false);
+            county = county.setDisabled(false);
+            site = site.setDisabled(false);
 
-              await i.editReply({
-                embeds,
-                components : [new ActionRowBuilder({ components: [county] }), new ActionRowBuilder({ components: [site] })],
-                files      : [attachment],
-              });
+            await i.editReply({
+              embeds,
+              components: [
+                new ActionRowBuilder({ components: [county] }),
+                new ActionRowBuilder({ components: [site] }),
+              ],
+              files: [attachment],
             });
+          });
 
           break;
         }
       }
     });
-
   },
 };

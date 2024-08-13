@@ -2,9 +2,9 @@ const { PermissionFlagsBits } = require("discord.js");
 const logger = require("../Core/logger");
 
 module.exports = {
-  name  : "ready",
-  event : "ready",
-  once  : false,
+  name: "ready",
+  event: "ready",
+  once: false,
 
   /**
    * @param {import("discord.js").Client} client
@@ -38,7 +38,9 @@ module.exports = {
     */
 
     setInterval(async () => {
-      await client.user.setActivity(`${client.version} | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`);
+      await client.user.setActivity(
+        `${client.version} | ${client.guilds.cache.size}伺服 - ${client.channels.cache.size}頻道 - ${client.users.cache.size}用戶`,
+      );
     }, 60000);
   },
 };

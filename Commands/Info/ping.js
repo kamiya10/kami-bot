@@ -19,29 +19,28 @@ const ReplyMessages = [
   "🐾嗚～別打擾我打盹啦～",
 ];
 
-const time = (date) => [
+const time = (date) =>
   [
-    `${date.getFullYear()}`,
-    `${date.getMonth() + 1}`.padStart(2, "0"),
-    `${date.getDate()}`.padStart(2, "0"),
-  ].join("/"),
-  " ",
-  [
-    `${date.getHours()}`.padStart(2, "0"),
-    `${date.getMinutes()}`.padStart(2, "0"),
-    `${date.getSeconds()}`.padStart(2, "0"),
-  ].join(":"),
-  ".",
-  `${date.getMilliseconds()}`.padStart(3, "0"),
-].join("");
+    [
+      `${date.getFullYear()}`,
+      `${date.getMonth() + 1}`.padStart(2, "0"),
+      `${date.getDate()}`.padStart(2, "0"),
+    ].join("/"),
+    " ",
+    [
+      `${date.getHours()}`.padStart(2, "0"),
+      `${date.getMinutes()}`.padStart(2, "0"),
+      `${date.getSeconds()}`.padStart(2, "0"),
+    ].join(":"),
+    ".",
+    `${date.getMilliseconds()}`.padStart(3, "0"),
+  ].join("");
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Ping"),
-  defer     : true,
-  ephemeral : false,
-  global    : true,
+  data: new SlashCommandBuilder().setName("ping").setDescription("Ping"),
+  defer: true,
+  ephemeral: false,
+  global: true,
 
   /**
    *
@@ -49,23 +48,33 @@ module.exports = {
    */
   async execute(interaction) {
     const receviedTimestamp = Date.now();
-    const content = ReplyMessages[(Math.floor(Math.random() * ReplyMessages.length))];
+    const content =
+      ReplyMessages[Math.floor(Math.random() * ReplyMessages.length)];
     await interaction.editReply({ content });
     const roundTripTimestamp = Date.now();
     const latency = roundTripTimestamp - receviedTimestamp;
     const embed = new EmbedBuilder()
-      .setColor(latency <= 500 ? Colors.Green : latency <= 1500 ? Colors.Yellow : Colors.Red)
-      .setAuthor({ name: "機器人延遲", iconURL: interaction.client.user.avatarURL() })
+      .setColor(
+        latency <= 500
+          ? Colors.Green
+          : latency <= 1500
+            ? Colors.Yellow
+            : Colors.Red,
+      )
+      .setAuthor({
+        name: "機器人延遲",
+        iconURL: interaction.client.user.avatarURL(),
+      })
       .addFields({
-        name  : "時間",
-        value : stripIndents`
+        name: "時間",
+        value: stripIndents`
           💬 訊息時間 **${time(new Date(interaction.createdTimestamp))}**
           ⏱ 主機時間 **${time(new Date(Date.now()))}**
         `,
       })
       .addFields({
-        name  : "延遲",
-        value : stripIndents`
+        name: "延遲",
+        value: stripIndents`
           ⌛ 延遲 **${roundTripTimestamp - receviedTimestamp}ms**
           🌐 WebSocket 延遲 **${interaction.client.ws.ping}ms**
         `,

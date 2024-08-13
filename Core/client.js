@@ -74,9 +74,9 @@ Kami.locale = {};
 for (const locale of fs
   .readdirSync("./Localization")
   .filter((file) => file.endsWith(".json")))
-  Kami.locale[locale.slice(0, -5)] = require(path.resolve(
-    `./Localization/${locale}`
-  ));
+  Kami.locale[locale.slice(0, -5)] = require(
+    path.resolve(`./Localization/${locale}`),
+  );
 
 // #endregion
 

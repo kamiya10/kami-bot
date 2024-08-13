@@ -1,18 +1,27 @@
 module.exports = {
-  name  : "interactionCreate",
-  event : "interactionCreate",
-  once  : false,
+  name: "interactionCreate",
+  event: "interactionCreate",
+  once: false,
 
   /**
    * @param {import("discord.js").ChatInputCommandInteraction } interaction The interaction which was created
    */
   async execute(client, interaction) {
-    if (!(interaction.isCommand() || interaction.isMessageContextMenuCommand() || interaction.isAutocomplete())) return;
+    if (
+      !(
+        interaction.isCommand() ||
+        interaction.isMessageContextMenuCommand() ||
+        interaction.isAutocomplete()
+      )
+    )
+      return;
 
     /**
      * @type {{data: import("discord.js").ApplicationCommandData, defer: boolean, execute: Promise}}
      */
-    const command = interaction.client[interaction.isMessageContextMenuCommand() ? "context" : "commands"].get(interaction.commandName);
+    const command = interaction.client[
+      interaction.isMessageContextMenuCommand() ? "context" : "commands"
+    ].get(interaction.commandName);
 
     if (!command) return;
 
@@ -36,7 +45,6 @@ module.exports = {
       } else {
         await interaction.reply({ content: msg, ephemeral: true });
       }
-
     }
   },
 };
