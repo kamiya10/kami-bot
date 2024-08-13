@@ -1,5 +1,6 @@
 import type { AutocompleteInteraction, Awaitable, CacheType, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from "discord.js";
-import type { KamiClient } from "./client";
+
+import type { KamiClient } from "@/classes/client";
 
 type AnySlashCommandBuilder =
   | SlashCommandBuilder

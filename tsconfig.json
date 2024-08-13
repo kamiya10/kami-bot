@@ -1,21 +1,37 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
+    // Enable latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "allowJs": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
     "declaration": true,
     "declarationDir": "types",
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "strict": true,
     "outDir": "dist",
     "rootDir": "src",
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./*"]
-    }
-  },
+    },
+
+    // Best practices
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true
+  }
 }

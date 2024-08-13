@@ -1,6 +1,6 @@
-import type { GuildDataModel } from "../databases/GuildDatabase";
-import type { UserDataModel } from "../databases/UserDatabase";
-import type { ClientDatabase } from "./client";
+import type { ClientDatabase } from "@/classes/client";
+import type { GuildDataModel } from "@/databases/GuildDatabase";
+import type { UserDataModel } from "@/databases/UserDatabase";
 
 export class KamiDatabase {
   database: ClientDatabase;

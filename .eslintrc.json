@@ -1,27 +1,26 @@
 {
   "root": true,
-	"extends": [
+  "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended-type-checked"
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "prettier"
   ],
-	"env": {
-		"node": true,
-		"es6": true
-	},
+  "env": {
+    "node": true,
+    "es6": true
+  },
   "parser": "@typescript-eslint/parser",
-	"parserOptions": {
-		"ecmaVersion": "latest",
+  "parserOptions": {
+    "ecmaVersion": "latest",
     "project": true,
     "tsconfigRootDir": "src"
-	},
-  "ignorePatterns":["*.cjs","types/*"],
-	"plugins": [
-    "require-sort",
-    "@typescript-eslint",
-    "@stylistic"
-  ],
-	"rules": {
-		"require-sort/require-sort": "warn",
-		"@stylistic/indent": ["warn", 2, { "SwitchCase": 1 }]
+  },
+  "ignorePatterns": ["*.cjs", "types/*"],
+  "plugins": ["require-sort", "@typescript-eslint", "@stylistic"],
+  "rules": {
+    "require-sort/require-sort": "warn",
+    "@stylistic/indent": ["warn", 2, { "SwitchCase": 1 }],
+    "@stylistic/object-curly-newline": ["warn"],
+    "sort-imports": ["warn", { "allowSeparatedGroups": true }]
   }
 }

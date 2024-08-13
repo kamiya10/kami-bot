@@ -1,16 +1,26 @@
-import { Client, Collection, Events, type ClientOptions } from "discord.js";
-import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
-import { createHash } from "node:crypto";
-import { KamiStates, type KamiStatesOptions } from "./states";
-import { Logger } from "./logger";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from "fs";
+import { createHash } from "crypto";
+import path from "path";
+
+import { Client, type ClientOptions, Collection, Events } from "discord.js";
+import type { Low } from "lowdb";
 import { SingleBar } from "cli-progress";
-import path from "node:path";
-import type { GuildDataModel } from "../databases/GuildDatabase";
-import type { Low } from "lowdb/lib";
-import type { UserDataModel } from "../databases/UserDatabase";
-import type { KamiDatabase } from "./database";
-import type { CommandBuilder, KamiCommand } from "./command";
-import type { KamiListener, ListenerBuilder } from "./listener";
+
+import type { KamiListener, ListenerBuilder } from "@/classes/listener";
+import { KamiStates, type KamiStatesOptions } from "@/classes/states";
+import type { GuildDataModel } from "@/databases/GuildDatabase";
+import type { KamiCommand } from "@/classes/command";
+import type { KamiDatabase } from "@/classes/database";
+import { Logger } from "@/classes/logger";
+import type { UserDataModel } from "@/databases/UserDatabase";
+
+import Commands from "@/commands/commands";
 
 export interface ClientDatabase {
   guild: Low<Record<string, GuildDataModel>>;
@@ -23,7 +33,6 @@ export class KamiClient extends Client {
   eventListeners: Collection<string, KamiListener>;
   commands: Collection<string, KamiCommand>;
 
-
   constructor(database: KamiDatabase, clientOptions: ClientOptions) {
     super(clientOptions);
     this.database = database;
@@ -31,15 +40,23 @@ export class KamiClient extends Client {
     let cachedState;
 
     if (existsSync("./.cache/states.json")) {
-      cachedState = JSON.parse(readFileSync("./.cache/states.json", { encoding: "utf-8" })) as KamiStatesOptions;
+      cachedState = JSON.parse(
+        readFileSync("./.cache/states.json", { encoding: "utf-8" })
+      ) as KamiStatesOptions;
     }
 
     this.states = new KamiStates(this, cachedState);
     this.eventListeners = new Collection();
     this.commands = new Collection();
 
+    for (const build of Commands) {
+      const command = build(this);
+      this.commands.set(command.builder.name, command);
+    }
+
+    console.log(this.commands);
+
     void this.loadListeners();
-    void this.loadCommands();
 
     this.once(Events.ClientReady, () => {
       this.sweepStates();
@@ -52,7 +69,11 @@ export class KamiClient extends Client {
     const listenersDir = path.join(__dirname.slice(8), "listeners");
 
     for (const filename of readdirSync(listenersDir)) {
-      const listener = (await import(path.join(__dirname, "listeners", filename)) as ListenerBuilder).build(this);
+      const listener = (
+        (await import(
+          path.join(__dirname, "listeners", filename)
+        )) as ListenerBuilder
+      ).build(this);
 
       this.eventListeners.set(listener.name, listener);
 
@@ -60,17 +81,6 @@ export class KamiClient extends Client {
         this.once(listener.event, (...args) => void listener.callback(...args));
       } else {
         this.on(listener.event, (...args) => void listener.callback(...args));
-      }
-    }
-  }
-
-  async loadCommands() {
-    for (const category of readdirSync("./src/commands")) {
-      const CategoryFolder = path.join("./src/commands", category);
-
-      for (const filename of readdirSync(CategoryFolder)) {
-        const command = ((await import(`../../${CategoryFolder}/${filename}`)) as CommandBuilder).build(this);
-        this.commands.set(command.builder.name, command);
       }
     }
   }
@@ -84,9 +94,11 @@ export class KamiClient extends Client {
       writeFileSync("./.cache/DEV_COMMAND_VERSION", "", { encoding: "utf-8" });
     }
 
-    const version = readFileSync("./.cache/DEV_COMMAND_VERSION", { encoding: "utf-8" });
+    const version = readFileSync("./.cache/DEV_COMMAND_VERSION", {
+      encoding: "utf-8",
+    });
 
-    const commands = this.commands.map(command => command.builder.toJSON());
+    const commands = this.commands.map((command) => command.builder.toJSON());
 
     const hash = createHash("sha256")
       .update(JSON.stringify(commands))
@@ -94,11 +106,15 @@ export class KamiClient extends Client {
       .toString();
 
     if (hash == version) {
-      Logger.info("Command Version is the same. Skipping command registration.");
+      Logger.info(
+        "Command Version is the same. Skipping command registration."
+      );
       return;
     } else {
       Logger.info("Command Version is different! Registering commands...");
-      writeFileSync("./.cache/DEV_COMMAND_VERSION", hash, { encoding: "utf-8" });
+      writeFileSync("./.cache/DEV_COMMAND_VERSION", hash, {
+        encoding: "utf-8",
+      });
 
       const bar = new SingleBar({
         format: "{bar} {percentage}% | {value} of {total} Guilds",
@@ -128,7 +144,6 @@ export class KamiClient extends Client {
           Logger.success("Done.");
         }
       }
-
     }
   }
 

@@ -1,16 +1,19 @@
 import "dotenv/config";
-import { dirname, resolve } from "node:path";
-import { existsSync, writeFileSync } from "node:fs";
-import { KamiClient, type ClientDatabase } from "./classes/client";
-import { KamiDatabase } from "./classes/database";
-import { KamiIntents } from "./constants";
-import { Low } from "lowdb";
+
+import { dirname, resolve } from "path";
+import { existsSync, writeFileSync } from "fs";
 import { JSONFile } from "lowdb/node";
-import i18next from "i18next";
-import strings from "./localization/strings";
+import { Low } from "lowdb";
 import PrettyError from "pretty-error";
-import type { GuildDataModel } from "./databases/GuildDatabase";
-import type { UserDataModel } from "./databases/UserDatabase";
+import i18next from "i18next";
+
+import type { ClientDatabase } from "@/classes/client";
+import type { GuildDataModel } from "@/databases/GuildDatabase";
+import { KamiClient } from "@/classes/client";
+import { KamiDatabase } from "@/classes/database";
+import { KamiIntents } from "@/constants";
+import type { UserDataModel } from "@/databases/UserDatabase";
+import strings from "@/localization/strings";
 
 const pe = PrettyError.start() as PrettyError;
 
@@ -59,18 +62,24 @@ if (!existsSync(userDatabasePath)) {
   writeFileSync(userDatabasePath, "{}", { encoding: "utf-8" });
 }
 
-await i18next.init({
-  resources: strings,
-});
+await i18next.init({ resources: strings });
 
 const databases: ClientDatabase = {
-  guild: new Low<Record<string, GuildDataModel>>(new JSONFile(guildDatabasePath), {}),
-  user: new Low<Record<string, UserDataModel>>(new JSONFile(userDatabasePath), {}),
+  guild: new Low<Record<string, GuildDataModel>>(
+    new JSONFile(guildDatabasePath),
+    {}
+  ),
+  user: new Low<Record<string, UserDataModel>>(
+    new JSONFile(userDatabasePath),
+    {}
+  ),
 };
 
 await databases.guild.read();
 await databases.user.read();
 
-const client = new KamiClient(new KamiDatabase(databases), { intents: KamiIntents });
+const client = new KamiClient(new KamiDatabase(databases), {
+  intents: KamiIntents,
+});
 
-await client.login(process.env.DEV_TOKEN);
+await client.login(process.env["DEV_TOKEN"]);

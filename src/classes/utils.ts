@@ -1,6 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, Locale, time as timestamp, TimestampStyles, type MessageCreateOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, Locale, type MessageCreateOptions, TimestampStyles, time as timestamp } from "discord.js";
 import i18next from "i18next";
-import { EarthquakeReportColor, type EarthquakeReport } from "../api/cwa";
+
+import { type EarthquakeReport, EarthquakeReportColor } from "@/api/cwa";
 
 export const $at = (key: string): Record<Locale, string> =>
   ([Locale.Japanese, Locale.ChineseTW] as const)
@@ -32,7 +33,7 @@ const intensityThumbnail = [
 
 export const buildEarthquakeReportMessage = (report: EarthquakeReport, style: string = "cwa-simple"): MessageCreateOptions => {
   const time = timestamp(new Date(report.EarthquakeInfo.OriginTime), TimestampStyles.LongDateTime);
-  const relative = timestamp(new Date(report.EarthquakeInfo.OriginTime), TimestampStyles.RelativeTime);
+  // const relative = timestamp(new Date(report.EarthquakeInfo.OriginTime), TimestampStyles.RelativeTime);
   const type = report.EarthquakeNo % 1000 ? "Earthquake.EarthquakeNo" : "小區域";
   const author = {
     name: "地震報告",

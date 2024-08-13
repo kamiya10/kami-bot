@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Awaitable, ClientEvents } from "discord.js";
-import type { KamiClient } from "./client";
+
+import type { KamiClient } from "@/classes/client";
 
 export interface ListenerBuilder {
   build: (client: KamiClient) => KamiListener;
