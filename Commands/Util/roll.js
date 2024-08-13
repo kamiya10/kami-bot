@@ -44,7 +44,7 @@ module.exports = {
 
     const result = [];
     for (let i = 0; i < count; i++)
-      result.push(Math.round(Math.random() * dice));
+      {result.push(Math.round(Math.random() * dice));}
 
     const desc = [];
 

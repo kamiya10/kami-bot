@@ -9,7 +9,7 @@ class KamiDatabase {
       this.name = filename.split(".")[0];
 
       if (!fs.existsSync(this._path))
-        fs.writeFileSync(this._path, "{}", { encoding: "utf-8" });
+        {fs.writeFileSync(this._path, "{}", { encoding: "utf-8" });}
 
       this._data = JSON.parse(
         fs.readFileSync(this._path, { encoding: "utf-8" }),
@@ -51,7 +51,7 @@ class KamiDatabase {
       );
 
     if (files.length)
-      for (const file of files) fs.rmSync(path.join(this._folder, file));
+      {for (const file of files) {fs.rmSync(path.join(this._folder, file));}}
 
     fs.writeFileSync(
       path.join(this._folder, `backup~${Date.now()}_${this.name}.json`),
@@ -73,10 +73,10 @@ class KamiDatabase {
   getAll(keys) {
     return Object.keys(this._data).reduce((acc, v) => {
       for (const k of keys)
-        if (Object.hasOwnProperty.call(this._data[v], k)) {
+        {if (Object.hasOwnProperty.call(this._data[v], k)) {
           acc[v] ??= {};
           acc[v][k] = this._data[v][k];
-        }
+        }}
 
       return acc;
     }, {});

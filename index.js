@@ -41,16 +41,16 @@ function waitForUserInput() {
         const args = input.split(" ").slice(1);
 
         if (args.length)
-          console.log(
+          {console.log(
             `${Kami.guilds.cache
               .filter((g) => g.memberCount < +args[0])
               .map((g) => `${g.name} ${chalk.gray(g.id)}`)
               .join("\n")}\n`,
-          );
+          );}
         else
-          console.log(
+          {console.log(
             `${Kami.guilds.cache.map((g) => `${g.name} ${chalk.gray(g.id)}`).join("\n")}\n`,
-          );
+          );}
       } else if (input.startsWith("guild")) {
         const args = input.split(" ").slice(1);
         const guild = Kami.guilds.cache.get(args[0]);
@@ -131,11 +131,11 @@ function waitForUserInput() {
         process.exit(0);
       }
 
-      if (!rl.subcommand) waitForUserInput();
+      if (!rl.subcommand) {waitForUserInput();}
     } catch (error) {
       console.error(undefined);
 
-      if (!rl.subcommand) waitForUserInput();
+      if (!rl.subcommand) {waitForUserInput();}
     }
   });
 }
@@ -160,30 +160,30 @@ rl._writeToOutput = function _writeToOutput(stringToWrite) {
         args[0] = chalk.blueBright(args[0]);
 
         if (args[1])
-          args[1] = args[1].startsWith('"')
+          {args[1] = args[1].startsWith('"')
             ? chalk.greenBright(args[1])
-            : chalk.yellow(args[1]);
+            : chalk.yellow(args[1]);}
         break;
       }
 
       case "emit": {
         args[0] = chalk.blueBright(args[0]);
 
-        if (args[1]) args[1] = chalk.greenBright(args[1]);
+        if (args[1]) {args[1] = chalk.greenBright(args[1]);}
         break;
       }
 
       case "guild": {
         args[0] = chalk.blueBright(args[0]);
 
-        if (args[1]) args[1] = chalk.greenBright(args[1]);
+        if (args[1]) {args[1] = chalk.greenBright(args[1]);}
         break;
       }
 
       case "member" && rl.subcommand == "guild": {
         args[0] = chalk.blueBright(args[0]);
 
-        if (args[1]) args[1] = chalk.greenBright(args[1]);
+        if (args[1]) {args[1] = chalk.greenBright(args[1]);}
         break;
       }
 
@@ -229,7 +229,7 @@ async function updateData() {
         Kami.data.quake_last[0]?.ReportContent !=
           Kami.data.quake_data[0].ReportContent
       )
-        Kami.emit("newEarthquake", Kami.data.quake_data[0]);
+        {Kami.emit("newEarthquake", Kami.data.quake_data[0]);}
     }
 
     if (fetched_data_s != undefined) {
@@ -241,18 +241,18 @@ async function updateData() {
         Kami.data.quake_last_s[0]?.ReportContent !=
           Kami.data.quake_data_s[0].ReportContent
       )
-        Kami.emit("newEarthquake_S", Kami.data.quake_data_s[0]);
+        {Kami.emit("newEarthquake_S", Kami.data.quake_data_s[0]);}
     }
 
     if (fetched_data != undefined && fetched_data_s != undefined)
-      Kami.data.quake_data_all = [
+      {Kami.data.quake_data_all = [
         ...Kami.data.quake_data,
         ...Kami.data.quake_data_s,
       ].sort(
         (a, b) =>
           new Date(b.EarthquakeInfo.OriginTime) -
           new Date(a.EarthquakeInfo.OriginTime),
-      );
+      );}
 
     const rts_list = await (
       await fetch(

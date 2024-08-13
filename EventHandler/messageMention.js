@@ -1,4 +1,4 @@
-const { ChannelType, EmbedBuilder, MessageFlags, time } = require("discord.js");
+const { EmbedBuilder, MessageFlags, time } = require("discord.js");
 
 module.exports = {
   name: "messageMention",
@@ -12,21 +12,28 @@ module.exports = {
   async execute(client, message) {
     // if (!client.database.GuildDatabase.get(message.guild.id).messageMention) return;
 
-    if (message.author.bot) return;
+    if (message.author.bot) {
+      return;
+    }
 
     if (
       (client.database.UserDatabase.get(message.author.id)?.message_mention ??
         true) != true
-    )
+    ) {
       return;
+    }
 
     const match = message.content.match(
       /^https:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)$/,
     );
 
-    if (match == null) return;
+    if (match == null) {
+      return;
+    }
 
-    if (match[1] != message.guild.id) return;
+    if (match[1] != message.guild.id) {
+      return;
+    }
 
     /**
      * @type {import("discord.js").Message<true>}
@@ -36,11 +43,14 @@ module.exports = {
       .messages.fetch({ message: match[3] })
       .catch(() => void 0);
 
-    if (mentioned == null || mentioned.partial) return;
+    if (mentioned == null || mentioned.partial) {
+      return;
+    }
 
     if (mentioned.content.length) {
-      if (mentioned.member == null)
+      if (mentioned.member == null) {
         await mentioned.guild.members.fetch({ user: mentioned.author.id });
+      }
 
       const embed = new EmbedBuilder()
         .setColor(mentioned.member.displayHexColor)

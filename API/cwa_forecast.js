@@ -551,12 +551,12 @@ class CWA_Forcast {
       CWA_Forcast.#baseurl + "F-C0032-001" + `?Authorization=${this.apikey}`;
 
     if (options)
-      url += Object.keys(options)
+      {url += Object.keys(options)
         .map((k) => {
-          if (Array.isArray(options[k])) return `&${k}=${options[k].join(",")}`;
-          else return `&${k}=${options[k]}`;
+          if (Array.isArray(options[k])) {return `&${k}=${options[k].join(",")}`;}
+          else {return `&${k}=${options[k]}`;}
         })
-        .join("");
+        .join("");}
 
     const r = await fetch(url, {
       method: "GET",
@@ -578,12 +578,12 @@ class CWA_Forcast {
       `?Authorization=${this.apikey}`;
 
     if (options)
-      url += Object.keys(options)
+      {url += Object.keys(options)
         .map((k) => {
-          if (Array.isArray(options[k])) return `&${k}=${options[k].join(",")}`;
-          else return `&${k}=${options[k]}`;
+          if (Array.isArray(options[k])) {return `&${k}=${options[k].join(",")}`;}
+          else {return `&${k}=${options[k]}`;}
         })
-        .join("");
+        .join("");}
 
     const r = await fetch(url, {
       method: "GET",
@@ -633,21 +633,21 @@ class CWA_Forcast {
     };
 
     Object.keys(value).map((id) => {
-      if (id == "list") return;
+      if (id == "list") {return;}
 
       if (value[id] != undefined && !Array.isArray(value[id])) {
         value[id].affectedAreas = [];
 
         for (const cid in areas.WarnTown)
-          for (const type in areas.WarnTown[cid])
-            if (areas.WarnTown[cid][type].find((v) => v.startsWith(id))) {
+          {for (const type in areas.WarnTown[cid])
+            {if (areas.WarnTown[cid][type].find((v) => v.startsWith(id))) {
               const c = Object.keys(CWA_Forcast.cid).find(
                 (key) => CWA_Forcast.cid[key] === cid,
               );
 
               if (!value[id].affectedAreas.includes(c))
-                value[id].affectedAreas.push(c);
-            }
+                {value[id].affectedAreas.push(c);}
+            }}}
       }
     });
 
@@ -681,12 +681,12 @@ class CWA_Forcast {
       CWA_Forcast.#baseurl + "E-A0015-001" + `?Authorization=${this.apikey}`;
 
     if (options)
-      url += Object.keys(options)
+      {url += Object.keys(options)
         .map((k) => {
-          if (Array.isArray(options[k])) return `&${k}=${options[k].join(",")}`;
-          else return `&${k}=${options[k]}`;
+          if (Array.isArray(options[k])) {return `&${k}=${options[k].join(",")}`;}
+          else {return `&${k}=${options[k]}`;}
         })
-        .join("");
+        .join("");}
 
     const r = await fetch(url, {
       method: "GET",
@@ -703,12 +703,12 @@ class CWA_Forcast {
       CWA_Forcast.#baseurl + "E-A0016-001" + `?Authorization=${this.apikey}`;
 
     if (options)
-      url += Object.keys(options)
+      {url += Object.keys(options)
         .map((k) => {
-          if (Array.isArray(options[k])) return `&${k}=${options[k].join(",")}`;
-          else return `&${k}=${options[k]}`;
+          if (Array.isArray(options[k])) {return `&${k}=${options[k].join(",")}`;}
+          else {return `&${k}=${options[k]}`;}
         })
-        .join("");
+        .join("");}
 
     const r = await fetch(url, {
       method: "GET",
@@ -724,7 +724,7 @@ class CWA_Forcast {
     let url =
       CWA_Forcast.#baseurl + "W-C0034-005" + `?Authorization=${this.apikey}`;
 
-    if (options) url += `&${new URLSearchParams(options)}`;
+    if (options) {url += `&${new URLSearchParams(options)}`;}
 
     const r = await fetch(url, {
       method: "GET",

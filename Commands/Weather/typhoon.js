@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
 const {
@@ -64,7 +65,7 @@ module.exports = {
     const data = (await cwa_Forecast.typhoon())?.records;
     const cyclones = [];
 
-    if (data)
+    if (data) {
       for (const cyclone of data.tropicalCyclones.tropicalCyclone) {
         const current = cyclone.analysisData.fix.at(-1);
         const lastForecast = cyclone.forecastData.fix.at(-1);
@@ -132,12 +133,13 @@ module.exports = {
             ).includes(history.fixTime.getHours()) &&
             cyclone.analysisData.fix.indexOf(history)
           ) {
-            if (bars.at(-1))
+            if (bars.at(-1)) {
               bars
                 .at(-1)
                 .push(
                   CycloneLevelEmojis[getCycloneLevel(history.maxWindSpeed)],
                 );
+            }
             continue;
           }
 
@@ -160,8 +162,9 @@ module.exports = {
                 : [8, 20]
             ).includes(history.fixTime.getHours()) &&
             cyclone.analysisData.fix.indexOf(history)
-          )
+          ) {
             continue;
+          }
 
           switch (bars[cur].length) {
             case 3: {
@@ -197,8 +200,9 @@ module.exports = {
             `${bars[cur][3]} 　近中心最大風速 │ **${history.maxWindSpeed} m/s**`,
           );
 
-          if ((historyEmbed.data.fields?.length ?? 0) >= 25)
+          if ((historyEmbed.data.fields?.length ?? 0) >= 25) {
             historyEmbed.spliceFields(0, 1);
+          }
 
           historyEmbed.addFields({
             name: `${bars[cur][0]} **${getCycloneLevel(history.maxWindSpeed, history.coordinate)}** ${time(history.fixTime, TimestampStyles.ShortDate)} ${time(history.fixTime, TimestampStyles.ShortTime)}`,
@@ -221,12 +225,13 @@ module.exports = {
             ![8, 20].includes(forecast.fixTime.getHours()) &&
             cyclone.forecastData.fix.indexOf(forecast)
           ) {
-            if (bars.at(-1))
+            if (bars.at(-1)) {
               bars
                 .at(-1)
                 .push(
                   CycloneLevelEmojis[getCycloneLevel(forecast.maxWindSpeed)],
                 );
+            }
             continue;
           }
 
@@ -242,8 +247,9 @@ module.exports = {
             new Date(Date.now()).getDate() != forecast.fixTime.getDate() &&
             ![8, 20].includes(forecast.fixTime.getHours()) &&
             cyclone.forecastData.fix.indexOf(forecast)
-          )
+          ) {
             continue;
+          }
 
           switch (bars[cur].length) {
             case 3: {
@@ -276,10 +282,11 @@ module.exports = {
             `${bars[cur][2]} 　中心氣壓　　　 │ **${forecast.pressure} 百帕**`,
           );
 
-          if (forecast.maxWindSpeed)
+          if (forecast.maxWindSpeed) {
             str.push(
               `${bars[cur][3]} 　近中心最大風速 │ **${forecast.maxWindSpeed} m/s**`,
             );
+          }
 
           forecastEmbed.addFields({
             name: `${bars[cur][0]} **${getCycloneLevel(forecast.maxWindSpeed, forecast.coordinate)}** ${time(forecast.fixTime, TimestampStyles.ShortDate)} ${time(forecast.fixTime, TimestampStyles.ShortTime)}`,
@@ -320,26 +327,29 @@ module.exports = {
           componentType: ComponentType.Button,
         });
         collector.on("collect", async (inter) => {
-          if (inter.customId == "typhoon-main")
+          if (inter.customId == "typhoon-main") {
             await inter.update({
               embeds: cyclones[cycloneIndex].main,
               components: [pages],
             });
+          }
 
-          if (inter.customId == "typhoon-history")
+          if (inter.customId == "typhoon-history") {
             await inter.update({
               embeds: cyclones[cycloneIndex].history,
               components: [pages],
             });
+          }
 
-          if (inter.customId == "typhoon-forecast")
+          if (inter.customId == "typhoon-forecast") {
             await inter.update({
               embeds: cyclones[cycloneIndex].forecast,
               components: [pages],
             });
+          }
         });
       }
-    else
+    } else {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -347,21 +357,27 @@ module.exports = {
             .setColor(Colors.DarkGrey),
         ],
       });
+    }
   },
 };
 
 function getCycloneLevel(wind = 0, coord) {
   let coords;
 
-  if (coord) coords = parseCoordinate(coord);
+  if (coord) {
+    coords = parseCoordinate(coord);
+  }
 
   const index = [17.1, 32.6, 50.9]
     .concat([+wind])
     .sort((a, b) => a - b)
     .indexOf(+wind);
 
-  if (index == 0 && (coords?.latitude ?? 0) > 23.5) return "溫帶氣旋";
-  else return ["熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風"][index];
+  if (index == 0 && (coords?.latitude ?? 0) > 23.5) {
+    return "溫帶氣旋";
+  } else {
+    return ["熱帶性低氣壓", "輕度颱風", "中度颱風", "強烈颱風"][index];
+  }
 }
 
 function parseCoordinate(coord) {

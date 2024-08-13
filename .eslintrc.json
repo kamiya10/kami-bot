@@ -9,6 +9,7 @@
   },
   "plugins": ["require-sort"],
   "rules": {
-    "require-sort/require-sort": "warn"
+    "require-sort/require-sort": "warn",
+    "curly": ["warn", "all"]
   }
 }

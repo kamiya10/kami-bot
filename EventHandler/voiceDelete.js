@@ -12,11 +12,11 @@ module.exports = {
   async execute(client, oldState) {
     try {
       if (oldState.channel)
-        if (client.watchedChanels.has(oldState.channelId))
-          if (oldState.channel.members.filter((v) => !v.user.bot).size == 0) {
+        {if (client.watchedChanels.has(oldState.channelId))
+          {if (oldState.channel.members.filter((v) => !v.user.bot).size == 0) {
             client.watchedChanels.delete(oldState.channel.id);
             await oldState.channel.delete();
-          }
+          }}}
 
       return;
     } catch (e) {

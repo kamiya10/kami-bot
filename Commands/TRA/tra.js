@@ -1,20 +1,14 @@
 const {
   ActionRowBuilder,
-  AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
-  Collection,
   Colors,
   ComponentType,
   EmbedBuilder,
   SlashCommandBuilder,
-  SlashCommandIntegerOption,
-  SlashCommandNumberOption,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
-  TimestampStyles,
-  time,
 } = require("discord.js");
 const {
   TrainDirectionName,
@@ -24,7 +18,7 @@ const {
 const { cache } = require("../../Core/cache");
 
 const trainIcon = (type, number) => {
-  if ([TrainType.FastLocalTrain, TrainType.FastLocalTrain].includes(type))
+  if ([TrainType.FastLocalTrain, TrainType.FastLocalTrain].includes(type)) {
     if (
       [
         1006, 1007, 1038, 2005, 2007, 2008, 2013, 2015, 2016, 2028, 2036, 2037,
@@ -32,8 +26,10 @@ const trainIcon = (type, number) => {
         4003, 4006, 4007, 4017, 4019, 4021, 4022, 4024, 4026, 4027, 4028, 4029,
         4030, 4032, 4033, 4035, 4037, 4039, 4048, 4050,
       ].includes(+number)
-    )
+    ) {
       return "https://upload.cc/i1/2023/07/29/dRfwxC.png";
+    }
+  }
 
   return {
     [TrainType.TarokoExpress]: "https://upload.cc/i1/2023/07/29/KTaG7f.png",
@@ -50,35 +46,45 @@ const trainIcon = (type, number) => {
 const facilityIcon = (trainInfo) => {
   const str = [];
 
-  if (trainInfo.Note.includes("跨日"))
+  if (trainInfo.Note.includes("跨日")) {
     str.push("<:TRA_crossday:1135723683684560987> 跨日列車");
+  }
 
-  if (trainInfo.Note.includes("自由座"))
+  if (trainInfo.Note.includes("自由座")) {
     str.push("<:TRA_freeseat:1135590263620907060> 自由座");
+  }
 
-  if (trainInfo.Note.includes("騰雲座艙"))
+  if (trainInfo.Note.includes("騰雲座艙")) {
     str.push("<:TRA_bussiness:1135585152706289734> 騰雲座艙");
+  }
 
-  if (trainInfo.TrainTypeCode == TrainType.PuyumaExpress)
+  if (trainInfo.TrainTypeCode == TrainType.PuyumaExpress) {
     str.push("<:TRA_table:1135584917921738772> 桌型座");
+  }
 
-  if (trainInfo.DiningFlag)
+  if (trainInfo.DiningFlag) {
     str.push("<:TRA_lunchbox:1135584866843496649> 訂便當服務");
+  }
 
-  if (trainInfo.DailyFlag || trainInfo.Note.includes("每日行駛"))
+  if (trainInfo.DailyFlag || trainInfo.Note.includes("每日行駛")) {
     str.push("<:TRA_everyday:1135580865276153896> 每日列車");
+  }
 
-  if (trainInfo.Note.includes("親子車廂"))
+  if (trainInfo.Note.includes("親子車廂")) {
     str.push("<:TRA_parenting:1135581088488624158> 親子車廂");
+  }
 
-  if (trainInfo.BikeFlag)
+  if (trainInfo.BikeFlag) {
     str.push("<:TRA_bicycle:1135585523109478401> 可載運自行車");
+  }
 
-  if (trainInfo.BreastFeedFlag)
+  if (trainInfo.BreastFeedFlag) {
     str.push("<:TRA_nursing:1135581420895604919> 哺(集)乳室");
+  }
 
-  if (trainInfo.WheelChairFlag)
+  if (trainInfo.WheelChairFlag) {
     str.push("<:TRA_wheelchair:1135581477409656914> 身障旅客專用座位");
+  }
 
   return str.join("\n");
 };
@@ -87,7 +93,9 @@ const handleTrainNumberAutocomplete = async (interaction) => {
   const timetables = cache.get("trainTimetable");
   const focused = interaction.options.getFocused(true);
 
-  if (!timetables) return;
+  if (!timetables) {
+    return;
+  }
 
   const choice = timetables.TrainTimetables.map((v) => ({
     name: `${v.TrainInfo.TrainNo}次 ${v.TrainInfo.TripHeadSign} ${TrainTypeName[v.TrainInfo.TrainTypeCode]}`,
@@ -104,7 +112,9 @@ const handleTrackDepartureAutocomplete = async (interaction) => {
     (v) => v.TrainInfo.TrainNo == interaction.options.getString("number"),
   );
 
-  if (!timetable) return;
+  if (!timetable) {
+    return;
+  }
 
   const focused = interaction.options.getFocused(true);
   const choice = timetable.StopTimes.map((v) => ({
@@ -131,12 +141,16 @@ const handleTrackArrivalAutocomplete =
       (v) => v.TrainInfo.TrainNo == interaction.options.getString("number"),
     );
 
-    if (!timetable) return;
+    if (!timetable) {
+      return;
+    }
 
     const focused = interaction.options.getFocused(true);
     const departure = interaction.options.getString("departure");
 
-    if (!departure) return;
+    if (!departure) {
+      return;
+    }
 
     const choice = timetable.StopTimes.map((v) => ({
       name: `${v.StopSequence}. ${v.StationName.Zh_tw} ${v.StationID}`,
@@ -186,7 +200,9 @@ const handleTimetableCommands =
 
           const chunkIndex = Math.floor(index / 15);
 
-          if (!acc[chunkIndex]) acc[chunkIndex] = [];
+          if (!acc[chunkIndex]) {
+            acc[chunkIndex] = [];
+          }
 
           acc[chunkIndex].push(item);
           return acc;

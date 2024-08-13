@@ -22,7 +22,7 @@ for (const category of commandCategories) {
   for (const file of commandFiles) {
     const command = require(`./Commands/${category}/${file}`);
 
-    if (command.dev) commands.push(command.data.toJSON());
+    if (command.dev) {commands.push(command.data.toJSON());}
   }
 }
 
@@ -33,7 +33,7 @@ const commandFiles = fs
 for (const file of commandFiles) {
   const command = require(`./Context/${file}`);
 
-  if (command.dev) commands.push(command.data.toJSON());
+  if (command.dev) {commands.push(command.data.toJSON());}
 }
 
 console.log(`Commands Length: ${commands.length}`);
@@ -55,7 +55,7 @@ client.once("ready", async () => {
         client.guilds.cache.get("810931443206848544").commands.set(commands),
         client.guilds.cache.get("597227484550791209").commands.set(commands),
       ])
-        promise
+        {promise
           .then(() => {
             count++;
             progress.update(count + errcount);
@@ -74,7 +74,7 @@ client.once("ready", async () => {
               progress.stop();
               resolve(true);
             }
-          });
+          });}
     })
   ) {
     console.log(

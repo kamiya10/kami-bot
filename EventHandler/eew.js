@@ -38,9 +38,9 @@ module.exports = {
    * @param {import("discord.js").Message} message The created message
    */
   execute(client, message) {
-    if (message.channelId != "948508570138329098") return;
+    if (message.channelId != "948508570138329098") {return;}
 
-    if (message.author.id == client.user.id) return;
+    if (message.author.id == client.user.id) {return;}
 
     try {
       /**
@@ -48,7 +48,7 @@ module.exports = {
        */
       const event = JSON.parse(message.content);
 
-      if (event.topic != "CWA_EEW") return;
+      if (event.topic != "CWA_EEW") {return;}
       logger.debug(`${this.name} triggered`);
 
       const GuildSetting = client.database.GuildDatabase.getAll([
@@ -203,7 +203,7 @@ module.exports = {
           isMessageAllSent[data.id] = true;
         } else if (data.type == "Update") {
           while (true)
-            if (isMessageAllSent[data.id]) {
+            {if (isMessageAllSent[data.id]) {
               ongoingMsgIds[data.id].forEach(async (m) => {
                 try {
                   await m.edit({ embeds: [embed] });
@@ -212,11 +212,11 @@ module.exports = {
                 }
               });
               break;
-            }
+            }}
         }
       });
     } catch (e) {
-      if (!e.message.startsWith("Unexpected token")) console.error(e);
+      if (!e.message.startsWith("Unexpected token")) {console.error(e);}
     }
   },
 };
@@ -410,7 +410,7 @@ function toDegrees(radians) {
 const getNearest = (expected) => {
   const all = [];
   for (const city in expected)
-    for (const town in expected[city]) all.push(expected[city][town]);
+    {for (const town in expected[city]) {all.push(expected[city][town]);}}
   return all.sort((a, b) => a.distance - b.distance)[0];
 };
 
@@ -419,7 +419,7 @@ const getAllMaxIntensity = (expected) => {
 
   for (const city in expected) {
     all[city] ??= [];
-    for (const town in expected[city]) all[city].push(expected[city][town]);
+    for (const town in expected[city]) {all[city].push(expected[city][town]);}
     all[city] = all[city].sort((a, b) => b.pga - a.pga)[0];
   }
 
@@ -429,7 +429,7 @@ const getAllMaxIntensity = (expected) => {
 const getMaxIntensity = (expected) => {
   const all = [];
   for (const city in expected)
-    for (const town in expected[city]) all.push(expected[city][town]);
+    {for (const town in expected[city]) {all.push(expected[city][town]);}}
   return all.sort((a, b) => b.pga - a.pga)[0];
 };
 

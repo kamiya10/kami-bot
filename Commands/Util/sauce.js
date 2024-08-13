@@ -2,12 +2,9 @@ const {
   Colors,
   EmbedBuilder,
   SlashCommandAttachmentOption,
-  SlashCommandBooleanOption,
   SlashCommandBuilder,
-  SlashCommandUserOption,
 } = require("discord.js");
 const sagiri = require("sagiri")(process.env.SAUCENAO_KEY);
-const { inspect } = require("node:util");
 const tinycolor = require("tinycolor2");
 
 const white = tinycolor("white");
@@ -34,7 +31,7 @@ module.exports = {
   async execute(interaction) {
     const image = interaction.options.getAttachment("圖片", true);
 
-    if (!image.contentType?.startsWith("image"))
+    if (!image.contentType?.startsWith("image")) {
       return await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -44,6 +41,7 @@ module.exports = {
             .setFooter({ text: "ERR_FILE_TYPE" }),
         ],
       });
+    }
 
     const results = await sagiri(image.url);
 
@@ -60,7 +58,7 @@ module.exports = {
         .setURL(`https://saucenao.com/search.php?db=999&url=${image.url}`),
     ];
 
-    for (const result of results)
+    for (const result of results) {
       try {
         let description = "";
 
@@ -70,7 +68,9 @@ module.exports = {
             : `作者：${result.authorName}`
           : "";
 
-        if (description.length) description += "\n";
+        if (description.length) {
+          description += "\n";
+        }
 
         description +=
           "ext_urls" in result.raw.data
@@ -98,7 +98,9 @@ module.exports = {
           .setDescription(description)
           .setURL(result.url);
 
-        if (description.length) embed.setDescription(description);
+        if (description.length) {
+          embed.setDescription(description);
+        }
 
         embeds.push(embed);
       } catch (error) {
@@ -108,6 +110,7 @@ module.exports = {
             .setDescription(`剖析結果時發生錯誤：${error}`),
         );
       }
+    }
 
     await interaction.editReply({ embeds });
   },

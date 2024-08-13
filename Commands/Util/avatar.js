@@ -124,12 +124,12 @@ module.exports = {
       .setTimestamp();
 
     if (!error)
-      embed
+      {embed
         .setTitle(
           `${member ? `${member.displayName} ` : "你"}的${displayGuild ? "伺服器" : ""}頭貼`,
         )
-        .setDescription(md);
-    else embed.setDescription(error);
+        .setDescription(md);}
+    else {embed.setDescription(error);}
 
     await interaction.editReply({ embeds: [embed] });
   },

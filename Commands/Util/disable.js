@@ -67,10 +67,10 @@ module.exports = {
     );
 
     if (!UserSettings)
-      interaction.client.database.UserDatabase.set(
+      {interaction.client.database.UserDatabase.set(
         interaction.user.id,
         UserDatabaseModel(),
-      );
+      );}
 
     UserSettings = interaction.client.database.UserDatabase.get(
       interaction.user.id,

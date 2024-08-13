@@ -42,7 +42,7 @@ module.exports = {
    */
   execute(client, data) {
     if (!client.data.rts_list.has(data.id))
-      client.data.rts_list.set(data.id, new Collection());
+      {client.data.rts_list.set(data.id, new Collection());}
 
     const GuildSetting = client.database.GuildDatabase.getAll([
       "rts_channel",
@@ -79,7 +79,7 @@ module.exports = {
       });
 
     if (Object.keys(data.list).length)
-      if (Object.keys(data.list).length > 10) {
+      {if (Object.keys(data.list).length > 10) {
         const uuids = Object.keys(data.list);
 
         /**
@@ -88,12 +88,12 @@ module.exports = {
         const int = {};
 
         for (let i = 0; i < uuids.length; i++)
-          if (
+          {if (
             data.list[uuids[i]] >
             (int[client.data.rts_stations.get(uuids[i]).area] ?? -1)
           )
-            int[client.data.rts_stations.get(uuids[i]).area] =
-              data.list[uuids[i]];
+            {int[client.data.rts_stations.get(uuids[i]).area] =
+              data.list[uuids[i]];}}
 
         embed.addFields({
           name: "各地最大測得震度",
@@ -118,7 +118,7 @@ module.exports = {
             )
             .join("\n"),
         });
-      }
+      }}
 
     logger.debug(
       `${chalk.magenta("[rts]")} ${data.alert ? chalk.redBright(data.id) : data.id} ${(data.cancel ? chalk.gray : chalk.yellow)(`#${data.number}`)}${chalk.gray(data.final ? "（最終報）" : "")}`,
@@ -133,24 +133,24 @@ module.exports = {
 
       const timer = () => {
         if (embed_cache[data.id].update) {
-          if (embed_cache[data.id].alert) button.setStyle(ButtonStyle.Primary);
+          if (embed_cache[data.id].alert) {button.setStyle(ButtonStyle.Primary);}
 
           for (const setting of rts_channels) {
             if (rts_channels[2] == true && embed_cache[data.id].alert != true)
-              continue;
+              {continue;}
 
             const message = client.data.rts_list.get(data.id).get(setting[0]);
 
             if (message) {
               if (message instanceof Message)
-                message
+                {message
                   .edit({
                     embeds: [embed_cache[data.id].embed],
                     components: [
                       new ActionRowBuilder({ components: [button] }),
                     ],
                   })
-                  .catch(console.error);
+                  .catch(console.error);}
             } else {
               const channel = client.channels.cache.get(setting[0]);
 
@@ -172,7 +172,7 @@ module.exports = {
                   .catch(console.error);
                 client.data.rts_list.get(data.id).set(setting[0], sent);
                 sent.then((v) => {
-                  if (!(v instanceof Message)) return;
+                  if (!(v instanceof Message)) {return;}
                   client.data.rts_list.get(data.id).set(setting[0], v);
                   const collector = v.createMessageComponentCollector({
                     componentType: ComponentType.Button,
@@ -274,7 +274,7 @@ module.exports = {
             const message = client.data.rts_list.get(data.id).get(setting[0]);
 
             if (message instanceof Message)
-              if (!embed_cache[data.id].cancelled) {
+              {if (!embed_cache[data.id].cancelled) {
                 message
                   .edit({
                     embeds: [embed_cache[data.id].embed],
@@ -289,14 +289,14 @@ module.exports = {
 
                   const ranking = [];
                   for (const index in embed_cache[data.id].felt)
-                    if (
+                    {if (
                       message.guild.members.cache.has(
                         embed_cache[data.id].felt[index].id,
                       )
                     )
-                      ranking.push(
+                      {ranking.push(
                         `${["🥇", "🥈", "🥉"][index] ?? `\`${+index + 1}.\``} ${message.guild.members.cache.get(embed_cache[data.id].felt[index].id)} ${index > 0 ? `+${parseFloat(((embed_cache[data.id].felt[index].timestamp - embed_cache[data.id].felt[index - 1].timestamp) / 1000).toFixed(2))}s` : ""}`,
-                      );
+                      );}}
 
                   if (ranking.length) {
                     const sendEmbed = new EmbedBuilder(endEmbed.data);
@@ -345,7 +345,7 @@ module.exports = {
                       .catch(() => void 0);
                   }
                 }
-              }
+              }}
           }
 
           clearInterval(embed_cache[data.id].timer);
@@ -354,7 +354,7 @@ module.exports = {
               const message = client.data.rts_list.get(data.id).get(setting[0]);
 
               if (message instanceof Message)
-                if (embed_cache[data.id].cancelled) message.delete();
+                {if (embed_cache[data.id].cancelled) {message.delete();}}
             }
 
             delete embed_cache[data.id];
@@ -380,15 +380,15 @@ module.exports = {
       embed_cache[data.id].lastTimestamp = data.timestamp;
 
       if (Object.keys(data.list).length)
-        for (const uuid in data.list)
-          if ((embed_cache[data.id].maxints[uuid] ?? -1) > data.list[uuid])
-            embed_cache[data.id].maxints[uuid] = data.list[uuid];
+        {for (const uuid in data.list)
+          {if ((embed_cache[data.id].maxints[uuid] ?? -1) > data.list[uuid])
+            {embed_cache[data.id].maxints[uuid] = data.list[uuid];}}}
 
-      if (data.cancel) embed_cache[data.id].cancelled = true;
+      if (data.cancel) {embed_cache[data.id].cancelled = true;}
 
-      if (data.alert) embed_cache[data.id].alert = true;
+      if (data.alert) {embed_cache[data.id].alert = true;}
 
-      if (data.cancel || data.final) embed_cache[data.id].end = true;
+      if (data.cancel || data.final) {embed_cache[data.id].end = true;}
     }
   },
 };

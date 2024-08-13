@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 const {
   ActionRowBuilder,
   ButtonBuilder,
@@ -345,7 +346,7 @@ function formatEarthquake(Earthquake, style = 0) {
 
       embeds.push(embed);
 
-      if (Earthquake.ShakemapImageURI) embeds.push(shakemap);
+      if (Earthquake.ShakemapImageURI) {embeds.push(shakemap);}
       embeds.push(pgvmap, pgamap);
       return { embeds, components: [url] };
     }

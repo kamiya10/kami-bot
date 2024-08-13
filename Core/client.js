@@ -1,9 +1,7 @@
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const KamiDatabase = require("../Database/KamiDatabase");
-const config = require("../config");
 const fs = require("fs");
 const path = require("path");
-const chalk = require("chalk");
 
 const KamiIntents = [
   GatewayIntentBits.MessageContent,
@@ -32,9 +30,11 @@ const eventFiles = fs
 for (const file of eventFiles) {
   const event = require(path.resolve(`./EventHandler/${file}`));
 
-  if (event.once)
+  if (event.once) {
     Kami.once(event.event, (...args) => event.execute(Kami, ...args));
-  else Kami.on(event.event, (...args) => event.execute(Kami, ...args));
+  } else {
+    Kami.on(event.event, (...args) => event.execute(Kami, ...args));
+  }
 }
 
 // #endregion
@@ -73,10 +73,11 @@ Kami.locale = {};
 
 for (const locale of fs
   .readdirSync("./Localization")
-  .filter((file) => file.endsWith(".json")))
+  .filter((file) => file.endsWith(".json"))) {
   Kami.locale[locale.slice(0, -5)] = require(
     path.resolve(`./Localization/${locale}`),
   );
+}
 
 // #endregion
 

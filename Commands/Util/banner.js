@@ -39,9 +39,10 @@ module.exports = {
   async execute(interaction) {
     const member =
       interaction.options.getMember("member") || interaction.member;
-    const displayGuild = interaction.options.getBoolean("guild");
 
-    if (member.partial) await member.fetch({ force: true });
+    if (member.partial) {
+      await member.fetch({ force: true });
+    }
 
     const bannerURLs = {
       png: interaction.user.bannerURL({
@@ -71,11 +72,13 @@ module.exports = {
       .setImage(bannerURL)
       .setTimestamp();
 
-    if (!error)
+    if (!error) {
       embed
         .setTitle(`${member ? `${member.displayName} ` : "你"}的個人檔案橫幅`)
         .setDescription(md);
-    else embed.setDescription(error);
+    } else {
+      embed.setDescription(error);
+    }
 
     await interaction.editReply({ embeds: [embed] });
   },

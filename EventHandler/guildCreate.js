@@ -12,7 +12,7 @@ module.exports = {
    */
   execute(client, guild) {
     if (!client.database.GuildDatabase.has(guild.id))
-      client.database.GuildDatabase.set(guild.id, GuildDatabaseModel());
+      {client.database.GuildDatabase.set(guild.id, GuildDatabaseModel());}
 
     guild.commands
       .set(

@@ -28,10 +28,10 @@ for (const category of commandCategories) {
   for (const file of commandFiles) {
     const command = require(`./Commands/${category}/${file}`);
 
-    if (command.dev) continue;
+    if (command.dev) {continue;}
 
-    if (command.global) globalCommands.push(command.data.toJSON());
-    else commands.push(command.data.toJSON());
+    if (command.global) {globalCommands.push(command.data.toJSON());}
+    else {commands.push(command.data.toJSON());}
   }
 }
 
@@ -42,8 +42,8 @@ const commandFiles = fs
 for (const file of commandFiles) {
   const command = require(`./Context/${file}`);
 
-  if (command.global) globalCommands.push(command.data.toJSON());
-  else commands.push(command.data.toJSON());
+  if (command.global) {globalCommands.push(command.data.toJSON());}
+  else {commands.push(command.data.toJSON());}
 }
 
 console.log("Starting command registration");

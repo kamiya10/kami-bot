@@ -1,8 +1,8 @@
 const {
   ApplicationCommandType,
   Colors,
-  EmbedBuilder,
   ContextMenuCommandBuilder,
+  EmbedBuilder,
 } = require("discord.js");
 
 module.exports = {
@@ -35,7 +35,7 @@ module.exports = {
     const content = interaction.targetMessage.content;
 
     if (interaction.targetMessage.member == null)
-      await interaction.guild.members.fetch({ force: true });
+      {await interaction.guild.members.fetch({ force: true });}
 
     if (!content.length) {
       embed.setColor(Colors.Red).setDescription("沒有可以變成名言的東西");

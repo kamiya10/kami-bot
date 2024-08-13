@@ -1,4 +1,4 @@
-const { ChannelType, Collection, Colors, EmbedBuilder } = require("discord.js");
+const { Colors, EmbedBuilder } = require("discord.js");
 const logger = require("../Core/logger");
 
 module.exports = {
@@ -51,13 +51,17 @@ module.exports = {
           );
         }
 
-        if (newState.channel?.send)
-          if (enter.length && newState.channel)
+        if (newState.channel?.send) {
+          if (enter.length && newState.channel) {
             await newState.channel.send({ embeds: enter }).catch(() => void 0);
+          }
+        }
 
-        if (oldState.channel?.send)
-          if (leave.length && oldState.channel)
+        if (oldState.channel?.send) {
+          if (leave.length && oldState.channel) {
             await oldState.channel.send({ embeds: leave }).catch(() => void 0);
+          }
+        }
       }
     } catch (e) {
       logger.error(

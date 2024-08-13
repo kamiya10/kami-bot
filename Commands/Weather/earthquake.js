@@ -223,10 +223,10 @@ module.exports = {
   async execute(interaction) {
     try {
       if (!interaction.client.database.GuildDatabase.has(interaction.guild.id))
-        interaction.client.database.GuildDatabase.set(
+        {interaction.client.database.GuildDatabase.set(
           interaction.guild.id,
           GuildDatabaseModel(),
-        );
+        );}
 
       const GuildSetting = interaction.client.database.GuildDatabase.get(
         interaction.guild.id,
@@ -254,11 +254,11 @@ module.exports = {
             });
 
             while (true)
-              if (
+              {if (
                 interaction.client.data.quake_data &&
                 interaction.client.data.quake_data_s
               )
-                break;
+                {break;}}
           }
 
           let messagedata = formatEarthquake(
@@ -323,13 +323,13 @@ module.exports = {
             ) &&
             !bypass
           )
-            throw { message: "ERR_PERMISSION_DENIED" };
+            {throw { message: "ERR_PERMISSION_DENIED" };}
           const channel = interaction.options.getChannel("channel");
           const style = interaction.options.getInteger("style");
           const small = interaction.options.getBoolean("unnumbered");
 
           if (channel)
-            if (
+            {if (
               !channel
                 .permissionsFor(interaction.guild.members.me)
                 .has([
@@ -337,17 +337,17 @@ module.exports = {
                   PermissionFlagsBits.EmbedLinks,
                 ])
             )
-              throw { message: "ERR_MISSING_PERMISSION" };
+              {throw { message: "ERR_MISSING_PERMISSION" };}}
 
           let desc = "";
 
-          if (channel) desc += `已將 **${channel}** 設為地震報告推播頻道`;
-          else desc += "已關閉地震報告推播功能";
+          if (channel) {desc += `已將 **${channel}** 設為地震報告推播頻道`;}
+          else {desc += "已關閉地震報告推播功能";}
 
           if (channel && style != undefined)
-            desc += `，報告樣式為 **${styles[style]}** `;
+            {desc += `，報告樣式為 **${styles[style]}** `;}
 
-          if (channel) desc += `且 **${small ? "" : "不"}傳送** 無編號地震報告`;
+          if (channel) {desc += `且 **${small ? "" : "不"}傳送** 無編號地震報告`;}
           desc += "。";
 
           GuildSetting.quake_channel = channel?.id || null;
@@ -372,13 +372,13 @@ module.exports = {
             ) &&
             !bypass
           )
-            throw { message: "ERR_PERMISSION_DENIED" };
+            {throw { message: "ERR_PERMISSION_DENIED" };}
           const channel = interaction.options.getChannel("channel");
           const mention = interaction.options.getRole("mention");
           const alert = interaction.options.getBoolean("alert");
 
           if (channel)
-            if (
+            {if (
               !channel
                 .permissionsFor(interaction.guild.members.me)
                 .has([
@@ -386,15 +386,15 @@ module.exports = {
                   PermissionFlagsBits.EmbedLinks,
                 ])
             )
-              throw { message: "ERR_MISSING_PERMISSION" };
+              {throw { message: "ERR_MISSING_PERMISSION" };}}
 
           let desc = "";
 
-          if (channel) desc += `已將 **${channel}** 設為即時地震檢知頻道`;
-          else desc += "已關閉即時地震檢知功能";
+          if (channel) {desc += `已將 **${channel}** 設為即時地震檢知頻道`;}
+          else {desc += "已關閉即時地震檢知功能";}
 
           if (channel && mention != undefined)
-            desc += `，並將在 **${alert ? "警報" : "檢知"}** 發佈時提及 **${mention}**`;
+            {desc += `，並將在 **${alert ? "警報" : "檢知"}** 發佈時提及 **${mention}**`;}
           desc += "。";
 
           GuildSetting.rts_channel = channel?.id || null;
@@ -419,12 +419,12 @@ module.exports = {
             ) &&
             !bypass
           )
-            throw { message: "ERR_PERMISSION_DENIED" };
+            {throw { message: "ERR_PERMISSION_DENIED" };}
           const channel = interaction.options.getChannel("channel");
           const mention = interaction.options.getRole("mention");
 
           if (channel)
-            if (
+            {if (
               !channel
                 .permissionsFor(interaction.guild.members.me)
                 .has([
@@ -432,15 +432,15 @@ module.exports = {
                   PermissionFlagsBits.EmbedLinks,
                 ])
             )
-              throw { message: "ERR_MISSING_PERMISSION" };
+              {throw { message: "ERR_MISSING_PERMISSION" };}}
 
           let desc = "";
 
-          if (channel) desc += `已將 **${channel}** 設為強震即時警報頻道`;
-          else desc += "已關閉強震即時警報功能";
+          if (channel) {desc += `已將 **${channel}** 設為強震即時警報頻道`;}
+          else {desc += "已關閉強震即時警報功能";}
 
           if (channel && mention != undefined)
-            desc += `，並將在警報發佈時提及 **${mention}**`;
+            {desc += `，並將在警報發佈時提及 **${mention}**`;}
           desc += "。";
 
           GuildSetting.eew_channel = channel?.id || null;

@@ -314,16 +314,16 @@ module.exports = {
       );
 
       if (!GuildSettings)
-        interaction.client.database.GuildDatabase.set(
+        {interaction.client.database.GuildDatabase.set(
           interaction.guild.id,
           GuildDatabaseModel(),
-        );
+        );}
 
       if (!UserSettings)
-        interaction.client.database.UserDatabase.set(
+        {interaction.client.database.UserDatabase.set(
           interaction.user.id,
           UserDatabaseModel(),
-        );
+        );}
 
       const bypass = interaction.user.id == process.env.OWNER_ID;
 
@@ -336,7 +336,7 @@ module.exports = {
           ) &&
           !bypass
         )
-          throw { message: "ERR_PERMISSION_DENIED" };
+          {throw { message: "ERR_PERMISSION_DENIED" };}
 
         switch (sc) {
           case "資訊": {
@@ -349,7 +349,7 @@ module.exports = {
               .setColor(Colors.Blue);
 
             if (GuildSettings?.voice?.length)
-              GuildSettings?.voice.forEach(
+              {GuildSettings?.voice.forEach(
                 /**
                  * @param {{ creator: string, category: string, channelSettings: { name: string, bitrate: number, limit: number } }} v
                  * @param {number} i Index
@@ -363,7 +363,7 @@ module.exports = {
                   ).replace(/{.+}/g, (all) => placeholder[all] || all);
 
                   if (censor.check(finalName))
-                    finalName = censor.censor(finalName);
+                    {finalName = censor.censor(finalName);}
 
                   const chsetting = [];
 
@@ -372,7 +372,7 @@ module.exports = {
                   );
 
                   if (v.channelSettings.name)
-                    chsetting.push(`　　預設 | ${DEFAULT_CHANNEL_NAME}`);
+                    {chsetting.push(`　　預設 | ${DEFAULT_CHANNEL_NAME}`);}
                   chsetting.push(`　　預覽 │ ${finalName}`);
                   chsetting.push(
                     `　位元率 │ **${v.channelSettings.bitrate / 1000}** kbps`,
@@ -410,11 +410,11 @@ module.exports = {
                     .setTimestamp();
                   pages.push(embed);
                 },
-              );
+              );}
             else
-              pages.push(
+              {pages.push(
                 voice.setDescription("這個伺服器尚未設定自動語音頻道"),
-              );
+              );}
 
             if (pages.length > 1) {
               const ar = new ActionRowBuilder().addComponents(
@@ -477,12 +477,12 @@ module.exports = {
               });
               controller.on("end", async (reason) => {
                 if (reason == "idle")
-                  await sent.editReply({
+                  {await sent.editReply({
                     embeds: new EmbedBuilder(sent.embeds[0].data).setFooter({
                       text: "互動已逾時",
                     }),
                     components: [],
-                  });
+                  });}
               });
             } else {
               await interaction.editReply({
@@ -502,7 +502,7 @@ module.exports = {
               if (
                 GuildSettings?.voice.filter((v) => v.creator == vch.id).length
               )
-                throw { message: "ERR_ALREADY_EXISTED" };
+                {throw { message: "ERR_ALREADY_EXISTED" };}
 
               GuildSettings?.voice.push({
                 creator: vch.id,
@@ -563,7 +563,7 @@ module.exports = {
                 .map((v) => v.creator)
                 .indexOf(vch.id);
 
-              if (indexToDelete == -1) throw { message: "ERR_NOT_EXIST" };
+              if (indexToDelete == -1) {throw { message: "ERR_NOT_EXIST" };}
 
               GuildSettings.voice.splice(indexToDelete, 1);
               await interaction.client.database.GuildDatabase.save();
@@ -773,14 +773,14 @@ module.exports = {
         }
       } else {
         if (!interaction.member.voice.channel)
-          throw { message: "ERR_NOT_IN_VOICE" };
+          {throw { message: "ERR_NOT_IN_VOICE" };}
 
         if (
           !interaction.client.watchedChanels.has(
             interaction.member.voice.channelId,
           )
         )
-          throw { message: "ERR_NOT_WATCHED" };
+          {throw { message: "ERR_NOT_WATCHED" };}
 
         if (
           interaction.client.watchedChanels.get(
@@ -788,7 +788,7 @@ module.exports = {
           ).master != interaction.user.id &&
           !bypass
         )
-          throw { message: "ERR_NOT_MASTER" };
+          {throw { message: "ERR_NOT_MASTER" };}
 
         const setting = GuildSettings.voice.find(
           (o) =>
@@ -826,7 +826,7 @@ module.exports = {
                       )
                     : `${interaction.member.displayName} 的房間`;
 
-            if (censor.check(finalName)) finalName = censor.censor(finalName);
+            if (censor.check(finalName)) {finalName = censor.censor(finalName);}
 
             if (defa) {
               UserSettings.voice.name = name;
@@ -837,7 +837,7 @@ module.exports = {
 
             let desc = `已將頻道名稱設為 **${finalName}**`;
 
-            if (defa) desc += "，並將在創建語音頻道時使用此名稱";
+            if (defa) {desc += "，並將在創建語音頻道時使用此名稱";}
 
             desc += "。";
 
@@ -873,7 +873,7 @@ module.exports = {
 
             let desc = `已將頻道人數上限設為 **${finalLimit || "`無限制`"}**`;
 
-            if (defa) desc += "，並將在創建語音頻道時使用此人數上限";
+            if (defa) {desc += "，並將在創建語音頻道時使用此人數上限";}
 
             desc += "。";
 
@@ -911,7 +911,7 @@ module.exports = {
 
             let desc = `已將頻道位元率設為 **${guildBitrate / 1000} kbps** `;
 
-            if (defa) desc += "，並將在創建語音頻道時使用此位元率";
+            if (defa) {desc += "，並將在創建語音頻道時使用此位元率";}
 
             desc += "。";
 
@@ -944,7 +944,7 @@ module.exports = {
 
             let desc = `已將頻道地區覆寫設為 **${finalRegion}** `;
 
-            if (defa) desc += "，並將在創建語音頻道時使用此地區覆寫";
+            if (defa) {desc += "，並將在創建語音頻道時使用此地區覆寫";}
 
             desc += "。";
 
@@ -982,7 +982,7 @@ module.exports = {
 
             let desc = `已將頻道視訊畫質設為 **${qualityString[finalQuality]}** `;
 
-            if (defa) desc += "，並將在創建語音頻道時使用此視訊畫質";
+            if (defa) {desc += "，並將在創建語音頻道時使用此視訊畫質";}
 
             desc += "。";
 
@@ -1010,20 +1010,20 @@ module.exports = {
 
                 if (id == member.id) {
                   if (muted == undefined)
-                    muted = !v.deny.has(PermissionFlagsBits.Speak);
+                    {muted = !v.deny.has(PermissionFlagsBits.Speak);}
 
                   if (muted) {
                     if (!v.deny.has(PermissionFlagsBits.Speak))
-                      deny = v.deny.add(PermissionFlagsBits.Speak);
+                      {deny = v.deny.add(PermissionFlagsBits.Speak);}
 
                     if (v.allow.has(PermissionFlagsBits.Speak))
-                      allow = v.allow.remove(PermissionFlagsBits.Speak);
+                      {allow = v.allow.remove(PermissionFlagsBits.Speak);}
                   } else {
                     if (v.deny.has(PermissionFlagsBits.Speak))
-                      deny = v.deny.remove(PermissionFlagsBits.Speak);
+                      {deny = v.deny.remove(PermissionFlagsBits.Speak);}
 
                     if (!v.allow.has(PermissionFlagsBits.Speak))
-                      allow = v.allow.add(PermissionFlagsBits.Speak);
+                      {allow = v.allow.add(PermissionFlagsBits.Speak);}
                   }
                 } else {
                   allow = v.allow;
@@ -1039,14 +1039,14 @@ module.exports = {
                 member.id,
               )
             )
-              permission.push({ id: member.id, deny: 1n << 21n });
+              {permission.push({ id: member.id, deny: 1n << 21n });}
 
             await interaction.member.voice.channel.permissionOverwrites.set(
               permission,
             );
 
             if (member.voice.channelId == interaction.member.voice.channelId)
-              await member.voice.setChannel(member.voice.channel);
+              {await member.voice.setChannel(member.voice.channel);}
 
             await interaction.editReply({ content: "✅" });
             break;

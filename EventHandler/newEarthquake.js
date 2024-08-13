@@ -78,7 +78,7 @@ module.exports = {
       .map((v) => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
 
     if (channels?.length)
-      channels.forEach(async (ch) => {
+      {channels.forEach(async (ch) => {
         try {
           await client.channels.cache
             .get(ch[0])
@@ -87,6 +87,6 @@ module.exports = {
         } catch (e) {
           console.error(e);
         }
-      });
+      });}
   },
 };

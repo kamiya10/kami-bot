@@ -39,34 +39,34 @@ module.exports = {
         const permissions = [];
 
         if (channel.type != ChannelType.GuildAnnouncement)
-          return `~~\`${channel.id}\` ${channel}~~　❌ __**非 [公告頻道](https://support.discord.com/hc/zh-tw/articles/360032008192)**__`;
+          {return `~~\`${channel.id}\` ${channel}~~　❌ __**非 [公告頻道](https://support.discord.com/hc/zh-tw/articles/360032008192)**__`;}
 
         if (
           !channel
             .permissionsFor(interaction.guild.members.me)
             .has(PermissionFlagsBits.ViewChannel)
         )
-          permissions.push("**讀取訊息**");
+          {permissions.push("**讀取訊息**");}
 
         if (
           !channel
             .permissionsFor(interaction.guild.members.me)
             .has(PermissionFlagsBits.ManageMessages)
         )
-          permissions.push("**管理訊息**");
+          {permissions.push("**管理訊息**");}
 
         if (
           !channel
             .permissionsFor(interaction.guild.members.me)
             .has(PermissionFlagsBits.AddReactions)
         )
-          permissions.push("**新增反應**");
+          {permissions.push("**新增反應**");}
 
         return `${permissions.length ? "~~" : ""}\`${channel.id}\` ${channel}${permissions.length ? `~~　⚠️ __缺少 ${permissions.join("、")} 權限__` : "　✅ 已啟用"}`;
       });
 
-    if (autonews.length) embed.setDescription(autonews.join("\n"));
-    else embed.setDescription("*`這個伺服器尚未設定自動公告發佈頻道`*");
+    if (autonews.length) {embed.setDescription(autonews.join("\n"));}
+    else {embed.setDescription("*`這個伺服器尚未設定自動公告發佈頻道`*");}
 
     await interaction.editReply({ embeds: [embed] });
   },

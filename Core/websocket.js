@@ -20,7 +20,7 @@ function connect(client, retryTimeout) {
   });
 
   ws.on("error", (err) => {
-    if (!err.message.includes("521")) logger.error(err);
+    if (!err.message.includes("521")) {logger.error(err);}
   });
 
   ws.on("open", () => {
@@ -31,7 +31,7 @@ function connect(client, retryTimeout) {
         clearInterval(ping);
         clearTimeout(heartbeat);
 
-        if (ws instanceof WebSocket) ws.terminate();
+        if (ws instanceof WebSocket) {ws.terminate();}
       }, 5_000);
     }, 20_000);
 
@@ -54,7 +54,7 @@ function connect(client, retryTimeout) {
 
     if (data.response != undefined) {
       if (data.response == "Connection Succeeded")
-        logger.info("WebSocket has connected");
+        {logger.info("WebSocket has connected");}
     } else {
       switch (data.type) {
         case "ntp": {

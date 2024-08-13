@@ -1,4 +1,4 @@
-const { AttachmentBuilder, Message } = require("discord.js");
+const { AttachmentBuilder } = require("discord.js");
 const formatEarthquake = require("../Functions/formatEarthquake");
 const logger = require("../Core/logger");
 
@@ -80,7 +80,7 @@ module.exports = {
       )
       .map((v) => [GuildSetting[v].quake_channel, GuildSetting[v].quake_style]);
 
-    if (channels?.length)
+    if (channels?.length) {
       channels.forEach((ch) => {
         try {
           client.channels.cache
@@ -91,5 +91,6 @@ module.exports = {
           console.error(e);
         }
       });
+    }
   },
 };

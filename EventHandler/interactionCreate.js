@@ -14,7 +14,7 @@ module.exports = {
         interaction.isAutocomplete()
       )
     )
-      return;
+      {return;}
 
     /**
      * @type {{data: import("discord.js").ApplicationCommandData, defer: boolean, execute: Promise}}
@@ -23,7 +23,7 @@ module.exports = {
       interaction.isMessageContextMenuCommand() ? "context" : "commands"
     ].get(interaction.commandName);
 
-    if (!command) return;
+    if (!command) {return;}
 
     try {
       if (interaction.isAutocomplete()) {
@@ -32,7 +32,7 @@ module.exports = {
       }
 
       if (command.defer)
-        await interaction.deferReply({ ephemeral: command.ephemeral });
+        {await interaction.deferReply({ ephemeral: command.ephemeral });}
 
       await command.execute(interaction);
     } catch (error) {

@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable array-bracket-newline */
 /* eslint-disable array-element-newline */
 const {
@@ -123,10 +124,13 @@ module.exports = {
       "00";
     const embedList = [];
 
-    if (warnList.includes("TY_NEWS")) addTyphoonNewsEmbed(embedList);
+    if (warnList.includes("TY_NEWS")) {
+      addTyphoonNewsEmbed(embedList);
+    }
 
-    if (warnList.includes("TY_WARN"))
+    if (warnList.includes("TY_WARN")) {
       addTyphoonWarnEmbed(embedList, warnings.TY_WARN);
+    }
 
     embedList.push(
       new EmbedBuilder()
@@ -215,7 +219,7 @@ module.exports = {
             )
             .setDisabled(true);
 
-          if (!_county_data || !_hazards)
+          if (!_county_data || !_hazards) {
             await i.editReply({
               embeds: [loading],
               components: [
@@ -223,21 +227,28 @@ module.exports = {
                 new ActionRowBuilder({ components: [town] }),
               ],
             });
+          }
 
-          if (!_county_data)
+          if (!_county_data) {
             _county_data = (await cwa_Forecast.forecast())?.records;
+          }
 
-          if (!_hazards) _hazards = (await cwa_Forecast.hazards())?.records;
+          if (!_hazards) {
+            _hazards = (await cwa_Forecast.hazards())?.records;
+          }
 
           const embeds = [];
 
-          if (warnList.includes("TY_NEWS")) addTyphoonNewsEmbed(embeds);
+          if (warnList.includes("TY_NEWS")) {
+            addTyphoonNewsEmbed(embeds);
+          }
 
-          if (warnList.includes("TY_WARN"))
+          if (warnList.includes("TY_WARN")) {
             addTyphoonWarnEmbed(embeds, warnings.TY_WARN);
+          }
 
-          for (const id in warnings)
-            if (warnings[id] && !Array.isArray(warnings[id]))
+          for (const id in warnings) {
+            if (warnings[id] && !Array.isArray(warnings[id])) {
               if (
                 !warnings[id].affectedAreas.length ||
                 warnings[id].affectedAreas.includes(_currentCounty)
@@ -287,6 +298,8 @@ module.exports = {
                     break;
                 }
               }
+            }
+          }
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(
@@ -296,7 +309,7 @@ module.exports = {
                 )?.length > 0,
             );
 
-            if (hazard_list.length > 0)
+            if (hazard_list.length > 0) {
               embeds.push(
                 ...hazard_list.map((e) =>
                   new EmbedBuilder()
@@ -308,6 +321,7 @@ module.exports = {
                     .setDescription(e.contents.content.contentText),
                 ),
               );
+            }
           }
 
           if (warnings.W33.length > 0) {
@@ -318,7 +332,7 @@ module.exports = {
                 ).length > 0,
             );
 
-            if (hazards_W33_list.length > 0)
+            if (hazards_W33_list.length > 0) {
               embeds.push(
                 ...hazards_W33_list.map((e) =>
                   new EmbedBuilder()
@@ -337,6 +351,7 @@ module.exports = {
                     ),
                 ),
               );
+            }
           }
 
           const forecast_embed = new EmbedBuilder()
@@ -399,8 +414,11 @@ module.exports = {
           await i.deferUpdate();
 
           if (_currentTown == "...") {
-            if (_currentTownPage) _currentTownPage = 0;
-            else _currentTownPage = 1;
+            if (_currentTownPage) {
+              _currentTownPage = 0;
+            } else {
+              _currentTownPage = 1;
+            }
 
             town = town.setOptions(
               CWAForecast.town_pages[_currentCounty][_currentTownPage].map(
@@ -458,13 +476,16 @@ module.exports = {
 
           const embeds = [];
 
-          if (warnList.includes("TY_NEWS")) addTyphoonNewsEmbed(embeds);
+          if (warnList.includes("TY_NEWS")) {
+            addTyphoonNewsEmbed(embeds);
+          }
 
-          if (warnList.includes("TY_WARN"))
+          if (warnList.includes("TY_WARN")) {
             addTyphoonWarnEmbed(embeds, warnings.TY_WARN);
+          }
 
-          for (const id in warnings)
-            if (warnings[id] && !Array.isArray(warnings[id]))
+          for (const id in warnings) {
+            if (warnings[id] && !Array.isArray(warnings[id])) {
               if (
                 !warnings[id].affectedAreas.length ||
                 warnings[id].affectedAreas.includes(_currentCounty)
@@ -514,6 +535,8 @@ module.exports = {
                     break;
                 }
               }
+            }
+          }
 
           if (_hazards.record.length > 0) {
             const hazard_list = _hazards.record.filter(
@@ -523,7 +546,7 @@ module.exports = {
                 ).length > 0,
             );
 
-            if (hazard_list.length > 0)
+            if (hazard_list.length > 0) {
               embeds.push(
                 ...hazard_list.map((e) =>
                   new EmbedBuilder()
@@ -535,6 +558,7 @@ module.exports = {
                     .setDescription(e.contents.content.contentText),
                 ),
               );
+            }
           }
 
           if (warnings.W33.length > 0) {
@@ -545,7 +569,7 @@ module.exports = {
                 ).length > 0,
             );
 
-            if (hazards_W33_list.length > 0)
+            if (hazards_W33_list.length > 0) {
               embeds.push(
                 ...hazards_W33_list.map((e) =>
                   new EmbedBuilder()
@@ -564,6 +588,7 @@ module.exports = {
                     ),
                 ),
               );
+            }
           }
 
           const location = _town_data.locations[0].location.find(
@@ -612,13 +637,15 @@ module.exports = {
                   )
                 : el.time;
 
-            if (!fields.length)
-              for (const t of time)
+            if (!fields.length) {
+              for (const t of time) {
                 fields.push({
                   name: `${timestamp(new Date(t.startTime), TimestampStyles.ShortDateTime)} ${emoji(t.elementValue[0].value, new Date(t.startTime).getHours() >= 18 || new Date(t.startTime).getHours() <= 3 ? "晚" : "")} **${t.elementValue[0].value}**`,
                   page: t.startTime,
                   value: "",
                 });
+              }
+            }
 
             const numericValues = time.map((v) => +v.elementValue[0].value);
 
@@ -670,8 +697,11 @@ module.exports = {
           for (const date of paging) {
             const page = new EmbedBuilder(forecast_embed.data);
 
-            for (const field of fields)
-              if (new Date(field.page).getDate() == date) page.addFields(field);
+            for (const field of fields) {
+              if (new Date(field.page).getDate() == date) {
+                page.addFields(field);
+              }
+            }
 
             pages.push(page);
 
@@ -714,12 +744,13 @@ module.exports = {
               1,
               pages[inter.customId.split("-")[1]],
             );
-            for (const index in buttons)
+            for (const index in buttons) {
               buttons[index].setStyle(
                 index == inter.customId.split("-")[1]
                   ? ButtonStyle.Primary
                   : ButtonStyle.Secondary,
               );
+            }
             buttons[inter.customId.split("-")[1]].setStyle(ButtonStyle.Primary);
             inter.update({
               embeds: newembeds,
@@ -744,16 +775,24 @@ function timeperiod(time) {
   if (now.getDate() == time.getDate()) {
     str += "今";
 
-    if (time.getHours() == 18) str += "晚";
-    else str += "日";
+    if (time.getHours() == 18) {
+      str += "晚";
+    } else {
+      str += "日";
+    }
   } else {
     str += "明日";
   }
 
-  if (str != "今晚")
-    if (time.getHours() == 6 || time.getHours() == 12) str += "白天";
-    else str += "晚上";
-  else str += "明晨";
+  if (str != "今晚") {
+    if (time.getHours() == 6 || time.getHours() == 12) {
+      str += "白天";
+    } else {
+      str += "晚上";
+    }
+  } else {
+    str += "明晨";
+  }
 
   return str;
 }
@@ -843,9 +882,9 @@ function addTyphoonWarnEmbed(arr, data) {
     "HeavyRain",
     "NoticeText",
     "NoteText",
-  ])
-    if (data[key].length)
-      if (Array.isArray(data[key]))
+  ]) {
+    if (data[key].length) {
+      if (Array.isArray(data[key])) {
         embed.addFields({
           name: {
             Movement: "颱風動態",
@@ -859,7 +898,7 @@ function addTyphoonWarnEmbed(arr, data) {
             .map((v) => `* ${v}`)
             .join("\n"),
         });
-      else
+      } else {
         embed.addFields({
           name: {
             Movement: "颱風動態",
@@ -871,6 +910,9 @@ function addTyphoonWarnEmbed(arr, data) {
           }[key],
           value: data[key],
         });
+      }
+    }
+  }
 
   arr.push(embed);
 }

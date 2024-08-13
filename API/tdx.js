@@ -72,11 +72,11 @@ class TRA {
         `?${query}`;
 
       fetch(url, { headers: this.requestHeader }).then((response) => {
-        if (response.ok) response.json().then(resolve);
+        if (response.ok) {response.json().then(resolve);}
         else
-          reject(
+          {reject(
             `Server responeded with status code ${response.status}: ${response.statusText}`,
-          );
+          );}
       });
     });
   }
@@ -87,11 +87,11 @@ class TRA {
       const url =
         Constants.BaseUrl + Constants.TRA.GeneralTrainTimetable + `?${query}`;
       fetch(url, { headers: this.requestHeader }).then((response) => {
-        if (response.ok) response.json().then(resolve);
+        if (response.ok) {response.json().then(resolve);}
         else
-          reject(
+          {reject(
             `Server responeded with status code ${response.status}: ${response.statusText}`,
-          );
+          );}
       });
     });
   }
@@ -106,11 +106,11 @@ class TRA {
         `?${query}`;
 
       fetch(url, { headers: this.requestHeader }).then((response) => {
-        if (response.ok) response.json().then(resolve);
+        if (response.ok) {response.json().then(resolve);}
         else
-          reject(
+          {reject(
             `Server responeded with status code ${response.status}: ${response.statusText}`,
-          );
+          );}
       });
     });
   }
@@ -160,11 +160,11 @@ class TDX {
       body: "grant_type=client_credentials",
     });
 
-    if (response.ok) return await response.json();
+    if (response.ok) {return await response.json();}
     else
-      throw new Error(
+      {throw new Error(
         `Server responeded with status code ${response.status}: ${response.statusText}`,
-      );
+      );}
   }
 }
 

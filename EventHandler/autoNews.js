@@ -10,11 +10,11 @@ module.exports = {
    */
   async execute(client, message) {
     if (message.channel.type == ChannelType.GuildAnnouncement)
-      if (message.channel.topic?.includes("[AutoNews]"))
-        if (!message.content.startsWith("-"))
-          if (message.crosspostable) {
+      {if (message.channel.topic?.includes("[AutoNews]"))
+        {if (!message.content.startsWith("-"))
+          {if (message.crosspostable) {
             await message.crosspost();
             await message.react("✅").catch(() => void 0);
-          }
+          }}}}
   },
 };
