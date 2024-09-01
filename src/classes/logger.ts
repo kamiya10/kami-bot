@@ -1,36 +1,49 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import chalk from "chalk";
+import c from "chalk";
 
-const now = () => {
-  const t = new Date(Date.now());
-  return `[${t.getFullYear()}/${`${t.getMonth() + 1}`.padStart(2, "0")}/${`${t.getDate()}`.padStart(2, "0")} ${`${t.getHours()}`.padStart(2, "0")}:${`${t.getMinutes()}`.padStart(2, "0")}:${`${t.getSeconds()}`.padStart(2, "0")}]`;
+const getCurrentTime = () => {
+  const time = new Date(Date.now());
+  return c.blackBright([
+    [
+      time.getFullYear(),
+      time.getMonth().toString().padStart(2, "0"),
+      time.getDate().toString().padStart(2, "0"),
+    ].join("/"),
+    [
+      time.getHours().toString().padStart(2, " "),
+      time.getMinutes().toString().padStart(2, "0"),
+      time.getSeconds().toString().padStart(2, "0"),
+    ].join(":"),
+  ].join(" "));
 };
 
 export class Logger {
-  static debug(...args: any[]) {
-    console.log(chalk.blackBright(now()), chalk.yellowBright("INFO:"), ...args);
+  static debug(message: string, ...args: any[]) {
+    console.debug(getCurrentTime(), c.cyan.italic("Debug"), c.gray.italic(message));
+    for (const arg of args) {
+      console.debug(c.gray.italic(Bun.inspect(arg, { colors: true })));
+    }
   }
 
   static info(...args: any[]) {
-    console.log(chalk.blackBright(now()), chalk.blueBright("INFO:"), ...args);
-  }
-
-  static success(...args: any[]) {
-    console.log(chalk.blackBright(now()), chalk.greenBright("SUCCESS:"), ...args);
+    console.log(getCurrentTime(), c.blueBright("Info"), ...args);
   }
 
   static warn(...args: any[]) {
-    console.warn(chalk.blackBright(now()), chalk.yellow("WARN:"), ...args);
+    console.warn(getCurrentTime(), c.yellow("Warn"), ...args);
   }
 
-  static error(...args: any[]) {
-    console.error(chalk.blackBright(now()), chalk.redBright("ERROR:"), ...args);
+  static error(message: string, ...args: any[]) {
+    console.error(getCurrentTime(), c.redBright("Error"), c.gray.italic(message));
+    for (const arg of args) {
+      console.error(arg);
+    }
   }
 
   static fatal(...args: any[]) {
-    console.log(chalk.blackBright(now()), chalk.whiteBright.bgRedBright.bold("FATAL:"), ...args);
+    console.log(getCurrentTime(), c.whiteBright.bgRedBright.bold("FATAL"), ...args);
   }
 
   static blank() {

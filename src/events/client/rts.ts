@@ -1,10 +1,11 @@
-import { KamiListener } from "../classes/listener";
-import { Logger } from "../classes/logger";
-import type { KamiClient } from "../classes/client";
-import type { Rts } from "@exptechtw/api-wrapper";
-import { Collection, EmbedBuilder, type Message } from "discord.js";
+import { Collection, EmbedBuilder } from "discord.js";
+import { Logger } from "@/classes/logger";
 
 import _codeTable from "@/resources/town_code.json";
+
+import type { KamiEventListener } from "@/events";
+import type { Message } from "discord.js";
+import type { Rts } from "@exptechtw/api-wrapper";
 
 type Location = {
   city: string;
@@ -48,11 +49,14 @@ const roundIntensity = (float: number) =>
               ? 8
               : 9;
 
-export const build = (client: KamiClient): KamiListener => new KamiListener("report")
-  .on("rts", (rts: Rts) => {
+const name = "rts";
+
+export default {
+  name,
+  on (rts: Rts) {
     Logger.info("rts", rts);
 
-    if (!client.states.data.stations) {
+    if (!this.states.data.stations) {
       Logger.warn("Skipping rts event as station data hasn't been fetched");
       return;
     }
@@ -60,18 +64,18 @@ export const build = (client: KamiClient): KamiListener => new KamiListener("rep
     /**
      * alias of `client.states.data.stations`
      */
-    const stations = client.states.data.stations;
+    const stations = this.states.data.stations;
 
     const townIntensityTable = Object.entries(rts.station)
       .filter(v => v[1].I < 0)
       .reduce<Record<number, number>>(
-        (acc, pair) => {
-          if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
-            acc[stations[pair[0]].info[0].code] = pair[1].I;
-          }
+      (acc, pair) => {
+        if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
+          acc[stations[pair[0]].info[0].code] = pair[1].I;
+        }
 
-          return acc;
-        }, {});
+        return acc;
+      }, {});
 
     Object.entries(townIntensityTable)
       .sort((a, b) => b[1] - a[1])
@@ -83,28 +87,28 @@ export const build = (client: KamiClient): KamiListener => new KamiListener("rep
 
     rtsCache.embed.setFields();
 
-    client.database.guild.forEach(guild => {
-      const rps = guild.earthquake.rts;
+    this.database.guild.forEach(guild => {
+      const rts = guild.earthquake.rts;
 
-      if (!rps.channelId) {
+      if (!rts.channelId) {
         return;
       }
 
-      const channel = client.channels.cache.get(rps.channelId);
+      const channel = this.channels.cache.get(rts.channelId);
 
       if (!channel || !channel.isTextBased() || channel.isDMBased()) {
-        rps.channelId = null;
+        rts.channelId = null;
         return;
       }
 
-      if (rtsCache.message.has(rps.channelId)) {
-        const message = rtsCache.message.get(rps.channelId);
+      if (rtsCache.message.has(rts.channelId)) {
+        const message = rtsCache.message.get(rts.channelId);
 
         if (!message) {
-          rtsCache.message.set(rps.channelId, channel
+          rtsCache.message.set(rts.channelId, channel
             .send({ embeds: [rtsCache.embed] })
-            .then(m => rtsCache.message.set(rps.channelId!, m))
-            .catch((e) => Logger.error(e)));
+            .then(m => rtsCache.message.set(rts.channelId!, m))
+            .catch((e) => Logger.error(`${e}`, e)));
           return;
         }
 
@@ -115,4 +119,5 @@ export const build = (client: KamiClient): KamiListener => new KamiListener("rep
         void message.edit({ embeds: [rtsCache.embed] });
       }
     });
-  });
+  },
+} as KamiEventListener<typeof name>;

@@ -1,19 +1,17 @@
-import { existsSync, mkdirSync } from "fs";
-import { join } from "path";
-import { writeFile } from "fs/promises";
-
 import {
   ExpTechApi,
   ExpTechWebsocket,
-  type Station,
   SupportedService,
   WebSocketEvent,
 } from "@exptechtw/api-wrapper";
 import { Collection } from "discord.js";
-
-import { CwaApi, type EarthquakeReport } from "@/api/cwa";
-import type { KamiClient } from "@/classes/client";
+import { CwaApi } from "@/api/cwa";
 import { Logger } from "@/classes/logger";
+import { join } from "path";
+
+import type { EarthquakeReport } from "@/api/cwa";
+import type { KamiClient } from "@/classes/client";
+import type { Station } from "@exptechtw/api-wrapper";
 
 const cwa = new CwaApi(process.env["CWA_TOKEN"]);
 
@@ -54,9 +52,7 @@ export class KamiStates {
       });
     } else {
       this.exptech = null;
-      Logger.warn(
-        "Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)"
-      );
+      Logger.warn("Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)");
     }
 
     this.setup();
@@ -128,19 +124,13 @@ export class KamiStates {
   async save() {
     Logger.info("Saving states...");
 
-    try {
-      if (!existsSync("./.cache")) {
-        mkdirSync("./.cache");
-      }
+    const file = Bun.file(join(this.client.cacheDirectory,"states.json"));
 
-      await writeFile(
-        join("./.cache", "states.json"),
-        JSON.stringify(this.toJSON()),
-        { encoding: "utf-8" }
-      );
+    try {
+      await Bun.write(file, JSON.stringify(this.toJSON()));
     } catch (error) {
-      Logger.error(error);
-      Logger.warn("States within this session is not saved.");
+      Logger.error(`Error while saving states: ${error}`, error);
+      Logger.warn("States within this session will be lost when the session ends.");
     }
   }
 

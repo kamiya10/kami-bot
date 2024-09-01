@@ -66,22 +66,26 @@ export class KamiDatabase {
 
 
   get user() {
+    const defaultUserConfig = {
+      voice: {
+        global: {
+          name: null,
+          bitrate: null,
+          limit: null,
+          region: null,
+        },
+      },
+    } as UserDataModel;
+
     const getter = (id: string): UserDataModel => {
       if (!this.database.user.data[id]) {
-        this.database.user.data[id] = {
-          voice: {
-            global: {
-              name: null,
-              bitrate: null,
-              limit: null,
-              region: null,
-            },
-          },
-        };
+        this.database.user.data[id] = defaultUserConfig;
       }
 
       return this.database.user.data[id];
     };
+
+    getter.default = defaultUserConfig;
 
     getter.forEach = (
       callback: (value: UserDataModel, id: string, index: number, data: Record<string, UserDataModel>) => void
