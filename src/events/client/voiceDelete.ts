@@ -1,4 +1,5 @@
-import { Events, VoiceChannel } from "discord.js";
+import { Events } from "@/classes/client";
+import { VoiceChannel } from "discord.js";
 
 import type { KamiEventListener } from "@/events";
 

@@ -60,6 +60,8 @@ export default [{
         "@stylistic/object-curly-newline": ["warn"],
         "@stylistic/space-infix-ops": ["warn"],
         "@stylistic/semi": ["warn", "always"],
+        "@stylistic/array-bracket-spacing": ["warn", "never"],
+        "@stylistic/comma-spacing": ["warn"],
 
         "sort-imports": ["warn", {
             allowSeparatedGroups: true,

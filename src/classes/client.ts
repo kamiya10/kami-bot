@@ -1,11 +1,11 @@
-import { Client, Collection, Events } from "discord.js";
+import { Client, Collection } from "discord.js";
 import { existsSync, readFileSync } from "fs";
 import { join, resolve } from "path";
 import { KamiStates } from "@/classes/states";
 import { Logger } from "@/classes/logger";
 import { SingleBar } from "cli-progress";
 
-import type { ClientOptions } from "discord.js";
+import type { ClientEvents, ClientOptions } from "discord.js";
 import type { GuildDataModel } from "@/databases/GuildDatabase";
 import type { KamiCommand } from "@/commands";
 import type { KamiDatabase } from "@/classes/database";
@@ -19,6 +19,91 @@ import events from "@/events";
 export interface ClientDatabase {
   guild: Low<Record<string, GuildDataModel>>;
   user: Low<Record<string, UserDataModel>>;
+}
+
+export enum Events {
+  ApplicationCommandPermissionsUpdate = "applicationCommandPermissionsUpdate",
+  AutoModerationActionExecution = "autoModerationActionExecution",
+  AutoModerationRuleCreate = "autoModerationRuleCreate",
+  AutoModerationRuleDelete = "autoModerationRuleDelete",
+  AutoModerationRuleUpdate = "autoModerationRuleUpdate",
+  ClientReady = "ready",
+  EntitlementCreate = "entitlementCreate",
+  EntitlementDelete = "entitlementDelete",
+  EntitlementUpdate = "entitlementUpdate",
+  GuildAuditLogEntryCreate = "guildAuditLogEntryCreate",
+  GuildAvailable = "guildAvailable",
+  GuildCreate = "guildCreate",
+  GuildDelete = "guildDelete",
+  GuildUpdate = "guildUpdate",
+  GuildUnavailable = "guildUnavailable",
+  GuildMemberAdd = "guildMemberAdd",
+  GuildMemberRemove = "guildMemberRemove",
+  GuildMemberUpdate = "guildMemberUpdate",
+  GuildMemberAvailable = "guildMemberAvailable",
+  GuildMembersChunk = "guildMembersChunk",
+  GuildIntegrationsUpdate = "guildIntegrationsUpdate",
+  GuildRoleCreate = "roleCreate",
+  GuildRoleDelete = "roleDelete",
+  InviteCreate = "inviteCreate",
+  InviteDelete = "inviteDelete",
+  GuildRoleUpdate = "roleUpdate",
+  GuildEmojiCreate = "emojiCreate",
+  GuildEmojiDelete = "emojiDelete",
+  GuildEmojiUpdate = "emojiUpdate",
+  GuildBanAdd = "guildBanAdd",
+  GuildBanRemove = "guildBanRemove",
+  ChannelCreate = "channelCreate",
+  ChannelDelete = "channelDelete",
+  ChannelUpdate = "channelUpdate",
+  ChannelPinsUpdate = "channelPinsUpdate",
+  MessageCreate = "messageCreate",
+  MessageDelete = "messageDelete",
+  MessageUpdate = "messageUpdate",
+  MessageBulkDelete = "messageDeleteBulk",
+  MessagePollVoteAdd = "messagePollVoteAdd",
+  MessagePollVoteRemove = "messagePollVoteRemove",
+  MessageReactionAdd = "messageReactionAdd",
+  MessageReactionRemove = "messageReactionRemove",
+  MessageReactionRemoveAll = "messageReactionRemoveAll",
+  MessageReactionRemoveEmoji = "messageReactionRemoveEmoji",
+  ThreadCreate = "threadCreate",
+  ThreadDelete = "threadDelete",
+  ThreadUpdate = "threadUpdate",
+  ThreadListSync = "threadListSync",
+  ThreadMemberUpdate = "threadMemberUpdate",
+  ThreadMembersUpdate = "threadMembersUpdate",
+  UserUpdate = "userUpdate",
+  PresenceUpdate = "presenceUpdate",
+  VoiceServerUpdate = "voiceServerUpdate",
+  VoiceStateUpdate = "voiceStateUpdate",
+  TypingStart = "typingStart",
+  WebhooksUpdate = "webhookUpdate",
+  InteractionCreate = "interactionCreate",
+  Error = "error",
+  Warn = "warn",
+  Debug = "debug",
+  CacheSweep = "cacheSweep",
+  ShardDisconnect = "shardDisconnect",
+  ShardError = "shardError",
+  ShardReconnecting = "shardReconnecting",
+  ShardReady = "shardReady",
+  ShardResume = "shardResume",
+  Invalidated = "invalidated",
+  Raw = "raw",
+  StageInstanceCreate = "stageInstanceCreate",
+  StageInstanceUpdate = "stageInstanceUpdate",
+  StageInstanceDelete = "stageInstanceDelete",
+  GuildStickerCreate = "stickerCreate",
+  GuildStickerDelete = "stickerDelete",
+  GuildStickerUpdate = "stickerUpdate",
+  GuildScheduledEventCreate = "guildScheduledEventCreate",
+  GuildScheduledEventUpdate = "guildScheduledEventUpdate",
+  GuildScheduledEventDelete = "guildScheduledEventDelete",
+  GuildScheduledEventUserAdd = "guildScheduledEventUserAdd",
+  GuildScheduledEventUserRemove = "guildScheduledEventUserRemove",
+  Rts = "rts",
+  Report = "report",
 }
 
 export class KamiClient extends Client {
@@ -58,11 +143,11 @@ export class KamiClient extends Client {
     for (const listener of events) {
       if (listener.on) {
         const on = listener.on;
-        this.on(listener.name, (...args) => void on.apply(this, args));
+        this.on(listener.name as keyof ClientEvents, (...args) => void on.apply(this, args));
       }
       if (listener.once) {
         const once = listener.once;
-        this.once(listener.name, (...args) => void once.apply(this, args));
+        this.once(listener.name as keyof ClientEvents, (...args) => void once.apply(this, args));
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Events } from "discord.js";
+import { Events } from "@/classes/client";
 import { Logger } from "@/classes/logger";
 
 import type { KamiEventListener } from "@/events";

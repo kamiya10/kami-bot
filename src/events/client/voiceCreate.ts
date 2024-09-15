@@ -1,4 +1,5 @@
-import { ChannelType, Events, GuildMember, VoiceChannel } from "discord.js";
+import { ChannelType, GuildMember, VoiceChannel } from "discord.js";
+import { Events } from "@/classes/client";
 
 import type { Guild } from "discord.js";
 import type { GuildDataModel } from "@/databases/GuildDatabase";

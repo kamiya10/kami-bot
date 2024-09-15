@@ -1,11 +1,11 @@
 import { Collection, EmbedBuilder } from "discord.js";
+import { Events } from "@/classes/client";
 import { Logger } from "@/classes/logger";
 
 import _codeTable from "@/resources/town_code.json";
 
 import type { KamiEventListener } from "@/events";
 import type { Message } from "discord.js";
-import type { Rts } from "@exptechtw/api-wrapper";
 
 type Location = {
   city: string;
@@ -49,11 +49,11 @@ const roundIntensity = (float: number) =>
               ? 8
               : 9;
 
-const name = "rts";
+const name = Events.Rts;
 
 export default {
   name,
-  on (rts: Rts) {
+  on(rts) {
     Logger.info("rts", rts);
 
     if (!this.states.data.stations) {
@@ -67,15 +67,14 @@ export default {
     const stations = this.states.data.stations;
 
     const townIntensityTable = Object.entries(rts.station)
-      .filter(v => v[1].I < 0)
-      .reduce<Record<number, number>>(
-      (acc, pair) => {
-        if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
-          acc[stations[pair[0]].info[0].code] = pair[1].I;
-        }
+      .filter((v) => v[1].I < 0)
+      .reduce<Record<number, number>>((acc, pair) => {
+      if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
+        acc[stations[pair[0]].info[0].code] = pair[1].I;
+      }
 
-        return acc;
-      }, {});
+      return acc;
+    }, {});
 
     Object.entries(townIntensityTable)
       .sort((a, b) => b[1] - a[1])
@@ -87,7 +86,7 @@ export default {
 
     rtsCache.embed.setFields();
 
-    this.database.guild.forEach(guild => {
+    this.database.guild.forEach((guild) => {
       const rts = guild.earthquake.rts;
 
       if (!rts.channelId) {
@@ -105,10 +104,13 @@ export default {
         const message = rtsCache.message.get(rts.channelId);
 
         if (!message) {
-          rtsCache.message.set(rts.channelId, channel
-            .send({ embeds: [rtsCache.embed] })
-            .then(m => rtsCache.message.set(rts.channelId!, m))
-            .catch((e) => Logger.error(`${e}`, e)));
+          rtsCache.message.set(
+            rts.channelId,
+            channel
+              .send({ embeds: [rtsCache.embed] })
+              .then((m) => rtsCache.message.set(rts.channelId!, m))
+              .catch((e) => Logger.error(`${e}`, e)),
+          );
           return;
         }
 
