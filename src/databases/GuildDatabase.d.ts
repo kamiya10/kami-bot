@@ -24,7 +24,7 @@ export interface RtsPushSetting {
 export interface GuildDataModel {
   voice: { global: GuildVoiceSettings } & Omit<
     Record<string, GuildVoiceSettings>,
-    "global"
+    'global'
   >;
   earthquake: {
     report: EarthquakeReportPushSetting[];

@@ -15,10 +15,15 @@
     "outDir": "dist",
     "rootDir": "src",
     "paths": {
+      "logger": ["./src/class/logger"],
+      "$/*": ["./src/commands/*"],
+      "$": ["./src/commands"],
       "#/*": ["./src/events/*"],
-      "&/*": ["./src/commands/*"],
+      "#": ["./src/events"],
       "@/*": ["./src/*"],
-      "~/*": ["./*"]
+      "@": ["./src"],
+      "~/*": ["./*"],
+      "~": ["."]
     },
 
     // Best practices

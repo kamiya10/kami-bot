@@ -1,36 +1,28 @@
-import { ExecutionResultType } from "@/commands";
-import { SlashCommandBuilder } from "discord.js";
-import { buildEarthquakeReportMessage } from "@/classes/utils";
+import { InteractionContextType, SlashCommandBuilder } from 'discord.js';
+import { buildEarthquakeReportMessage } from '@/class/utils';
 
-import type { KamiCommand } from "@/commands";
+import { KamiCommand } from '@/class/command';
 
 /**
  * The /avatar command.
  */
-export default {
-  data: new SlashCommandBuilder()
-    .setName("report")
-    .setDescription("地震報告"),
+export default new KamiCommand({
+  builder: new SlashCommandBuilder()
+    .setName('report')
+    .setDescription('地震報告')
+    .setContexts(InteractionContextType.Guild),
   defer: true,
   ephemeral: true,
-  global: true,
-  execute() {
+  async execute(interaction) {
     const report = this.states.report[0];
 
     if (report) {
-      const m = buildEarthquakeReportMessage(report, "simple");
-      return Promise.resolve({
-        type: ExecutionResultType.SingleSuccess,
-        payload: m,
-      });
+      const m = buildEarthquakeReportMessage(report, 'simple');
+      await interaction.editReply(m);
     }
 
-    return Promise.resolve({
-      type: ExecutionResultType.SingleSuccess,
-      payload: {
-        type: ExecutionResultType.SingleSuccess,
-        content: "目前沒有地震報告",
-      },
+    await interaction.editReply({
+      content: '目前沒有地震報告',
     });
   },
-} satisfies KamiCommand;
+});

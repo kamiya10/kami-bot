@@ -5,50 +5,48 @@ import {
   EmbedBuilder,
   GuildMember,
   ImageFormat,
+  InteractionContextType,
   SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandUserOption,
   hyperlink,
-} from "discord.js";
-import { $at } from "@/classes/utils";
-import { t as $t } from "i18next";
-import { ExecutionResultType } from "@/commands";
-
-import type { KamiCommand } from "@/commands";
+} from 'discord.js';
+import { $at } from '@/class/utils';
+import { t as $t } from 'i18next';
+import { KamiCommand } from '@/class/command';
 
 /**
  * The /banner command.
  * @returns {KamiCommand}
  */
-export default {
-  data: new SlashCommandBuilder()
-    .setName("banner")
-    .setNameLocalizations($at("slash:banner.NAME"))
-    .setDescription("Get the banner of a member.")
-    .setDescriptionLocalizations($at("slash:banner.DESC"))
-    .setDMPermission(false)
+export default new KamiCommand({
+  builder: new SlashCommandBuilder()
+    .setName('banner')
+    .setNameLocalizations($at('slash:banner.NAME'))
+    .setDescription('Get the banner of a member.')
+    .setDescriptionLocalizations($at('slash:banner.DESC'))
+    .setContexts(InteractionContextType.Guild)
     .addUserOption(new SlashCommandUserOption()
-      .setName("member")
-      .setNameLocalizations($at("slash:banner.OPTIONS.member.NAME"))
-      .setDescription("The member to get the banner of.")
-      .setDescriptionLocalizations($at("slash:banner.OPTIONS.member.DESC")))
+      .setName('member')
+      .setNameLocalizations($at('slash:banner.OPTIONS.member.NAME'))
+      .setDescription('The member to get the banner of.')
+      .setDescriptionLocalizations($at('slash:banner.OPTIONS.member.DESC')))
     .addBooleanOption(new SlashCommandBooleanOption()
-      .setName("server")
-      .setNameLocalizations($at("slash:banner.OPTIONS.server.NAME"))
-      .setDescription("Get the server specific banner.")
-      .setDescriptionLocalizations($at("slash:banner.OPTIONS.server.DESC"))),
+      .setName('server')
+      .setNameLocalizations($at('slash:banner.OPTIONS.server.NAME'))
+      .setDescription('Get the server specific banner.')
+      .setDescriptionLocalizations($at('slash:banner.OPTIONS.server.DESC'))),
   defer: true,
   ephemeral: true,
-  global: true,
   async execute(interaction) {
-    const member = interaction.options.getMember("member") ?? interaction.member;
+    const member = interaction.options.getMember('member') ?? interaction.member;
 
-    const urls = <Record<ImageFormat, string>>{};
+    const urls = {} as Record<ImageFormat, string>;
     const embed = new EmbedBuilder();
 
     if (member instanceof GuildMember) {
       embed.setAuthor({
-        name: $t("header:banner", {
+        name: $t('header:banner', {
           lng: interaction.locale,
           0: member.displayName,
         }),
@@ -82,22 +80,21 @@ export default {
         embed
           .setColor(Colors.Blue)
           .setDescription(
-            `**Image Formats:**\n${(["JPEG", "PNG", "WebP", "GIF"] as const)
+            `**Image Formats:**\n${(['JPEG', 'PNG', 'WebP', 'GIF'] as const)
               .map((format) => hyperlink(format, urls[ImageFormat[format]]))
-              .join("🔸")}`,
+              .join('🔸')}`,
           );
-      } else {
+      }
+      else {
         embed
           .setColor(Colors.Red)
-          .setDescription("❌ This member has no banner.");
+          .setDescription('❌ This member has no banner.');
       }
-    } else {
-      embed.setColor(Colors.Red).setDescription("❌ Member not found.");
+    }
+    else {
+      embed.setColor(Colors.Red).setDescription('❌ Member not found.');
     }
 
-    return Promise.resolve({
-      type: ExecutionResultType.SingleSuccess,
-      payload: { embeds: [embed] },
-    });
+    await interaction.editReply({ embeds: [embed] });
   },
-} satisfies KamiCommand;
+});

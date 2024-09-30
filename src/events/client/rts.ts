@@ -1,18 +1,17 @@
-import { Collection, EmbedBuilder } from "discord.js";
-import { Events } from "@/classes/client";
-import { Logger } from "@/classes/logger";
+import { Collection, EmbedBuilder } from 'discord.js';
+import { EventHandler } from '@/class/event';
 
-import _codeTable from "@/resources/town_code.json";
+import logger from 'logger';
+import _codeTable from '@/resources/town_code.json';
 
-import type { KamiEventListener } from "@/events";
-import type { Message } from "discord.js";
+import type { Message } from 'discord.js';
 
-type Location = {
+interface Location {
   city: string;
   town: string;
   lat: number;
   lng: number;
-};
+}
 
 const codeTable = _codeTable as Record<string, Location>;
 
@@ -22,16 +21,16 @@ const rtsCache = {
 };
 
 const intensityText = [
-  "０級",
-  "１級",
-  "２級",
-  "３級",
-  "４級",
-  "５弱",
-  "５強",
-  "６弱",
-  "６強",
-  "７級",
+  '０級',
+  '１級',
+  '２級',
+  '３級',
+  '４級',
+  '５弱',
+  '５強',
+  '６弱',
+  '６強',
+  '７級',
 ];
 
 const roundIntensity = (float: number) =>
@@ -49,15 +48,13 @@ const roundIntensity = (float: number) =>
               ? 8
               : 9;
 
-const name = Events.Rts;
-
-export default {
-  name,
+export default new EventHandler({
+  event: 'rts',
   on(rts) {
-    Logger.info("rts", rts);
+    logger.info('rts', rts);
 
     if (!this.states.data.stations) {
-      Logger.warn("Skipping rts event as station data hasn't been fetched");
+      logger.warn('Skipping rts event as station data hasn\'t been fetched');
       return;
     }
 
@@ -69,12 +66,12 @@ export default {
     const townIntensityTable = Object.entries(rts.station)
       .filter((v) => v[1].I < 0)
       .reduce<Record<number, number>>((acc, pair) => {
-      if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
-        acc[stations[pair[0]].info[0].code] = pair[1].I;
-      }
+        if (acc[stations[pair[0]].info[0].code] < pair[1].I) {
+          acc[stations[pair[0]].info[0].code] = pair[1].I;
+        }
 
-      return acc;
-    }, {});
+        return acc;
+      }, {});
 
     Object.entries(townIntensityTable)
       .sort((a, b) => b[1] - a[1])
@@ -109,7 +106,7 @@ export default {
             channel
               .send({ embeds: [rtsCache.embed] })
               .then((m) => rtsCache.message.set(rts.channelId!, m))
-              .catch((e) => Logger.error(`${e}`, e)),
+              .catch((e) => logger.error(`${e}`, e)),
           );
           return;
         }
@@ -122,4 +119,4 @@ export default {
       }
     });
   },
-} as KamiEventListener<typeof name>;
+});

@@ -1,6 +1,6 @@
-import type { ClientDatabase } from "@/classes/client";
-import type { GuildDataModel } from "@/databases/GuildDatabase";
-import type { UserDataModel } from "@/databases/UserDatabase";
+import type { ClientDatabase } from '@/class/client';
+import type { GuildDataModel } from '@/databases/GuildDatabase';
+import type { UserDataModel } from '@/databases/UserDatabase';
 
 export class KamiDatabase {
   database: ClientDatabase;
@@ -10,7 +10,6 @@ export class KamiDatabase {
   }
 
   get guild() {
-
     /**
      * Get Guild Data
      * @param {string} id Guild Id
@@ -38,7 +37,7 @@ export class KamiDatabase {
               channelId: null,
               autoDelete: true,
             },
-          }
+          },
         };
       }
 
@@ -46,7 +45,7 @@ export class KamiDatabase {
     };
 
     getter.forEach = (
-      callback: (value: GuildDataModel, id: string, index: number, data: Record<string, GuildDataModel>) => void
+      callback: (value: GuildDataModel, id: string, index: number, data: Record<string, GuildDataModel>) => void,
     ): void => {
       Object
         .entries(this.database.guild.data)
@@ -54,7 +53,7 @@ export class KamiDatabase {
     };
 
     getter.map = <T>(
-      callback: (value: GuildDataModel, id: string, index: number, data: Record<string, GuildDataModel>) => T
+      callback: (value: GuildDataModel, id: string, index: number, data: Record<string, GuildDataModel>) => T,
     ): T[] => {
       return Object
         .entries(this.database.guild.data)
@@ -63,7 +62,6 @@ export class KamiDatabase {
 
     return getter;
   }
-
 
   get user() {
     const defaultUserConfig = {
@@ -88,7 +86,7 @@ export class KamiDatabase {
     getter.default = defaultUserConfig;
 
     getter.forEach = (
-      callback: (value: UserDataModel, id: string, index: number, data: Record<string, UserDataModel>) => void
+      callback: (value: UserDataModel, id: string, index: number, data: Record<string, UserDataModel>) => void,
     ): void => {
       Object
         .entries(this.database.user.data)
@@ -96,7 +94,7 @@ export class KamiDatabase {
     };
 
     getter.map = <T>(
-      callback: (value: UserDataModel, id: string, index: number, data: Record<string, UserDataModel>) => T
+      callback: (value: UserDataModel, id: string, index: number, data: Record<string, UserDataModel>) => T,
     ): T[] => {
       return Object
         .entries(this.database.user.data)

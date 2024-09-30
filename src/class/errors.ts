@@ -1,4 +1,4 @@
-import type { InteractionReplyOptions, MessageCreateOptions } from "discord.js";
+import type { InteractionReplyOptions, MessageCreateOptions } from 'discord.js';
 
 export class SlashCommandRejectionError extends Error {
   payload: InteractionReplyOptions & MessageCreateOptions;

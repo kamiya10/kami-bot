@@ -5,49 +5,47 @@ import {
   EmbedBuilder,
   GuildMember,
   ImageFormat,
+  InteractionContextType,
   SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandUserOption,
   hyperlink,
-} from "discord.js";
-import { $at } from "@/classes/utils";
-import { t as $t } from "i18next";
-import { ExecutionResultType } from "@/commands";
-
-import type { KamiCommand } from "@/commands";
+} from 'discord.js';
+import { $at } from '@/class/utils';
+import { t as $t } from 'i18next';
+import { KamiCommand } from '@/class/command';
 
 /**
  * The /avatar command.
  */
-export default {
-  data: new SlashCommandBuilder()
-    .setName("avatar")
-    .setNameLocalizations($at("slash:avatar.NAME"))
-    .setDescription("Get the avatar of a member.")
-    .setDescriptionLocalizations($at("slash:avatar.DESC"))
-    .setDMPermission(false)
+export default new KamiCommand({
+  builder: new SlashCommandBuilder()
+    .setName('avatar')
+    .setNameLocalizations($at('slash:avatar.NAME'))
+    .setDescription('Get the avatar of a member.')
+    .setDescriptionLocalizations($at('slash:avatar.DESC'))
+    .setContexts(InteractionContextType.Guild)
     .addUserOption(new SlashCommandUserOption()
-      .setName("member")
-      .setNameLocalizations($at("slash:avatar.OPTIONS.member.NAME"))
-      .setDescription("The member to get the avatar of.")
-      .setDescriptionLocalizations($at("slash:avatar.OPTIONS.member.DESC")))
+      .setName('member')
+      .setNameLocalizations($at('slash:avatar.OPTIONS.member.NAME'))
+      .setDescription('The member to get the avatar of.')
+      .setDescriptionLocalizations($at('slash:avatar.OPTIONS.member.DESC')))
     .addBooleanOption(new SlashCommandBooleanOption()
-      .setName("server")
-      .setNameLocalizations($at("slash:avatar.OPTIONS.server.NAME"))
-      .setDescription("Get the server specific avatar.")
-      .setDescriptionLocalizations($at("slash:avatar.OPTIONS.server.DESC"))),
+      .setName('server')
+      .setNameLocalizations($at('slash:avatar.OPTIONS.server.NAME'))
+      .setDescription('Get the server specific avatar.')
+      .setDescriptionLocalizations($at('slash:avatar.OPTIONS.server.DESC'))),
   defer: true,
   ephemeral: true,
-  global: true,
   async execute(interaction) {
-    const member = interaction.options.getMember("member") ?? interaction.member;
-    const server = interaction.options.getBoolean("server");
-    const urls = <Record<ImageFormat, string>>{};
+    const member = interaction.options.getMember('member') ?? interaction.member;
+    const server = interaction.options.getBoolean('server');
+    const urls = {} as Record<ImageFormat, string>;
     const embed = new EmbedBuilder();
 
     if (member instanceof GuildMember) {
       embed.setAuthor({
-        name: $t("header:avatar", {
+        name: $t('header:avatar', {
           lng: interaction.locale,
           0: member.displayName,
         }),
@@ -56,7 +54,7 @@ export default {
 
       await member.fetch(true);
 
-      if (typeof server == "boolean") {
+      if (typeof server == 'boolean') {
         if (server) {
           if (member.avatar) {
             embed.setThumbnail(member.avatarURL({ size: 256 }));
@@ -79,12 +77,14 @@ export default {
               extension: ImageFormat.GIF,
               size: 4096,
             })!;
-          } else {
+          }
+          else {
             embed
               .setColor(Colors.Red)
-              .setDescription("❌ This member has no server specific avatar.");
+              .setDescription('❌ This member has no server specific avatar.');
           }
-        } else {
+        }
+        else {
           embed.setThumbnail(member.user.displayAvatarURL({ size: 256 }));
           urls.jpeg = member.user.displayAvatarURL({
             extension: ImageFormat.JPEG,
@@ -106,7 +106,8 @@ export default {
             size: 4096,
           });
         }
-      } else {
+      }
+      else {
         embed.setThumbnail(member.displayAvatarURL({ size: 256 }));
         urls.jpeg = member.displayAvatarURL({
           extension: ImageFormat.JPEG,
@@ -132,17 +133,17 @@ export default {
       embed
         .setColor(Colors.Blue)
         .setDescription(
-          `**Image Formats:**\n${(["JPEG", "PNG", "WebP", "GIF"] as const)
+          `**Image Formats:**\n${(['JPEG', 'PNG', 'WebP', 'GIF'] as const)
             .map((format) => hyperlink(format, urls[ImageFormat[format]]))
-            .join("🔸")}`,
+            .join('🔸')}`,
         );
-    } else {
-      embed.setColor(Colors.Red).setDescription("❌ Member not found.");
+    }
+    else {
+      embed.setColor(Colors.Red).setDescription('❌ Member not found.');
     }
 
-    return Promise.resolve({
-      type: ExecutionResultType.SingleSuccess,
-      payload: { embeds: [embed] },
+    await interaction.editReply({
+      embeds: [embed],
     });
   },
-} satisfies KamiCommand;
+});

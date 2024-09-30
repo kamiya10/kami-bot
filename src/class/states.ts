@@ -3,17 +3,17 @@ import {
   ExpTechWebsocket,
   SupportedService,
   WebSocketEvent,
-} from "@exptechtw/api-wrapper";
-import { Collection } from "discord.js";
-import { CwaApi } from "@/api/cwa";
-import { Logger } from "@/classes/logger";
-import { join } from "path";
+} from '@exptechtw/api-wrapper';
+import { Collection } from 'discord.js';
+import { CwaApi } from '@/api/cwa';
+import { join } from 'path';
 
-import type { EarthquakeReport } from "@/api/cwa";
-import type { KamiClient } from "@/classes/client";
-import type { Station } from "@exptechtw/api-wrapper";
+import type { EarthquakeReport } from '@/api/cwa';
+import type { KamiClient } from '@/class/client';
+import type { Station } from '@exptechtw/api-wrapper';
+import logger from 'logger';
 
-const cwa = new CwaApi(process.env["CWA_TOKEN"]);
+const cwa = new CwaApi(process.env['CWA_TOKEN']);
 
 interface KamiVoiceState {
   creatorId: string;
@@ -45,14 +45,15 @@ export class KamiStates {
     this.client = client;
     this.voice = new Collection(data?.voice);
 
-    if (process.env["EXPTECH_TOKEN"]) {
+    if (process.env['EXPTECH_TOKEN']) {
       this.exptech = new ExpTechWebsocket({
-        key: process.env["EXPTECH_TOKEN"],
+        key: process.env['EXPTECH_TOKEN'],
         service: [SupportedService.RealtimeStation, SupportedService.Eew],
       });
-    } else {
+    }
+    else {
       this.exptech = null;
-      Logger.warn("Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)");
+      logger.warn('Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)');
     }
 
     this.setup();
@@ -66,11 +67,11 @@ export class KamiStates {
         }
 
         if (
-          this.report.length &&
-          this.report[0].EarthquakeInfo.OriginTime !=
-            v[0].EarthquakeInfo.OriginTime
+          this.report.length
+          && this.report[0].EarthquakeInfo.OriginTime
+          != v[0].EarthquakeInfo.OriginTime
         ) {
-          this.client.emit("report", v[0]);
+          this.client.emit('report', v[0]);
         }
 
         this.report = v;
@@ -82,11 +83,11 @@ export class KamiStates {
         }
 
         if (
-          this.numberedReport.length &&
-          this.numberedReport[0].EarthquakeInfo.OriginTime !=
-            v[0].EarthquakeInfo.OriginTime
+          this.numberedReport.length
+          && this.numberedReport[0].EarthquakeInfo.OriginTime
+          != v[0].EarthquakeInfo.OriginTime
         ) {
-          this.client.emit("report", v[0]);
+          this.client.emit('report', v[0]);
         }
 
         this.numberedReport = v;
@@ -105,8 +106,7 @@ export class KamiStates {
 
         let alertCount = 0;
 
-        for (let index = 0; index < entries.length; index++) {
-          const [, data] = entries[index];
+        for (const [, data] of entries) {
           if (data.alert) {
             alertCount++;
           }
@@ -116,21 +116,22 @@ export class KamiStates {
           return;
         }
 
-        this.client.emit("rts", rts);
+        this.client.emit('rts', rts);
       });
     }
   }
 
   async save() {
-    Logger.info("Saving states...");
+    logger.info('Saving states...');
 
-    const file = Bun.file(join(this.client.cacheDirectory,"states.json"));
+    const file = Bun.file(join(this.client.cacheDirectory, 'states.json'));
 
     try {
       await Bun.write(file, JSON.stringify(this.toJSON()));
-    } catch (error) {
-      Logger.error(`Error while saving states: ${error}`, error);
-      Logger.warn("States within this session will be lost when the session ends.");
+    }
+    catch (error) {
+      logger.error(`Error while saving states:`, error);
+      logger.warn('States within this session will be lost when the session ends.');
     }
   }
 

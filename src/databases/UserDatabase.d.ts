@@ -6,7 +6,7 @@ declare interface VoiceSettings {
 }
 
 export interface UserDataModel {
-  voice: { global: VoiceSettings } & Omit<Record<string, VoiceSettings>, "global">;
+  voice: { global: VoiceSettings } & Omit<Record<string, VoiceSettings>, 'global'>;
 }
 
 export type UserDatabase = Record<string, UserDataModel>;

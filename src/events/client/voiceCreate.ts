@@ -1,18 +1,17 @@
-import { ChannelType, GuildMember, VoiceChannel } from "discord.js";
-import { Events } from "@/classes/client";
+import { ChannelType, GuildMember, VoiceChannel } from 'discord.js';
 
-import type { Guild } from "discord.js";
-import type { GuildDataModel } from "@/databases/GuildDatabase";
-import type { KamiEventListener } from "@/events";
-import type { UserDataModel } from "@/databases/UserDatabase";
+import type { Guild } from 'discord.js';
+import type { GuildDataModel } from '@/databases/GuildDatabase';
+import type { UserDataModel } from '@/databases/UserDatabase';
+import { EventHandler } from '@/class/event';
 
 const getName = (
-  uvd: UserDataModel["voice"],
-  gvd: GuildDataModel["voice"],
+  uvd: UserDataModel['voice'],
+  gvd: GuildDataModel['voice'],
   channelId: string,
   guildId: string,
 ): string => {
-  let name = "{displayName}'s Room";
+  let name = '{displayName}\'s Room';
 
   if (gvd.global.name != null) {
     name = gvd.global.name;
@@ -26,7 +25,7 @@ const getName = (
     name = uvd.global.name;
   }
 
-  if (uvd[guildId] && uvd[guildId].name != null) {
+  if (uvd[guildId]?.name != null) {
     name = uvd[guildId].name!;
   }
 
@@ -38,8 +37,8 @@ const getName = (
 };
 
 const getBitrate = (
-  uvd: UserDataModel["voice"],
-  gvd: GuildDataModel["voice"],
+  uvd: UserDataModel['voice'],
+  gvd: GuildDataModel['voice'],
   channelId: string,
   guild: Guild,
 ): number => {
@@ -47,19 +46,22 @@ const getBitrate = (
 
   if (gvd.global.bitrate != null) {
     bitrate = gvd.global.bitrate * 1000;
-  } else if (gvd[channelId].bitrate != null) {
-    bitrate = gvd[channelId].bitrate! * 1000;
-  } else if (uvd.global.bitrate != null) {
+  }
+  else if (gvd[channelId].bitrate != null) {
+    bitrate = gvd[channelId].bitrate * 1000;
+  }
+  else if (uvd.global.bitrate != null) {
     bitrate = uvd.global.bitrate * 1000;
-  } else if (uvd[channelId] && uvd[channelId].bitrate != null) {
-    bitrate = uvd[channelId].bitrate! * 1000;
+  }
+  else if (uvd[channelId]?.bitrate != null) {
+    bitrate = uvd[channelId].bitrate * 1000;
   }
 
   if (
-    gvd[channelId].bitrate != null &&
-    gvd[channelId].bitrateOverride == true
+    gvd[channelId].bitrate != null
+    && gvd[channelId].bitrateOverride == true
   ) {
-    bitrate = gvd[channelId].bitrate! * 1000;
+    bitrate = gvd[channelId].bitrate * 1000;
   }
 
   if (bitrate > guild.maximumBitrate) {
@@ -70,19 +72,22 @@ const getBitrate = (
 };
 
 const getUserLimit = (
-  uvd: UserDataModel["voice"],
-  gvd: GuildDataModel["voice"],
+  uvd: UserDataModel['voice'],
+  gvd: GuildDataModel['voice'],
   channelId: string,
 ): number => {
   let limit = 0;
 
   if (gvd.global.limit != null) {
     limit = gvd.global.limit;
-  } else if (gvd[channelId].limit != null) {
+  }
+  else if (gvd[channelId].limit != null) {
     limit = gvd[channelId].limit!;
-  } else if (uvd.global.limit != null) {
+  }
+  else if (uvd.global.limit != null) {
     limit = uvd.global.limit;
-  } else if (uvd[channelId] && uvd[channelId].limit != null) {
+  }
+  else if (uvd[channelId]?.limit != null) {
     limit = uvd[channelId].limit!;
   }
 
@@ -93,7 +98,7 @@ const getUserLimit = (
   return limit;
 };
 
-const getVoiceRegion =
+const getVoiceRegion
   /**
    * Gets a user's voice channel region.
    * @param {Record<string, VoiceSettings>} uvd
@@ -101,26 +106,29 @@ const getVoiceRegion =
    * @param {string} channelId
    * @return {string} region
    */
-  (
-    uvd: UserDataModel["voice"],
-    gvd: GuildDataModel["voice"],
+  = (
+    uvd: UserDataModel['voice'],
+    gvd: GuildDataModel['voice'],
     channelId: string,
   ): string | undefined => {
     let region: string | undefined;
 
     if (gvd.global.region != null) {
       region = gvd.global.region;
-    } else if (gvd[channelId].region != null) {
+    }
+    else if (gvd[channelId].region != null) {
       region = gvd[channelId].region!;
-    } else if (uvd.global.region != null) {
+    }
+    else if (uvd.global.region != null) {
       region = uvd.global.region;
-    } else if (uvd[channelId] && uvd[channelId].region != null) {
+    }
+    else if (uvd[channelId]?.region != null) {
       region = uvd[channelId].region!;
     }
 
     if (
-      gvd[channelId].region != null &&
-      gvd[channelId].regionOverride == true
+      gvd[channelId].region != null
+      && gvd[channelId].regionOverride == true
     ) {
       region = gvd[channelId].region!;
     }
@@ -128,26 +136,23 @@ const getVoiceRegion =
     return region;
   };
 
-const formatVoiceName =
-  (name: string, member: GuildMember): string => {
+const formatVoiceName
+  = (name: string, member: GuildMember): string => {
     name = name.replace(/({displayName})/g, member.displayName);
-    name = name.replace(/({nickname})/g, member.nickname ?? "");
+    name = name.replace(/({nickname})/g, member.nickname ?? '');
     name = name.replace(/({username})/g, member.user.username);
-    name = name.replace(/({globalName})/g, member.user.globalName ?? "");
+    name = name.replace(/({globalName})/g, member.user.globalName ?? '');
     name = name.replace(/({tag})/g, member.user.tag);
     return name;
   };
-
-
-const name = Events.VoiceStateUpdate;
 
 /**
  * Temporary voice channel creation event listener.
  * @param {KamiClient} client
  * @returns {KamiListener}
  */
-export default {
-  name,
+export default new EventHandler({
+  event: 'voiceStateUpdate',
   async on(_, newState) {
     if (!(newState.channel instanceof VoiceChannel)) {
       return;
@@ -189,7 +194,7 @@ export default {
           newState.channel.id,
         ),
         parent: guildVoiceData[newState.channel.id].category,
-        reason: "Temporary Voice Channel",
+        reason: 'Temporary Voice Channel',
       });
 
       this.states.voice.set(channel.id, {
@@ -206,8 +211,8 @@ export default {
 
       await newState.member.voice.setChannel(
         channel,
-        "Temporary Voice Channel",
+        'Temporary Voice Channel',
       );
     }
   },
-} as KamiEventListener<typeof name>;
+});

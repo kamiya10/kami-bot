@@ -5,7 +5,7 @@ import slash from '../localization/zh-TW/slash.json';
 const resources = {
   common,
   header,
-  slash
+  slash,
 } as const;
 
 export default resources;

@@ -1,13 +1,13 @@
-import slash_en from "./en/slash.json";
-import header_en from "./en/header.json";
-import common_en from "./en/common.json";
-import slash_ja from "./ja/slash.json";
-import header_ja from "./ja/header.json";
-import common_ja from "./ja/common.json";
-import slash_zhTW from "./zh-TW/slash.json";
-import header_zhTW from "./zh-TW/header.json";
-import common_zhTW from "./zh-TW/common.json";
-import { Locale } from "discord.js";
+import slash_en from './en/slash.json';
+import header_en from './en/header.json';
+import common_en from './en/common.json';
+import slash_ja from './ja/slash.json';
+import header_ja from './ja/header.json';
+import common_ja from './ja/common.json';
+import slash_zhTW from './zh-TW/slash.json';
+import header_zhTW from './zh-TW/header.json';
+import common_zhTW from './zh-TW/common.json';
+import { Locale } from 'discord.js';
 
 export default {
   [Locale.EnglishUS]: {
@@ -25,4 +25,4 @@ export default {
     header: header_zhTW,
     common: common_zhTW,
   },
-}; 
+};

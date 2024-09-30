@@ -1,9 +1,9 @@
-import "i18next";
-import resources from "./resources";
+import 'i18next';
+import resources from './resources';
 
-declare module "i18next" {
+declare module 'i18next' {
   interface CustomTypeOptions {
-    defaultNS: "common";
+    defaultNS: 'common';
     resources: typeof resources;
   }
 }

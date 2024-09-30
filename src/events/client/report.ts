@@ -1,15 +1,12 @@
-import { Events } from "@/classes/client";
-import { Logger } from "@/classes/logger";
-import { buildEarthquakeReportMessage } from "@/classes/utils";
+import { EventHandler } from '@/class/event';
+import { buildEarthquakeReportMessage } from '@/class/utils';
 
-import type { KamiEventListener } from "@/events";
+import logger from 'logger';
 
-const name = Events.Report;
-
-export default {
-  name,
+export default new EventHandler({
+  event: 'report',
   on(report) {
-    Logger.info("newReport", report);
+    logger.info('newReport', report);
 
     this.database.guild.forEach((guild) => {
       const list = guild.earthquake.report.slice(0, 5);
@@ -17,12 +14,12 @@ export default {
       for (const setting of list) {
         const channel = this.channels.cache.get(setting.channelId);
 
-        if (!channel || !channel.isTextBased()) continue;
+        if (!channel?.isSendable()) continue;
 
         void channel
-          .send(buildEarthquakeReportMessage(report, "cwa-simple"))
-          .catch((e) => Logger.error(`${e}`, e));
+          .send(buildEarthquakeReportMessage(report, 'cwa-simple'))
+          .catch((e) => logger.error(`${e}`, e));
       }
     });
   },
-} as KamiEventListener<typeof name>;
+});

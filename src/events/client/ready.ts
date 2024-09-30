@@ -1,13 +1,10 @@
-import { Events } from "@/classes/client";
-import { Logger } from "@/classes/logger";
+import { EventHandler } from '@/class/event';
 
-import type { KamiEventListener } from "@/events";
+import logger from 'logger';
 
-const name = Events.ClientReady;
-
-export default {
-  name,
+export default new EventHandler({
+  event: 'ready',
   on(client) {
-    Logger.info(`Client is ready as ${client.user.tag} with ${client.guilds.cache.size} guild${client.guilds.cache.size > 1 ? 's' : ''}.`);
+    logger.info(`Client is ready as ${client.user.tag} with ${client.guilds.cache.size} guild${client.guilds.cache.size > 1 ? 's' : ''}.`);
   },
-} as KamiEventListener<typeof name>;
+});
