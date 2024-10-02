@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "rollup -c rollup.config.mjs",
     "start": "node --es-module-specifier-resolution=node .",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "toc": "i18next-resources-for-ts toc -i ./src/localization/zh-TW -o ./src/@types/resources.ts"

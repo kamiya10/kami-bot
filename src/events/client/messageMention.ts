@@ -41,8 +41,7 @@ export default new EventHandler({
 
     const embed = new EmbedBuilder()
       .setDescription(mentioned.content)
-      .setColor(mentioned.member!.displayColor)
-      ;
+      .setColor(mentioned.member!.displayColor);
 
     await message.reply({
       embeds: [embed, ...mentioned.embeds],

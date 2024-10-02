@@ -67,6 +67,7 @@ export class KamiClient extends Client {
       logger.error('Client isn\'t ready for command updates yet');
       return;
     }
+
     const lockfile = Bun.file(join(this.cacheDirectory, 'commands.lock'));
 
     try {
