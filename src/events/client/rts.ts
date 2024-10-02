@@ -5,6 +5,8 @@ import logger from 'logger';
 import _codeTable from '@/resources/town_code.json';
 
 import type { Message } from 'discord.js';
+import { rtsChannel } from '@/database/schema';
+import { inArray } from 'drizzle-orm';
 
 interface Location {
   city: string;
@@ -17,7 +19,7 @@ const codeTable = _codeTable as Record<string, Location>;
 
 const rtsCache = {
   embed: new EmbedBuilder(),
-  message: new Collection<string, Message<true> | Promise<unknown>>(),
+  message: new Collection<string, Message | Promise<unknown>>(),
 };
 
 const intensityText = [
@@ -50,7 +52,7 @@ const roundIntensity = (float: number) =>
 
 export default new EventHandler({
   event: 'rts',
-  on(rts) {
+  async on(rts) {
     logger.info('rts', rts);
 
     if (!this.states.data.stations) {
@@ -83,30 +85,27 @@ export default new EventHandler({
 
     rtsCache.embed.setFields();
 
-    this.database.guild.forEach((guild) => {
-      const rts = guild.earthquake.rts;
+    const settings = await this.database.query.rtsChannel.findMany();
+    const failed: string[] = [];
 
-      if (!rts.channelId) {
-        return;
+    for (const setting of settings) {
+      const channel = this.channels.cache.get(setting.channelId);
+
+      if (!channel?.isSendable()) {
+        failed.push(setting.channelId);
+        continue;
       }
 
-      const channel = this.channels.cache.get(rts.channelId);
-
-      if (!channel || !channel.isTextBased() || channel.isDMBased()) {
-        rts.channelId = null;
-        return;
-      }
-
-      if (rtsCache.message.has(rts.channelId)) {
-        const message = rtsCache.message.get(rts.channelId);
+      if (rtsCache.message.has(setting.channelId)) {
+        const message = rtsCache.message.get(setting.channelId);
 
         if (!message) {
           rtsCache.message.set(
-            rts.channelId,
+            setting.channelId,
             channel
               .send({ embeds: [rtsCache.embed] })
-              .then((m) => rtsCache.message.set(rts.channelId!, m))
-              .catch((e) => logger.error(`${e}`, e)),
+              .then((m) => rtsCache.message.set(setting.channelId, m))
+              .catch((e) => logger.error(`${e}`, e, setting)),
           );
           return;
         }
@@ -117,6 +116,9 @@ export default new EventHandler({
 
         void message.edit({ embeds: [rtsCache.embed] });
       }
-    });
+    }
+
+    await this.database.delete(rtsChannel)
+      .where(inArray(rtsChannel.channelId, failed));
   },
 });

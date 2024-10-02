@@ -4,33 +4,22 @@ import { join, resolve } from 'path';
 import { KamiStates } from '@/class/states';
 
 import type { ClientOptions } from 'discord.js';
-import type { GuildDataModel } from '@/databases/GuildDatabase';
 import type { KamiCommand } from '@/class/command';
-import type { KamiDatabase } from '@/class/database';
 import type { KamiStatesOptions } from '@/class/states';
-import type { Low } from 'lowdb';
-import type { UserDataModel } from '@/databases/UserDatabase';
 
 import commands from '@/commands';
+import db from '@/database';
 import events from '@/events';
-
 import logger from 'logger';
 
-export interface ClientDatabase {
-  guild: Low<Record<string, GuildDataModel>>;
-  user: Low<Record<string, UserDataModel>>;
-}
-
 export class KamiClient extends Client {
-  database: KamiDatabase;
   states: KamiStates;
   commands = new Collection<string, KamiCommand>();
-
+  database = db;
   cacheDirectory = resolve('.cache');
 
-  constructor(database: KamiDatabase, clientOptions: ClientOptions) {
+  constructor(clientOptions: ClientOptions) {
     super(clientOptions);
-    this.database = database;
 
     let cachedState;
 
@@ -67,7 +56,6 @@ export class KamiClient extends Client {
       logger.error('Client isn\'t ready for command updates yet');
       return;
     }
-
     const lockfile = Bun.file(join(this.cacheDirectory, 'commands.lock'));
 
     try {

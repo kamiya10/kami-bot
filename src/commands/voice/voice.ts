@@ -28,7 +28,7 @@ import type {
   CacheType,
   ChatInputCommandInteraction,
 } from 'discord.js';
-import type { GuildVoiceSettings } from '@/databases/GuildDatabase';
+import type { GuildVoiceSettings } from '@/database/GuildDatabase';
 import type { KamiClient } from '@/class/client';
 import { KamiCommand } from '@/class/command';
 

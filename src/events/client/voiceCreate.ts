@@ -1,9 +1,11 @@
 import { ChannelType, GuildMember, VoiceChannel } from 'discord.js';
 
 import type { Guild } from 'discord.js';
-import type { GuildDataModel } from '@/databases/GuildDatabase';
-import type { UserDataModel } from '@/databases/UserDatabase';
+import type { GuildDataModel } from '@/database/GuildDatabase';
+import type { UserDataModel } from '@/database/UserDatabase';
 import { EventHandler } from '@/class/event';
+import { user, voiceChannel } from '@/database/schema';
+import { eq } from 'drizzle-orm';
 
 const getName = (
   uvd: UserDataModel['voice'],
@@ -98,46 +100,23 @@ const getUserLimit = (
   return limit;
 };
 
-const getVoiceRegion
-  /**
-   * Gets a user's voice channel region.
-   * @param {Record<string, VoiceSettings>} uvd
-   * @param {Record<string, GuildVoiceSettings>} gvd
-   * @param {string} channelId
-   * @return {string} region
-   */
-  = (
-    uvd: UserDataModel['voice'],
-    gvd: GuildDataModel['voice'],
-    channelId: string,
-  ): string | undefined => {
-    let region: string | undefined;
+interface VoiceSettings {
+  name: string | null;
+  bitrate: number | null;
+  limit: number | null;
+  region: string | null;
+}
 
-    if (gvd.global.region != null) {
-      region = gvd.global.region;
-    }
-    else if (gvd[channelId].region != null) {
-      region = gvd[channelId].region!;
-    }
-    else if (uvd.global.region != null) {
-      region = uvd.global.region;
-    }
-    else if (uvd[channelId]?.region != null) {
-      region = uvd[channelId].region!;
-    }
-
-    if (
-      gvd[channelId].region != null
-      && gvd[channelId].regionOverride == true
-    ) {
-      region = gvd[channelId].region!;
-    }
-
-    return region;
-  };
+const resolveSetting = <K extends keyof VoiceSettings>(
+  property: K,
+  guild: VoiceSettings,
+  user: VoiceSettings,
+): VoiceSettings[K] => {
+  return user[property] ?? guild[property];
+};
 
 const formatVoiceName
-  = (name: string, member: GuildMember): string => {
+  = (name: string = , member: GuildMember): string => {
     name = name.replace(/({displayName})/g, member.displayName);
     name = name.replace(/({nickname})/g, member.nickname ?? '');
     name = name.replace(/({username})/g, member.user.username);
@@ -162,17 +141,23 @@ export default new EventHandler({
       return;
     }
 
-    const userVoiceData = this.database.user(newState.member.id).voice;
-    const guildVoiceData = this.database.guild(newState.guild.id).voice;
+    const guildVoiceData = await this.database.query.voiceChannel.findFirst({
+      where: eq(voiceChannel.channelId, newState.channel.id),
+    });
+
+    if (!guildVoiceData) return;
+
+    const userVoiceData = await this.database.query.user.findFirst({
+      where: eq(user.id, newState.member.id),
+    });
 
     if (newState.channel.id in guildVoiceData) {
       const channel = await newState.guild.channels.create({
         name: formatVoiceName(
-          getName(
-            userVoiceData,
+          resolveSetting(
+            'name',
             guildVoiceData,
-            newState.channel.id,
-            newState.guild.id,
+            userVoiceData,
           ),
           newState.member,
         ),

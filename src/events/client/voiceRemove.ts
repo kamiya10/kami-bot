@@ -1,4 +1,6 @@
 import { EventHandler } from '@/class/event';
+import { voiceChannel } from '@/database/schema';
+import { eq } from 'drizzle-orm';
 import logger from 'logger';
 
 /**
@@ -11,10 +13,17 @@ export default new EventHandler ({
   async on(channel) {
     if (!channel.isVoiceBased()) return;
 
-    if (channel.id in this.database.guild(channel.guild.id).voice) {
+    const result = await this.database.select({
+      channelId: voiceChannel.channelId,
+    }).from(voiceChannel);
+
+    const list = result.map((v) => v.channelId);
+
+    if (list.includes(channel.id)) {
       logger.info(`Removing #${channel.name} from temporary voice creator as channel is being deleted.`);
-      delete this.database.guild(channel.guild.id).voice[channel.id];
-      await this.database.database.user.write();
+      await this.database.delete(voiceChannel)
+        .where(eq(voiceChannel.channelId, channel.guild.id));
+      this.states.voice.delete(channel.id);
     }
   },
 });

@@ -10,7 +10,7 @@ export default ts.config(
     semi: true,
     indent: 2,
     arrowParens: true,
-    commaDangle:"always-multiline",
+    commaDangle: "always-multiline",
   }),
   ts.configs.eslintRecommended,
   ...ts.configs.recommendedTypeChecked,
@@ -20,12 +20,14 @@ export default ts.config(
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
+        project: ["tsconfig.json"],
       },
     },
   },
   {
     rules: {
       "@stylistic/comma-spacing": ["warn"],
+      "@stylistic/array-bracket-spacing": ["warn"],
       "@typescript-eslint/no-unused-vars": ["warn", { caughtErrors: "none" }],
       "@typescript-eslint/prefer-nullish-coalescing": ["error", { ignorePrimitives: true }],
     }

@@ -1,4 +1,5 @@
 import { KamiCommand } from '@/class/command';
+import { rtsChannel } from '@/database/schema';
 import {
   ChannelType,
   Colors,
@@ -8,6 +9,7 @@ import {
   SlashCommandBuilder,
   SlashCommandChannelOption,
 } from 'discord.js';
+import { eq } from 'drizzle-orm';
 import { t as $t } from 'i18next';
 
 /**
@@ -36,7 +38,17 @@ export default new KamiCommand({
     let content = '';
 
     if (channel) {
-      this.database.guild(interaction.guild.id).earthquake.rts.channelId = channel.id;
+      const setting = await this.database.query.rtsChannel.findFirst({ where: eq(rtsChannel.channelId, channel.id) });
+
+      if (setting) {
+        this.databa;
+      }
+
+      this.database.update(rtsChannel).set({
+        channelId: channel.id,
+      }).where();
+
+      (interaction.guild.id).earthquake.rts.channelId = channel.id;
       content += `已將推播頻道設為 **${channel.toString()}**`;
       if (autoDelete == undefined) {
         content += `。`;
