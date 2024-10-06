@@ -28,6 +28,7 @@ export default ts.config(
     rules: {
       "@stylistic/comma-spacing": ["warn"],
       "@stylistic/array-bracket-spacing": ["warn"],
+      "@typescript-eslint/restrict-template-expressions": ["off"],
       "@typescript-eslint/no-unused-vars": ["warn", { caughtErrors: "none" }],
       "@typescript-eslint/prefer-nullish-coalescing": ["error", { ignorePrimitives: true }],
     }

@@ -1,192 +1,192 @@
 {
-  "avatar": {
-    "NAME": "avatar",
-    "DESC": "Get the avatar of a member.",
-    "OPTIONS": {
-      "member": {
-        "NAME": "member",
-        "DESC": "The member to get the avatar of."
-      },
-      "server": {
-        "NAME": "server",
-        "DESC": "Get the server specific avatar."
-      }
-    }
-  },
-  "banner": {
-    "NAME": "banner",
-    "DESC": "Get the banner of a member.",
-    "OPTIONS": {
-      "member": {
-        "NAME": "member",
-        "DESC": "The member to get the banner of."
-      },
-      "server": {
-        "NAME": "server",
-        "DESC": "Get the server specific banner."
-      }
-    }
-  },
-  "color": {
-    "NAME": "color",
-    "DESC": "Converts a color into many forms.",
-    "OPTIONS": {
-      "color": {
-        "NAME": "color",
-        "DESC": "The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color."
-      }
-    }
-  },
-  "ping": {
-    "NAME": "ping",
-    "DESC": "Check if the bot is still alive or not."
-  },
-  "voice": {
-    "NAME": "voice",
-    "DESC": "Commands for temporary voice channels.",
-    "server": {
-      "NAME": "server",
-      "DESC": "Server configuration commands for temporary voice channels.",
-      "setup": {
-        "NAME": "setup",
-        "DESC": "Setup a temporary voice channel creator."
-      },
-      "add": {
-        "NAME": "add",
-        "DESC": "Add a voice channel to be a temporary voice channel creator.",
+    "avatar": {
+        "$name": "avatar",
+        "$desc": "Get the avatar of a member.",
         "OPTIONS": {
-          "channel": {
-            "NAME": "channel",
-            "DESC": "The channel to be a temporary voice channel creator."
-          },
-          "category": {
-            "NAME": "category",
-            "DESC": "The category temporary voice channel should be created in."
-          }
+            "member": {
+                "$name": "member",
+                "$desc": "The member to get the avatar of."
+            },
+            "server": {
+                "$name": "server",
+                "$desc": "Get the server specific avatar."
+            }
         }
-      },
-      "remove": {
-        "NAME": "remove",
-        "DESC": "Remove a voice channel from being a temporary voice channel creator.",
+    },
+    "banner": {
+        "$name": "banner",
+        "$desc": "Get the banner of a member.",
         "OPTIONS": {
-          "channel": {
-            "NAME": "channel",
-            "DESC": "The channel to remove from being a temporary voice channel creator."
-          }
+            "member": {
+                "$name": "member",
+                "$desc": "The member to get the banner of."
+            },
+            "server": {
+                "$name": "server",
+                "$desc": "Get the server specific banner."
+            }
         }
-      },
-      "info": {
-        "NAME": "info",
-        "DESC": "Get currently configured temporary voice channel creators.",
+    },
+    "color": {
+        "$name": "color",
+        "$desc": "Converts a color into many forms.",
         "OPTIONS": {
-          "channel": {
-            "NAME": "channel",
-            "DESC": "Show the specific temporary voice channel creator configuration."
-          }
+            "color": {
+                "$name": "color",
+                "$desc": "The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color."
+            }
         }
-      },
-      "name": {
-        "DESC": "Change the name of the template temporary voice channel."
-      },
-      "limit": {
-        "DESC": "Change the user limit of the template temporary voice channel."
-      },
-      "bitrate": {
-        "DESC": "Change the bitrate of the template temporary voice channel."
-      },
-      "region": {
-        "DESC": "Change the region of the template temporary voice channel."
-      },
-      "OPTIONS": {
-        "default": {
-          "NAME": "channel",
-          "DESC": "Make this setting only affects the specified channel creator."
+    },
+    "ping": {
+        "$name": "ping",
+        "$desc": "Check if the bot is still alive or not."
+    },
+    "voice": {
+        "$name": "voice",
+        "$desc": "Commands for temporary voice channels.",
+        "server": {
+            "$name": "server",
+            "$desc": "Server configuration commands for temporary voice channels.",
+            "setup": {
+                "$name": "setup",
+                "$desc": "Setup a temporary voice channel creator."
+            },
+            "add": {
+                "$name": "add",
+                "$desc": "Add a voice channel to be a temporary voice channel creator.",
+                "OPTIONS": {
+                    "channel": {
+                        "$name": "channel",
+                        "$desc": "The channel to be a temporary voice channel creator."
+                    },
+                    "category": {
+                        "$name": "category",
+                        "$desc": "The category temporary voice channel should be created in."
+                    }
+                }
+            },
+            "remove": {
+                "$name": "remove",
+                "$desc": "Remove a voice channel from being a temporary voice channel creator.",
+                "OPTIONS": {
+                    "channel": {
+                        "$name": "channel",
+                        "$desc": "The channel to remove from being a temporary voice channel creator."
+                    }
+                }
+            },
+            "info": {
+                "$name": "info",
+                "$desc": "Get currently configured temporary voice channel creators.",
+                "OPTIONS": {
+                    "channel": {
+                        "$name": "channel",
+                        "$desc": "Show the specific temporary voice channel creator configuration."
+                    }
+                }
+            },
+            "name": {
+                "$desc": "Change the name of the template temporary voice channel."
+            },
+            "limit": {
+                "$desc": "Change the user limit of the template temporary voice channel."
+            },
+            "bitrate": {
+                "$desc": "Change the bitrate of the template temporary voice channel."
+            },
+            "region": {
+                "$desc": "Change the region of the template temporary voice channel."
+            },
+            "OPTIONS": {
+                "default": {
+                    "$name": "channel",
+                    "$desc": "Make this setting only affects the specified channel creator."
+                },
+                "override": {
+                    "$name": "override",
+                    "$desc": "Override user preferences."
+                }
+            }
         },
-        "override": {
-          "NAME": "override",
-          "DESC": "Override user preferences."
-        }
-      }
-    },
-    "name": {
-      "NAME": "name",
-      "DESC": "Change the name of a temporary voice channel you owned.",
-      "OPTIONS": {
         "name": {
-          "NAME": "name",
-          "DESC": "The new name of the temporary voice channel."
-        }
-      }
-    },
-    "limit": {
-      "NAME": "limit",
-      "DESC": "Change the user limit of a temporary voice channel you owned.",
-      "OPTIONS": {
+            "$name": "name",
+            "$desc": "Change the name of a temporary voice channel you owned.",
+            "OPTIONS": {
+                "name": {
+                    "$name": "name",
+                    "$desc": "The new name of the temporary voice channel."
+                }
+            }
+        },
         "limit": {
-          "NAME": "limit",
-          "DESC": "The new user limit of the temporary voice channel. (0 = Unlimited)"
-        }
-      }
-    },
-    "bitrate": {
-      "NAME": "bitrate",
-      "DESC": "Change the bitrate of a temporary voice channel you owned.",
-      "OPTIONS": {
+            "$name": "limit",
+            "$desc": "Change the user limit of a temporary voice channel you owned.",
+            "OPTIONS": {
+                "limit": {
+                    "$name": "limit",
+                    "$desc": "The new user limit of the temporary voice channel. (0 = Unlimited)"
+                }
+            }
+        },
         "bitrate": {
-          "NAME": "bitrate",
-          "DESC": "The new bitrate of the temporary voice channel. (In kbps)"
-        }
-      }
-    },
-    "region": {
-      "NAME": "region",
-      "DESC": "Change the region of a temporary voice channel you owned.",
-      "OPTIONS": {
+            "$name": "bitrate",
+            "$desc": "Change the bitrate of a temporary voice channel you owned.",
+            "OPTIONS": {
+                "bitrate": {
+                    "$name": "bitrate",
+                    "$desc": "The new bitrate of the temporary voice channel. (In kbps)"
+                }
+            }
+        },
         "region": {
-          "NAME": "region",
-          "DESC": "The new region of the temporary voice channel."
+            "$name": "region",
+            "$desc": "Change the region of a temporary voice channel you owned.",
+            "OPTIONS": {
+                "region": {
+                    "$name": "region",
+                    "$desc": "The new region of the temporary voice channel."
+                }
+            },
+            "CHOICES": {
+                "brazil": "Brazil",
+                "hongkong": "Hong Kong",
+                "india": "India",
+                "japan": "Japan",
+                "rotterdam": "Rotterdam",
+                "russia": "Russia",
+                "singapore": "Singapore",
+                "southafrica": "South Africa",
+                "sydney": "Sydney",
+                "us_central": "US Central",
+                "us_east": "US East",
+                "us_south": "US South",
+                "us_west": "US West"
+            }
+        },
+        "clear": {
+            "$name": "clear",
+            "$desc": "Clear temporary voice channel settings.",
+            "OPTIONS": {
+                "which": {
+                    "$name": "which",
+                    "$desc": "Choose which scope to clear."
+                }
+            },
+            "CHOICES": {
+                "global": "Global",
+                "guild": "This server",
+                "all": "All"
+            }
+        },
+        "OPTIONS": {
+            "default": {
+                "$name": "default",
+                "$desc": "Make this name as the server default name of the temporary voice channel on channel creation."
+            },
+            "global": {
+                "$name": "global",
+                "$desc": "Save the setting globally so it applies to all servers."
+            }
         }
-      },
-      "CHOICES": {
-        "brazil": "Brazil",
-        "hongkong": "Hong Kong",
-        "india": "India",
-        "japan": "Japan",
-        "rotterdam": "Rotterdam",
-        "russia": "Russia",
-        "singapore": "Singapore",
-        "southafrica": "South Africa",
-        "sydney": "Sydney",
-        "us_central": "US Central",
-        "us_east": "US East",
-        "us_south": "US South",
-        "us_west": "US West"
-      }
-    },
-    "clear": {
-      "NAME": "clear",
-      "DESC": "Clear temporary voice channel settings.",
-      "OPTIONS": {
-        "which": {
-          "NAME": "which",
-          "DESC": "Choose which scope to clear."
-        }
-      },
-      "CHOICES": {
-        "global": "Global",
-        "guild": "This server",
-        "all": "All"
-      }
-    },
-    "OPTIONS": {
-      "default": {
-        "NAME": "default",
-        "DESC": "Make this name as the server default name of the temporary voice channel on channel creation."
-      },
-      "global": {
-        "NAME": "global",
-        "DESC": "Save the setting globally so it applies to all servers."
-      }
     }
-  }
 }

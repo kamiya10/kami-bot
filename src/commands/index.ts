@@ -5,13 +5,13 @@ import report from '@/commands/earthquake/report';
 import rts from '@/commands/earthquake/rts';
 
 // utils
-import avatar from '@/commands/utils/avatar';
-import banner from '@/commands/utils/banner';
-import color from '@/commands/utils/color';
-import ping from '@/commands/utils/ping';
+import avatar from '$/avatar';
+import banner from '$/banner';
+import color from '$/color';
+import ping from '$/ping';
 
 // voice
-import voice from '@/commands/voice/voice';
+import voice from '$/voice';
 
 export default [
   report,

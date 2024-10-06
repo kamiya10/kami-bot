@@ -1,5 +1,5 @@
 import { EventHandler } from '@/class/event';
-import { voiceChannel } from '@/database/schema';
+import { guildVoiceChannel } from '@/database/schema';
 import { eq } from 'drizzle-orm';
 import logger from 'logger';
 
@@ -8,21 +8,26 @@ import logger from 'logger';
  * @param {KamiClient} client
  * @returns {KamiListener}
  */
-export default new EventHandler ({
+export default new EventHandler({
   event: 'channelDelete',
   async on(channel) {
     if (!channel.isVoiceBased()) return;
 
-    const result = await this.database.select({
-      channelId: voiceChannel.channelId,
-    }).from(voiceChannel);
+    const result = await this.database
+      .select({
+        channelId: guildVoiceChannel.channelId,
+      })
+      .from(guildVoiceChannel);
 
     const list = result.map((v) => v.channelId);
 
     if (list.includes(channel.id)) {
-      logger.info(`Removing #${channel.name} from temporary voice creator as channel is being deleted.`);
-      await this.database.delete(voiceChannel)
-        .where(eq(voiceChannel.channelId, channel.guild.id));
+      logger.info(
+        `Removing #${channel.name} from temporary voice creator as channel is being deleted.`,
+      );
+      await this.database
+        .delete(guildVoiceChannel)
+        .where(eq(guildVoiceChannel.channelId, channel.guild.id));
       this.states.voice.delete(channel.id);
     }
   },

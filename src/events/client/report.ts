@@ -1,6 +1,6 @@
 import { EventHandler } from '@/class/event';
 import { buildEarthquakeReportMessage } from '@/class/utils';
-import { eqReportChannel } from '@/database/schema';
+import { guildEqReportChannel } from '@/database/schema';
 import { inArray } from 'drizzle-orm';
 
 import logger from 'logger';
@@ -10,7 +10,7 @@ export default new EventHandler({
   async on(report) {
     logger.info('newReport', report);
 
-    const settings = await this.database.query.eqReportChannel.findMany();
+    const settings = await this.database.query.guildEqReportChannel.findMany();
     const failed: string[] = [];
 
     for (const setting of settings) {
@@ -26,7 +26,8 @@ export default new EventHandler({
         .catch((e) => logger.error(`${e}`, e));
     }
 
-    await this.database.delete(eqReportChannel)
-      .where(inArray(eqReportChannel.channelId, failed));
+    await this.database
+      .delete(guildEqReportChannel)
+      .where(inArray(guildEqReportChannel.channelId, failed));
   },
 });

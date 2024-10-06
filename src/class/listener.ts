@@ -22,8 +22,14 @@ export class KamiListener {
     event: Exclude<S, keyof ClientEvents>,
     listener: (...args: any[]) => Awaitable<void>,
   ): this;
-  public on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => Awaitable<void>): this;
-  on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => Awaitable<void>) {
+  public on<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+  ): this;
+  on<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+  ) {
     this.event = event;
     this.callback = listener;
     return this;
@@ -33,8 +39,14 @@ export class KamiListener {
     event: Exclude<S, keyof ClientEvents>,
     listener: (...args: any[]) => Awaitable<void>,
   ): this;
-  public once<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => Awaitable<void>): this;
-  once<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => Awaitable<void>) {
+  public once<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+  ): this;
+  once<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+  ) {
     this.event = event;
     this.callOnce = true;
     this.callback = listener;

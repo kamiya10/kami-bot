@@ -23,12 +23,20 @@ export default new KamiCommand({
     .setNameLocalizations($at('slash:color.NAME'))
     .setDescription('Converts a color into many forms.')
     .setDescriptionLocalizations($at('slash:color.DESC'))
-    .setContexts(InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel)
-    .addStringOption(new SlashCommandStringOption()
-      .setName('color')
-      .setNameLocalizations($at('slash:color.OPTIONS.color.NAME'))
-      .setDescription('The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color.')
-      .setDescriptionLocalizations($at('slash:color.OPTIONS.color.DESC'))),
+    .setContexts(
+      InteractionContextType.BotDM,
+      InteractionContextType.Guild,
+      InteractionContextType.PrivateChannel,
+    )
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName('color')
+        .setNameLocalizations($at('slash:color.OPTIONS.color.NAME'))
+        .setDescription(
+          'The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color.',
+        )
+        .setDescriptionLocalizations($at('slash:color.OPTIONS.color.DESC')),
+    ),
   defer: true,
   ephemeral: true,
   async execute(interaction) {
@@ -94,9 +102,7 @@ export default new KamiCommand({
           },
           {
             name: 'hex',
-            value: `\`\`\`js\n0x${
-              isOpaque ? hex : hex8
-            }\`\`\`\n\`\`\`css\n#${
+            value: `\`\`\`js\n0x${isOpaque ? hex : hex8}\`\`\`\n\`\`\`css\n#${
               isOpaque ? hex.toUpperCase() : hex8.toUpperCase()
             }\`\`\`\n\`\`\`css\n#${isOpaque ? hex : hex8}\`\`\``,
             inline: true,
@@ -198,9 +204,7 @@ export default new KamiCommand({
               cmy[2] * 100,
             )}%)\n\`\`\`css\ncmy(${cmy[0]}%, ${cmy[1]}%, ${
               cmy[2]
-            }%)\`\`\`\n\`\`\`css\ncmy(${cmy[0]}% ${cmy[1]}% ${
-              cmy[2]
-            }%)\`\`\``,
+            }%)\`\`\`\n\`\`\`css\ncmy(${cmy[0]}% ${cmy[1]}% ${cmy[2]}%)\`\`\``,
           },
           {
             name: 'cmyk',

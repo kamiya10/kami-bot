@@ -12,17 +12,31 @@ type Events = keyof KamiClientEvents;
 
 export interface EventHandlerOptions<Event extends Events = Events> {
   event: Event;
-  on?: (this: KamiClient, ...args: KamiClientEvents[Event]) => void | Promise<void>;
-  once?: (this: KamiClient, ...args: KamiClientEvents[Event]) => void | Promise<void>;
+  on?: (
+    this: KamiClient,
+    ...args: KamiClientEvents[Event]
+  ) => void | Promise<void>;
+  once?: (
+    this: KamiClient,
+    ...args: KamiClientEvents[Event]
+  ) => void | Promise<void>;
 }
 
 export class EventHandler<Event extends Events = Events> {
   event: Event;
-  on?: (this: KamiClient, ...args: KamiClientEvents[Event]) => void | Promise<void>;
-  once?: (this: KamiClient, ...args: KamiClientEvents[Event]) => void | Promise<void>;
+  on?: (
+    this: KamiClient,
+    ...args: KamiClientEvents[Event]
+  ) => void | Promise<void>;
+
+  once?: (
+    this: KamiClient,
+    ...args: KamiClientEvents[Event]
+  ) => void | Promise<void>;
+
   constructor(options: EventHandlerOptions<Event>) {
     this.event = options.event;
     this.on = options.on;
     this.once = options.once;
-  };
+  }
 }

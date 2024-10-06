@@ -21,7 +21,11 @@ export default new KamiCommand({
     .setNameLocalizations($at('slash:ping.NAME'))
     .setDescription('Check if the bot is alive or not.')
     .setDescriptionLocalizations($at('slash:ping.DESC'))
-    .setContexts(InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel),
+    .setContexts(
+      InteractionContextType.BotDM,
+      InteractionContextType.Guild,
+      InteractionContextType.PrivateChannel,
+    ),
   defer: true,
   ephemeral: true,
   async execute(interaction) {
@@ -57,10 +61,7 @@ export default new KamiCommand({
               TimestampStyles.LongTime,
             )}.${`${new Date(
               ~~(sent.createdTimestamp / 1000),
-            ).getMilliseconds()}`.padStart(
-              3,
-              '0',
-            )}\n🤖 **Bot Time**: ${time(
+            ).getMilliseconds()}`.padStart(3, '0')}\n🤖 **Bot Time**: ${time(
               ~~(end / 1000),
               TimestampStyles.LongDate,
             )}${time(

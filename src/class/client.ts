@@ -65,8 +65,10 @@ export class KamiClient extends Client {
         .update(JSON.stringify(data))
         .digest('hex');
 
-      if (!force && await lockfile.text().catch((e) => void e) == hash) {
-        logger.debug('Command Version is the same. Skipping command registration.');
+      if (!force && (await lockfile.text().catch((e) => void e)) == hash) {
+        logger.debug(
+          'Command Version is the same. Skipping command registration.',
+        );
         return;
       }
 

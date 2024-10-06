@@ -5,7 +5,7 @@ import logger from 'logger';
 import _codeTable from '@/resources/town_code.json';
 
 import type { Message } from 'discord.js';
-import { rtsChannel } from '@/database/schema';
+import { guildRtsChannel } from '@/database/schema';
 import { inArray } from 'drizzle-orm';
 
 interface Location {
@@ -85,7 +85,7 @@ export default new EventHandler({
 
     rtsCache.embed.setFields();
 
-    const settings = await this.database.query.rtsChannel.findMany();
+    const settings = await this.database.query.guildRtsChannel.findMany();
     const failed: string[] = [];
 
     for (const setting of settings) {
@@ -118,7 +118,8 @@ export default new EventHandler({
       }
     }
 
-    await this.database.delete(rtsChannel)
-      .where(inArray(rtsChannel.channelId, failed));
+    await this.database
+      .delete(guildRtsChannel)
+      .where(inArray(guildRtsChannel.channelId, failed));
   },
 });

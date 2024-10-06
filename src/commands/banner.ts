@@ -26,20 +26,25 @@ export default new KamiCommand({
     .setDescription('Get the banner of a member.')
     .setDescriptionLocalizations($at('slash:banner.DESC'))
     .setContexts(InteractionContextType.Guild)
-    .addUserOption(new SlashCommandUserOption()
-      .setName('member')
-      .setNameLocalizations($at('slash:banner.OPTIONS.member.NAME'))
-      .setDescription('The member to get the banner of.')
-      .setDescriptionLocalizations($at('slash:banner.OPTIONS.member.DESC')))
-    .addBooleanOption(new SlashCommandBooleanOption()
-      .setName('server')
-      .setNameLocalizations($at('slash:banner.OPTIONS.server.NAME'))
-      .setDescription('Get the server specific banner.')
-      .setDescriptionLocalizations($at('slash:banner.OPTIONS.server.DESC'))),
+    .addUserOption(
+      new SlashCommandUserOption()
+        .setName('member')
+        .setNameLocalizations($at('slash:banner.OPTIONS.member.NAME'))
+        .setDescription('The member to get the banner of.')
+        .setDescriptionLocalizations($at('slash:banner.OPTIONS.member.DESC')),
+    )
+    .addBooleanOption(
+      new SlashCommandBooleanOption()
+        .setName('server')
+        .setNameLocalizations($at('slash:banner.OPTIONS.server.NAME'))
+        .setDescription('Get the server specific banner.')
+        .setDescriptionLocalizations($at('slash:banner.OPTIONS.server.DESC')),
+    ),
   defer: true,
   ephemeral: true,
   async execute(interaction) {
-    const member = interaction.options.getMember('member') ?? interaction.member;
+    const member
+      = interaction.options.getMember('member') ?? interaction.member;
 
     const urls = {} as Record<ImageFormat, string>;
     const embed = new EmbedBuilder();

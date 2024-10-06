@@ -25,20 +25,25 @@ export default new KamiCommand({
     .setDescription('Get the avatar of a member.')
     .setDescriptionLocalizations($at('slash:avatar.DESC'))
     .setContexts(InteractionContextType.Guild)
-    .addUserOption(new SlashCommandUserOption()
-      .setName('member')
-      .setNameLocalizations($at('slash:avatar.OPTIONS.member.NAME'))
-      .setDescription('The member to get the avatar of.')
-      .setDescriptionLocalizations($at('slash:avatar.OPTIONS.member.DESC')))
-    .addBooleanOption(new SlashCommandBooleanOption()
-      .setName('server')
-      .setNameLocalizations($at('slash:avatar.OPTIONS.server.NAME'))
-      .setDescription('Get the server specific avatar.')
-      .setDescriptionLocalizations($at('slash:avatar.OPTIONS.server.DESC'))),
+    .addUserOption(
+      new SlashCommandUserOption()
+        .setName('member')
+        .setNameLocalizations($at('slash:avatar.OPTIONS.member.NAME'))
+        .setDescription('The member to get the avatar of.')
+        .setDescriptionLocalizations($at('slash:avatar.OPTIONS.member.DESC')),
+    )
+    .addBooleanOption(
+      new SlashCommandBooleanOption()
+        .setName('server')
+        .setNameLocalizations($at('slash:avatar.OPTIONS.server.NAME'))
+        .setDescription('Get the server specific avatar.')
+        .setDescriptionLocalizations($at('slash:avatar.OPTIONS.server.DESC')),
+    ),
   defer: true,
   ephemeral: true,
   async execute(interaction) {
-    const member = interaction.options.getMember('member') ?? interaction.member;
+    const member
+      = interaction.options.getMember('member') ?? interaction.member;
     const server = interaction.options.getBoolean('server');
     const urls = {} as Record<ImageFormat, string>;
     const embed = new EmbedBuilder();

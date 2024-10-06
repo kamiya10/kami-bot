@@ -28,12 +28,17 @@ export default new EventHandler({
     }
     catch (error) {
       if (error instanceof Error) {
-        logger.error(`Failed to execute command /${interaction.commandName}`, error); ;
+        logger.error(
+          `Failed to execute command /${interaction.commandName}`,
+          error,
+        );
 
         const embed = new EmbedBuilder()
           .setColor(Colors.Red)
           .setTitle('🛑 Uncaught Exception')
-          .setDescription(`Error stack:\n${codeBlock('ansi', error.stack ?? '')}`);
+          .setDescription(
+            `Error stack:\n${codeBlock('ansi', error.stack ?? '')}`,
+          );
 
         if (command.defer) {
           await interaction.editReply({ embeds: [embed] });

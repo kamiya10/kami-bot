@@ -1,5 +1,16 @@
-import type { AnySelectMenuInteraction, ApplicationCommandOptionChoiceData, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, ModalSubmitInteraction } from 'discord.js';
-import type { ModalBuilder, SharedSlashCommand } from '@discordjs/builders';
+import type {
+  AnySelectMenuInteraction,
+  ApplicationCommandOptionChoiceData,
+  AutocompleteInteraction,
+  ButtonInteraction,
+  ChatInputCommandInteraction,
+  ModalSubmitInteraction,
+} from 'discord.js';
+import type {
+  ModalBuilder,
+  SharedSlashCommand,
+  SlashCommandSubcommandBuilder,
+} from '@discordjs/builders';
 import type { KamiClient } from '@/class/client';
 
 export interface KamiCommandOptions {
@@ -7,23 +18,67 @@ export interface KamiCommandOptions {
   defer: boolean;
   ephemeral: boolean;
   modals?: Record<string, ModalBuilder>;
-  execute: (this: KamiClient, interaction: ChatInputCommandInteraction<'cached'>) => void | Promise<void>;
-  onAutocomplete?: (this: KamiClient, interaction: AutocompleteInteraction<'cached'>) => readonly ApplicationCommandOptionChoiceData[] | Promise<readonly ApplicationCommandOptionChoiceData[]>;
-  onButton?: (this: KamiClient, interaction: ButtonInteraction<'cached'>, buttonId: string) => void | Promise<void>;
-  onModalSubmit?: (this: KamiClient, interaction: ModalSubmitInteraction<'cached'>, modalId: string) => void | Promise<void>;
-  onSelectMenu?: (this: KamiClient, interaction: AnySelectMenuInteraction<'cached'>, menuId: string) => void | Promise<void>;
+  execute: (
+    this: KamiClient,
+    interaction: ChatInputCommandInteraction<'cached'>,
+  ) => void | Promise<void>;
+  onAutocomplete?: (
+    this: KamiClient,
+    interaction: AutocompleteInteraction<'cached'>,
+  ) =>
+    | readonly ApplicationCommandOptionChoiceData[]
+    | Promise<readonly ApplicationCommandOptionChoiceData[]>;
+  onButton?: (
+    this: KamiClient,
+    interaction: ButtonInteraction<'cached'>,
+    buttonId: string,
+  ) => void | Promise<void>;
+  onModalSubmit?: (
+    this: KamiClient,
+    interaction: ModalSubmitInteraction<'cached'>,
+    modalId: string,
+  ) => void | Promise<void>;
+  onSelectMenu?: (
+    this: KamiClient,
+    interaction: AnySelectMenuInteraction<'cached'>,
+    menuId: string,
+  ) => void | Promise<void>;
 }
 
-export class KamiCommand {
+export class KamiCommand implements KamiCommandOptions {
   builder: SharedSlashCommand;
   defer: boolean;
   ephemeral: boolean;
   modals?: Record<string, ModalBuilder>;
-  execute: (this: KamiClient, interaction: ChatInputCommandInteraction<'cached'>) => void | Promise<void>;
-  onAutocomplete?: (this: KamiClient, interaction: AutocompleteInteraction<'cached'>) => readonly ApplicationCommandOptionChoiceData[] | Promise<readonly ApplicationCommandOptionChoiceData[]>;
-  onButton?: (this: KamiClient, interaction: ButtonInteraction<'cached'>, buttonId: string) => void | Promise<void>;
-  onModalSubmit?: (this: KamiClient, interaction: ModalSubmitInteraction<'cached'>, modalId: string) => void | Promise<void>;
-  onSelectMenu?: (this: KamiClient, interaction: AnySelectMenuInteraction<'cached'>, menuId: string) => void | Promise<void>;
+  execute: (
+    this: KamiClient,
+    interaction: ChatInputCommandInteraction<'cached'>,
+  ) => void | Promise<void>;
+
+  onAutocomplete?: (
+    this: KamiClient,
+    interaction: AutocompleteInteraction<'cached'>,
+  ) =>
+    | readonly ApplicationCommandOptionChoiceData[]
+    | Promise<readonly ApplicationCommandOptionChoiceData[]>;
+
+  onButton?: (
+    this: KamiClient,
+    interaction: ButtonInteraction<'cached'>,
+    buttonId: string,
+  ) => void | Promise<void>;
+
+  onModalSubmit?: (
+    this: KamiClient,
+    interaction: ModalSubmitInteraction<'cached'>,
+    modalId: string,
+  ) => void | Promise<void>;
+
+  onSelectMenu?: (
+    this: KamiClient,
+    interaction: AnySelectMenuInteraction<'cached'>,
+    menuId: string,
+  ) => void | Promise<void>;
 
   constructor(options: KamiCommandOptions) {
     this.builder = options.builder;
@@ -36,4 +91,12 @@ export class KamiCommand {
     this.onModalSubmit = options.onModalSubmit;
     this.onSelectMenu = options.onSelectMenu;
   }
+}
+
+export interface KamiSubCommand {
+  builder: SlashCommandSubcommandBuilder;
+  execute: (
+    this: KamiClient,
+    interaction: ChatInputCommandInteraction<'cached'>,
+  ) => void | Promise<void>;
 }

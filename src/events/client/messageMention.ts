@@ -1,12 +1,18 @@
 import { EventHandler } from '@/class/event';
-import { EmbedBuilder, messageLink } from 'discord.js';
+import { EmbedBuilder, messageLink, time, TimestampStyles } from 'discord.js';
 
 import type { Guild, Message, TextBasedChannel } from 'discord.js';
 import type { KamiClient } from '@/class/client';
 
-const messageLinkRegex = /https:\/\/(?:ptb|canary)?\.?discord\.com\/channels\/(\d*)\/(\d*)\/(\d*)/;
+const messageLinkRegex
+  = /https:\/\/(?:ptb|canary)?\.?discord\.com\/channels\/(\d*)\/(\d*)\/(\d*)/;
 
-const parseMessageLink = async function (this: KamiClient, url: string): Promise<[guild: Guild, channel: TextBasedChannel, mentioned: Message<true>] | null> {
+const parseMessageLink = async function (
+  this: KamiClient,
+  url: string,
+): Promise<
+  [guild: Guild, channel: TextBasedChannel, mentioned: Message<true>] | null
+  > {
   const result = messageLinkRegex.exec(url);
 
   if (!result || result.length != 3) return null;
@@ -17,10 +23,11 @@ const parseMessageLink = async function (this: KamiClient, url: string): Promise
   const channel = guild.channels.cache.get(result[1]);
   if (!channel?.isTextBased()) return null;
 
-  const message = channel.messages.cache.get(result[2])
-    ?? await channel.messages.fetch({
+  const message
+    = channel.messages.cache.get(result[2])
+    ?? (await channel.messages.fetch({
       message: result[2],
-    });
+    }));
   if (!message) return null;
 
   return [guild, channel, message];
@@ -44,6 +51,7 @@ export default new EventHandler({
       .setColor(mentioned.member!.displayColor);
 
     await message.reply({
+      content: `${time(mentioned.createdTimestamp, TimestampStyles.LongDateTime)}，在 ${channel}，在 ${guild.name}`,
       embeds: [embed, ...mentioned.embeds],
       allowedMentions: {
         parse: [],

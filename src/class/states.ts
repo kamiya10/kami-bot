@@ -53,7 +53,9 @@ export class KamiStates {
     }
     else {
       this.exptech = null;
-      logger.warn('Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)');
+      logger.warn(
+        'Launching without ExpTech WebSocket, some functionallity will not work. (affected: rts, eew)',
+      );
     }
 
     this.setup();
@@ -131,7 +133,9 @@ export class KamiStates {
     }
     catch (error) {
       logger.error(`Error while saving states:`, error);
-      logger.warn('States within this session will be lost when the session ends.');
+      logger.warn(
+        'States within this session will be lost when the session ends.',
+      );
     }
   }
 

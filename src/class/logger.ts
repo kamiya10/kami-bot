@@ -34,11 +34,7 @@ export default {
     );
   },
   info(message: string, ...args: any[]) {
-    console.info(
-      chalk.blue(`${time()} ${pad('Info')}`),
-      message,
-      ...args,
-    );
+    console.info(chalk.blue(`${time()} ${pad('Info')}`), message, ...args);
   },
   warn(message: string, ...args: any[]) {
     console.warn(

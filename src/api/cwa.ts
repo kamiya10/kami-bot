@@ -18,8 +18,10 @@ export type IntensityText =
   | '2級'
   | '3級'
   | '4級'
-  | '5弱' | '5強'
-  | '6弱' | '6強'
+  | '5弱'
+  | '5強'
+  | '6弱'
+  | '6強'
   | '7級';
 
 export enum EarthquakeReportColor {
@@ -152,23 +154,37 @@ export class EarthquakeReport {
   }
 
   get cwaUrl() {
-    return 'https://www.cwa.gov.tw/V8/C/E/EQ/'
-      + this.cwaCode
-      + '.html';
+    return 'https://www.cwa.gov.tw/V8/C/E/EQ/' + this.cwaCode + '.html';
   }
 
   get cwaImage() {
-    return 'https://www.cwa.gov.tw/Data/earthquake/img/EC'
+    return (
+      'https://www.cwa.gov.tw/Data/earthquake/img/EC'
       + (this.EarthquakeNo % 1000 == 0 ? 'L' : '')
-      + (this.EarthquakeNo % 1000 == 0 ? this.timecode : this.timecode.slice(4, this.timecode.length - 2))
-      + (this.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10)
-      + (this.EarthquakeNo % 1000 == 0 ? '' : this.EarthquakeNo.toString().substring(3))
-      + '_H.png';
+      + (this.EarthquakeNo % 1000 == 0
+        ? this.timecode
+        : this.timecode.slice(4, this.timecode.length - 2))
+        + this.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10
+        + (this.EarthquakeNo % 1000 == 0
+          ? ''
+          : this.EarthquakeNo.toString().substring(3))
+          + '_H.png'
+    );
   }
 
   get intensity() {
-    return [null, '1級', '2級', '3級', '4級', '5弱', '5強', '6弱', '6強', '7級']
-      .indexOf(this.Intensity.ShakingArea[0].AreaIntensity);
+    return [
+      null,
+      '1級',
+      '2級',
+      '3級',
+      '4級',
+      '5弱',
+      '5強',
+      '6弱',
+      '6強',
+      '7級',
+    ].indexOf(this.Intensity.ShakingArea[0].AreaIntensity);
   }
 }
 
@@ -190,9 +206,12 @@ export class CwaApi {
       },
     });
 
-    if (!res.ok) throw new Error(`Failed to get resource ${url}: The server responded with a status code of ${res.status}`);
+    if (!res.ok)
+      throw new Error(
+        `Failed to get resource ${url}: The server responded with a status code of ${res.status}`,
+      );
 
-    return await res.json() as T;
+    return (await res.json()) as T;
   }
 
   async getEarthquakeReport(limit?: number, offset?: number) {
@@ -208,7 +227,10 @@ export class CwaApi {
     return data.records.Earthquake.map((v) => new EarthquakeReport(v));
   }
 
-  async getNumberedEarthquakeReport(limit?: number, offset?: number): Promise<EarthquakeReport[]> {
+  async getNumberedEarthquakeReport(
+    limit?: number,
+    offset?: number,
+  ): Promise<EarthquakeReport[]> {
     const query = new URLSearchParams({
       Authorization: this.apikey,
       limit: `${limit ?? ''}`,
