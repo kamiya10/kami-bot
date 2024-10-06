@@ -17,10 +17,9 @@ const dbPath = resolve(_databasePath);
 const file = Bun.file(dbPath);
 
 if (!await file.exists()) {
-  logger.info(`Database does not exists at ${dbPath}. Creating one...`);
-  await Bun.write(file, []);
+  logger.info(`Database does not exists at ${dbPath} and will be created...`);
 }
 
-const sqlite = new Database(dbPath, { strict: true });
+const sqlite = new Database(dbPath, { strict: true, create: true });
 
 export default drizzle(sqlite, { schema });
