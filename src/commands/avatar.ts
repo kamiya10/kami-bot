@@ -21,23 +21,23 @@ import { KamiCommand } from '@/class/command';
 export default new KamiCommand({
   builder: new SlashCommandBuilder()
     .setName('avatar')
-    .setNameLocalizations($at('slash:avatar.NAME'))
+    .setNameLocalizations($at('slash:avatar.$name'))
     .setDescription('Get the avatar of a member.')
-    .setDescriptionLocalizations($at('slash:avatar.DESC'))
+    .setDescriptionLocalizations($at('slash:avatar.$desc'))
     .setContexts(InteractionContextType.Guild)
     .addUserOption(
       new SlashCommandUserOption()
         .setName('member')
-        .setNameLocalizations($at('slash:avatar.OPTIONS.member.NAME'))
+        .setNameLocalizations($at('slash:avatar.%member.$name'))
         .setDescription('The member to get the avatar of.')
-        .setDescriptionLocalizations($at('slash:avatar.OPTIONS.member.DESC')),
+        .setDescriptionLocalizations($at('slash:avatar.%member.$desc')),
     )
     .addBooleanOption(
       new SlashCommandBooleanOption()
         .setName('server')
-        .setNameLocalizations($at('slash:avatar.OPTIONS.server.NAME'))
+        .setNameLocalizations($at('slash:avatar.%server.$name'))
         .setDescription('Get the server specific avatar.')
-        .setDescriptionLocalizations($at('slash:avatar.OPTIONS.server.DESC')),
+        .setDescriptionLocalizations($at('slash:avatar.%server.$desc')),
     ),
   defer: true,
   ephemeral: true,

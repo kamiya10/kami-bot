@@ -21,9 +21,7 @@ export default {
     .addChannelOption(
       new SlashCommandChannelOption()
         .setName('channel')
-        .setNameLocalizations(
-          $at('slash:voice.server.remove.%channel.$name'),
-        )
+        .setNameLocalizations($at('slash:voice.server.remove.%channel.$name'))
         .setDescription(
           'The channel to remove from being a temporary voice channel creator.',
         )

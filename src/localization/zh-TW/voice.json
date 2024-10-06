@@ -1,3 +1,22 @@
 {
-  "default_channel_name": "{username} 的房間"
+  "default_channel_name": "{username} 的房間",
+  "video_quality": {
+    "auto": "自動",
+    "full": "720p"
+  },
+  "region": {
+    "brazil": "巴西",
+    "hongkong": "香港",
+    "india": "印度",
+    "japan": "日本",
+    "rotterdam": "鹿特丹",
+    "russia": "俄羅斯",
+    "singapore": "新加坡",
+    "southafrica": "南非",
+    "sydney": "雪梨",
+    "us_central": "美國中部",
+    "us_east": "美國東部",
+    "us_south": "美國南部",
+    "us_west": "美國西部"
+  }
 }

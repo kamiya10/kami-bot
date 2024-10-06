@@ -1,3 +1,22 @@
 {
-  "default_channel_name": "{username}のチャンネル"
+  "default_channel_name": "{username}のチャンネル",
+  "video_quality": {
+    "auto": "自動",
+    "full": "720p"
+  },
+  "region": {
+    "brazil": "ブラジル",
+    "hongkong": "香港",
+    "india": "インド",
+    "japan": "日本",
+    "rotterdam": "ロッテルダム",
+    "russia": "ロシア",
+    "singapore": "シンガポール",
+    "southafrica": "南アフリカ",
+    "sydney": "シドニー",
+    "us_central": "アメリカ中部",
+    "us_east": "アメリカ東部",
+    "us_south": "アメリカ南部",
+    "us_west": "アメリカ西部"
+  }
 }

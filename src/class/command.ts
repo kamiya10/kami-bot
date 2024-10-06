@@ -20,28 +20,28 @@ export interface KamiCommandOptions {
   modals?: Record<string, ModalBuilder>;
   execute: (
     this: KamiClient,
-    interaction: ChatInputCommandInteraction<'cached'>,
+    interaction: ChatInputCommandInteraction<'cached'>
   ) => void | Promise<void>;
   onAutocomplete?: (
     this: KamiClient,
-    interaction: AutocompleteInteraction<'cached'>,
+    interaction: AutocompleteInteraction<'cached'>
   ) =>
     | readonly ApplicationCommandOptionChoiceData[]
     | Promise<readonly ApplicationCommandOptionChoiceData[]>;
   onButton?: (
     this: KamiClient,
     interaction: ButtonInteraction<'cached'>,
-    buttonId: string,
+    buttonId: string
   ) => void | Promise<void>;
   onModalSubmit?: (
     this: KamiClient,
     interaction: ModalSubmitInteraction<'cached'>,
-    modalId: string,
+    modalId: string
   ) => void | Promise<void>;
   onSelectMenu?: (
     this: KamiClient,
     interaction: AnySelectMenuInteraction<'cached'>,
-    menuId: string,
+    menuId: string
   ) => void | Promise<void>;
 }
 
@@ -52,12 +52,12 @@ export class KamiCommand implements KamiCommandOptions {
   modals?: Record<string, ModalBuilder>;
   execute: (
     this: KamiClient,
-    interaction: ChatInputCommandInteraction<'cached'>,
+    interaction: ChatInputCommandInteraction<'cached'>
   ) => void | Promise<void>;
 
   onAutocomplete?: (
     this: KamiClient,
-    interaction: AutocompleteInteraction<'cached'>,
+    interaction: AutocompleteInteraction<'cached'>
   ) =>
     | readonly ApplicationCommandOptionChoiceData[]
     | Promise<readonly ApplicationCommandOptionChoiceData[]>;
@@ -65,19 +65,19 @@ export class KamiCommand implements KamiCommandOptions {
   onButton?: (
     this: KamiClient,
     interaction: ButtonInteraction<'cached'>,
-    buttonId: string,
+    buttonId: string
   ) => void | Promise<void>;
 
   onModalSubmit?: (
     this: KamiClient,
     interaction: ModalSubmitInteraction<'cached'>,
-    modalId: string,
+    modalId: string
   ) => void | Promise<void>;
 
   onSelectMenu?: (
     this: KamiClient,
     interaction: AnySelectMenuInteraction<'cached'>,
-    menuId: string,
+    menuId: string
   ) => void | Promise<void>;
 
   constructor(options: KamiCommandOptions) {
@@ -93,10 +93,11 @@ export class KamiCommand implements KamiCommandOptions {
   }
 }
 
-export interface KamiSubCommand {
+export interface KamiSubCommand<T = undefined> {
   builder: SlashCommandSubcommandBuilder;
-  execute: (
+  execute(
     this: KamiClient,
     interaction: ChatInputCommandInteraction<'cached'>,
-  ) => void | Promise<void>;
+    ..._: T extends undefined ? [undefined?] : [data: T]
+  ): void | Promise<void>;
 }

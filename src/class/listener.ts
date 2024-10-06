@@ -20,11 +20,11 @@ export class KamiListener {
 
   public on<S extends string | symbol>(
     event: Exclude<S, keyof ClientEvents>,
-    listener: (...args: any[]) => Awaitable<void>,
+    listener: (...args: any[]) => Awaitable<void>
   ): this;
   public on<K extends keyof ClientEvents>(
     event: K,
-    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>
   ): this;
   on<K extends keyof ClientEvents>(
     event: K,
@@ -37,11 +37,11 @@ export class KamiListener {
 
   public once<S extends string | symbol>(
     event: Exclude<S, keyof ClientEvents>,
-    listener: (...args: any[]) => Awaitable<void>,
+    listener: (...args: any[]) => Awaitable<void>
   ): this;
   public once<K extends keyof ClientEvents>(
     event: K,
-    listener: (...args: ClientEvents[K]) => Awaitable<void>,
+    listener: (...args: ClientEvents[K]) => Awaitable<void>
   ): this;
   once<K extends keyof ClientEvents>(
     event: K,

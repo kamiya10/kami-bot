@@ -18,9 +18,9 @@ import { KamiCommand } from '@/class/command';
 export default new KamiCommand({
   builder: new SlashCommandBuilder()
     .setName('ping')
-    .setNameLocalizations($at('slash:ping.NAME'))
+    .setNameLocalizations($at('slash:ping.$name'))
     .setDescription('Check if the bot is alive or not.')
-    .setDescriptionLocalizations($at('slash:ping.DESC'))
+    .setDescriptionLocalizations($at('slash:ping.$desc'))
     .setContexts(
       InteractionContextType.BotDM,
       InteractionContextType.Guild,

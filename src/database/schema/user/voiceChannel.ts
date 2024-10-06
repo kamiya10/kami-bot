@@ -5,8 +5,8 @@ import { user } from '.';
 export const userVoiceChannel = sqliteTable('user_voiceChannel', {
   userId: text('userId').references(() => user.id),
   name: text('name'),
-  bitrate: integer('bitrate'),
   limit: integer('limit'),
+  bitrate: integer('bitrate'),
   region: text('region'),
   videoQuality: integer('videoQuality'),
   slowMode: integer('slowMode'),

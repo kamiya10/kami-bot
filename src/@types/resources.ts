@@ -7,7 +7,7 @@ const resources = {
   common,
   header,
   slash,
-  voice
+  voice,
 } as const;
 
 export default resources;

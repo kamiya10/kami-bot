@@ -1,8 +1,20 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, codeBlock, Colors, ComponentType, EmbedBuilder, PermissionFlagsBits, SlashCommandSubcommandBuilder } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  CategoryChannel,
+  ChannelType,
+  codeBlock,
+  Colors,
+  ComponentType,
+  EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandSubcommandBuilder,
+} from 'discord.js';
 import { $at } from '@/class/utils';
-import { t as $t } from 'i18next';
 
 import type { KamiSubCommand } from '@/class/command';
+import { guildVoiceChannel } from '@/database/schema';
 
 const ChannelIcons = {
   [ChannelType.GuildAnnouncement]: '📢',
@@ -165,23 +177,16 @@ export default {
         userLimit: 1,
       });
 
-      guildVoiceData[channel.id] = {
-        category: category?.id || null,
-        name: null,
-        nameOverride: false,
-        bitrate: null,
-        bitrateOverride: false,
-        limit: null,
-        limitOverride: false,
-        region: null,
-        regionOverride: false,
-      };
-
-      await this.database.database.guild.write();
+      await this.database.insert(guildVoiceChannel).values({
+        channelId: channel.id,
+        guildId: interaction.guild.id,
+      });
 
       const doneEmbed = new EmbedBuilder()
         .setColor(Colors.Green)
-        .setDescription('Temporary Voice Channel has been added to the server.');
+        .setDescription(
+          'Temporary Voice Channel has been added to the server.',
+        );
 
       await decision.editReply({ embeds: [doneEmbed], components: [] });
     }

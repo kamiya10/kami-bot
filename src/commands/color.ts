@@ -20,9 +20,9 @@ import { KamiCommand } from '@/class/command';
 export default new KamiCommand({
   builder: new SlashCommandBuilder()
     .setName('color')
-    .setNameLocalizations($at('slash:color.NAME'))
+    .setNameLocalizations($at('slash:color.$name'))
     .setDescription('Converts a color into many forms.')
-    .setDescriptionLocalizations($at('slash:color.DESC'))
+    .setDescriptionLocalizations($at('slash:color.$desc'))
     .setContexts(
       InteractionContextType.BotDM,
       InteractionContextType.Guild,
@@ -31,11 +31,11 @@ export default new KamiCommand({
     .addStringOption(
       new SlashCommandStringOption()
         .setName('color')
-        .setNameLocalizations($at('slash:color.OPTIONS.color.NAME'))
+        .setNameLocalizations($at('slash:color.%color.$name'))
         .setDescription(
           'The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color.',
         )
-        .setDescriptionLocalizations($at('slash:color.OPTIONS.color.DESC')),
+        .setDescriptionLocalizations($at('slash:color.%color.$desc')),
     ),
   defer: true,
   ephemeral: true,

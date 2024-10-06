@@ -1,3 +1,22 @@
 {
-  "default_channel_name": "{username}' Voice Room'"
+  "default_channel_name": "{username}' Voice Room'",
+  "video_quality": {
+    "auto": "Auto",
+    "full": "Full HD"
+  },
+  "region": {
+    "brazil": "Brazil",
+    "hongkong": "Hong Kong",
+    "india": "India",
+    "japan": "Japan",
+    "rotterdam": "Rotterdam",
+    "russia": "Russia",
+    "singapore": "Singapore",
+    "southafrica": "South Africa",
+    "sydney": "Sydney",
+    "us_central": "US Central",
+    "us_east": "US East",
+    "us_south": "US South",
+    "us_west": "US West"
+  }
 }

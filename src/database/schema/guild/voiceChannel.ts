@@ -8,10 +8,12 @@ export const guildVoiceChannel = sqliteTable('guild_voiceChannel', {
   channelId: text('channelId').primaryKey(),
   categoryId: text('categoryId'),
   name: text('name'),
-  bitrate: integer('bitrate').notNull().default(64000),
   limit: integer('limit').notNull().default(0),
+  bitrate: integer('bitrate').notNull().default(64000),
   region: text('region'),
-  videoQuality: integer('videoQuality').notNull().default(VideoQualityMode.Auto),
+  videoQuality: integer('videoQuality')
+    .notNull()
+    .default(VideoQualityMode.Auto),
   slowMode: integer('slowMode').notNull().default(0),
   nsfw: integer('nsfw', { mode: 'boolean' }).notNull().default(false),
 });

@@ -1,176 +1,125 @@
 {
-    "avatar": {
-        "$name": "アバター",
-        "$desc": "サーバーメンバーのアバターを取得する。",
-        "OPTIONS": {
-            "member": {
-                "$name": "メンバー",
-                "$desc": "アバターを取得するメンバー。"
-            },
-            "server": {
-                "$name": "サーバーアバター",
-                "$desc": "メンバーのサーバーアバターを取得する。"
-            }
-        }
+  "avatar": {
+    "$name": "アバター",
+    "$desc": "サーバーメンバーのアバターを取得する。",
+    "%member": {
+      "$name": "メンバー",
+      "$desc": "アバターを取得するメンバー。"
     },
-    "banner": {
-        "$name": "プロフィールバナー",
-        "$desc": "サーバーメンバーのプロフィールバナーを取得する。",
-        "OPTIONS": {
-            "member": {
-                "$name": "メンバー",
-                "$desc": "プロフィールバナーを取得するメンバー。"
-            },
-            "server": {
-                "$name": "サーバープロフィールバナー",
-                "$desc": "メンバーのサーバープロフィールバナーを取得する。"
-            }
-        }
-    },
-    "color": {
-        "$name": "カラー",
-        "$desc": "カラーをさまざまな表現形式に変換します。",
-        "OPTIONS": {
-            "color": {
-                "$name": "カラー",
-                "$desc": "変換する色。16進トリプレット、rgb、hsl、hsv、cmyk、または英語名を受け入れます。オプションを省略すると、ランダムな色を使用します。"
-            }
-        }
-    },
-    "ping": {
-        "$name": "ping",
-        "$desc": "ボットが生きてるかどうか確認する。"
-    },
-    "voice": {
-        "$name": "個人ボイスチャンネル",
-        "$desc": "個人ボイスチャンネルに関するコマンド。",
-        "server": {
-            "$name": "サーバー設定",
-            "$desc": "Server configuration commands for temporary voice channels.",
-            "setup": {
-                "$name": "クイックセットアップ",
-                "$desc": "Setup a temporary voice channel creator."
-            },
-            "add": {
-                "$name": "追加",
-                "$desc": "Add a voice channel to be a temporary voice channel creator.",
-                "%channel": {
-                    "$name": "チャンネル",
-                    "$desc": "The channel to be a temporary voice channel creator."
-                },
-                "%category": {
-                    "$name": "カテゴリー",
-                    "$desc": "The category temporary voice channel should be created in."
-                }
-            },
-            "remove": {
-                "$name": "削除",
-                "$desc": "Remove a voice channel from being a temporary voice channel creator.",
-                "%channel": {
-                    "$name": "チャンネル",
-                    "$desc": "The channel to remove from being a temporary voice channel creator."
-                }
-            },
-            "info": {
-                "$name": "情報",
-                "$desc": "現在設定されている個人ボイスチャンネルの設定を表示する。",
-                "%channel": {
-                    "$name": "チャンネル",
-                    "$desc": "作成チャンネルを指定してその設定を表示します。"
-                }
-            },
-            "name": {
-                "$desc": "Change the name of the template temporary voice channel."
-            },
-            "limit": {
-                "$desc": "Change the user limit of the template temporary voice channel."
-            },
-            "bitrate": {
-                "$desc": "Change the bitrate of the template temporary voice channel."
-            },
-            "region": {
-                "$desc": "Change the region of the template temporary voice channel."
-            },
-            "%default": {
-                "$name": "チャンネル",
-                "$desc": "この設定を指定した作成チャンネルにのみ影響を与える。"
-            },
-            "%override": {
-                "$name": "オーバーライド",
-                "$desc": "ユーザー設定を無視してサーバーの設定を使用する。"
-            }
-        },
-        "name": {
-            "$name": "名前",
-            "$desc": "個人ボイスチャンネルの名前を変更する。",
-            "%name": {
-                "$name": "名前",
-                "$desc": "新しい個人ボイスチャンネル名前。"
-            }
-        },
-        "limit": {
-            "$name": "ユーサー上限",
-            "$desc": "Change the user limit of a temporary voice channel you owned.",
-            "%limit": {
-                "$name": "人数",
-                "$desc": "The new user limit of the temporary voice channel. (0 = Unlimited)"
-            }
-        },
-        "bitrate": {
-            "$name": "ビットレート",
-            "$desc": "Change the bitrate of a temporary voice channel you owned.",
-            "%bitrate": {
-                "$name": "ビットレート",
-                "$desc": "The new bitrate of the temporary voice channel. (In kbps)"
-            }
-        },
-        "region": {
-            "$name": "地域",
-            "$desc": "Change the region of a temporary voice channel you owned.",
-            "%region": {
-                "$name": "地域",
-                "$desc": "The new region of the temporary voice channel."
-            },
-            "CHOICES": {
-                "brazil": "ブラジル",
-                "hongkong": "香港",
-                "india": "インド",
-                "japan": "日本",
-                "rotterdam": "ロッテルダム",
-                "russia": "ロシア",
-                "singapore": "シンガポール",
-                "southafrica": "南アフリカ",
-                "sydney": "シドニー",
-                "us_central": "アメリカ中部",
-                "us_east": "アメリカ東部",
-                "us_south": "アメリカ南部",
-                "us_west": "アメリカ西部"
-            }
-        },
-        "clear": {
-            "$name": "リセット",
-            "$desc": "Clear temporary voice channel settings.",
-            "OPTIONS": {
-                "which": {
-                    "$name": "which",
-                    "$desc": "Choose which scope to clear."
-                }
-            },
-            "CHOICES": {
-                "global": "全域設定",
-                "guild": "このサーバーの設定",
-                "all": "デフォルトに戻す（全域設定とすべてのサーバーの設定）"
-            }
-        },
-        "OPTIONS": {
-            "default": {
-                "$name": "default",
-                "$desc": "Make this name as the server default name of the temporary voice channel on channel creation."
-            },
-            "global": {
-                "$name": "global",
-                "$desc": "Save the setting globally so it applies to all servers."
-            }
-        }
+    "%server": {
+      "$name": "サーバーアバター",
+      "$desc": "メンバーのサーバーアバターを取得する。"
     }
+  },
+  "banner": {
+    "$name": "プロフィールバナー",
+    "$desc": "サーバーメンバーのプロフィールバナーを取得する。",
+    "%member": {
+      "$name": "メンバー",
+      "$desc": "プロフィールバナーを取得するメンバー。"
+    },
+    "%server": {
+      "$name": "サーバープロフィールバナー",
+      "$desc": "メンバーのサーバープロフィールバナーを取得する。"
+    }
+  },
+  "color": {
+    "$name": "カラー",
+    "$desc": "カラーをさまざまな表現形式に変換します。",
+    "%color": {
+      "$name": "カラー",
+      "$desc": "変換する色。16進トリプレット、rgb、hsl、hsv、cmyk、または英語名を受け入れます。オプションを省略すると、ランダムな色を使用します。"
+    }
+  },
+  "ping": {
+    "$name": "ping",
+    "$desc": "ボットが生きてるかどうか確認する。"
+  },
+  "voice": {
+    "$name": "個人ボイスチャンネル",
+    "$desc": "個人ボイスチャンネルに関するコマンド。",
+    "server": {
+      "$name": "サーバー設定",
+      "$desc": "Server configuration commands for temporary voice channels.",
+      "setup": {
+        "$name": "クイックセットアップ",
+        "$desc": "Setup a temporary voice channel creator."
+      },
+      "set": {
+        "$name": "設定",
+        "$desc": "Add a voice channel or alter the settings of a temporary voice channel creator.",
+        "%channel": {
+          "$name": "チャンネル",
+          "$desc": "The channel to be a temporary voice channel creator."
+        },
+        "%category": {
+          "$name": "カテゴリー",
+          "$desc": "The category temporary voice channel should be created in."
+        }
+      },
+      "remove": {
+        "$name": "削除",
+        "$desc": "Remove a voice channel from being a temporary voice channel creator.",
+        "%channel": {
+          "$name": "チャンネル",
+          "$desc": "The channel to remove from being a temporary voice channel creator."
+        }
+      },
+      "info": {
+        "$name": "情報",
+        "$desc": "現在設定されている個人ボイスチャンネルの設定を表示する。",
+        "%channel": {
+          "$name": "チャンネル",
+          "$desc": "作成チャンネルを指定してその設定を表示します。"
+        }
+      }
+    },
+    "set": {
+      "$name": "設定",
+      "$desc": "Change the settings of the temporary voice channel when it is created.",
+      "%name": {
+        "$name": "名前",
+        "$desc": "The name template of the temporary voice channel."
+      },
+      "%limit": {
+        "$name": "ユーザー上限",
+        "$desc": "The user limit of the temporary voice channel."
+      },
+      "%bitrate": {
+        "$name": "ビットレート",
+        "$desc": "The bitrate of the temporary voice channel."
+      },
+      "%region": {
+        "$name": "地域",
+        "$desc": "The region of the temporary voice channel."
+      },
+      "%video": {
+        "$name": "ビデオ画質",
+        "$desc": "The video quality of the temporary voice channel."
+      },
+      "%slow": {
+        "$name": "低速モード",
+        "$desc": "The time user needed to wait before sending another message."
+      },
+      "%nsfw": {
+        "$name": "年齢制限",
+        "$desc": "Is the channel nsfw? 👀"
+      }
+    },
+    "clear": {
+      "$name": "リセット",
+      "$desc": "Clear temporary voice channel settings.",
+      "OPTIONS": {
+        "which": {
+          "$name": "which",
+          "$desc": "Choose which scope to clear."
+        }
+      },
+      "CHOICES": {
+        "global": "全域設定",
+        "guild": "このサーバーの設定",
+        "all": "デフォルトに戻す（全域設定とすべてのサーバーの設定）"
+      }
+    }
+  }
 }
