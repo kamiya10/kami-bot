@@ -3,7 +3,7 @@ import ts from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 
 export default ts.config(
-  { files: ['/src/**/*.{ts}'] },
+  { files: ['/src/**/*.{ts}', 'drizzle.config.ts'] },
   { ignores: ['**/*.{js,mjs,cjs}'] },
   js.configs.recommended,
   stylistic.configs.customize({

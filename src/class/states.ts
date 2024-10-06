@@ -8,7 +8,7 @@ import { Collection } from 'discord.js';
 import { CwaApi } from '@/api/cwa';
 import { join } from 'path';
 
-import type { EarthquakeReport } from '@/api/cwa';
+import type { CwaFetchError, EarthquakeReport } from '@/api/cwa';
 import type { KamiClient } from '@/class/client';
 import type { Station } from '@exptechtw/api-wrapper';
 import logger from 'logger';
@@ -62,7 +62,7 @@ export class KamiStates {
   }
 
   private setup() {
-    setInterval(() => {
+    const updateReport = () => {
       void cwa.getEarthquakeReport().then((v) => {
         if (!v.length) {
           return;
@@ -77,6 +77,8 @@ export class KamiStates {
         }
 
         this.report = v;
+      }).catch((e: CwaFetchError) => {
+        if (e.response.status != 429) throw e;
       });
 
       void cwa.getNumberedEarthquakeReport().then((v) => {
@@ -93,14 +95,22 @@ export class KamiStates {
         }
 
         this.numberedReport = v;
+      }).catch((e: CwaFetchError) => {
+        if (e.response.status != 429) throw e;
       });
-    }, 1000);
+    };
 
-    setInterval(() => {
+    const updateRtsStation = () => {
       void new ExpTechApi().getStations().then((v) => {
         this.data.stations = v;
       });
-    }, 5_000);
+    };
+
+    updateReport();
+    setInterval(updateReport, 10_000);
+
+    updateRtsStation();
+    setInterval(updateRtsStation, 600_000);
 
     if (this.exptech) {
       this.exptech.on(WebSocketEvent.Rts, (rts) => {

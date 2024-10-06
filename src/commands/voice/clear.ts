@@ -15,9 +15,7 @@ export default {
     .setNameLocalizations($at('slash:voice.clear.$name'))
     .setDescription('Clear temporary voice channel settings.')
     .setDescriptionLocalizations($at('slash:voice.clear.$desc')),
-  async execute(interaction, { baseEmbed }) {
-    const embed = new EmbedBuilder(baseEmbed.data);
-
+  async execute(interaction, embed) {
     await this.database
       .delete(userVoiceChannel)
       .where(eq(userVoiceChannel.userId, interaction.member.id));
@@ -25,11 +23,7 @@ export default {
     embed
       .setColor(Colors.Green)
       .setDescription(
-        'Your defaul temporary voice channel settings have been cleared.',
+        '✅ Your defaul temporary voice channel settings have been cleared.',
       );
-
-    await interaction.editReply({
-      embeds: [embed],
-    });
   },
-} as KamiSubCommand<{ baseEmbed: EmbedBuilder }>;
+} as KamiSubCommand<EmbedBuilder>;

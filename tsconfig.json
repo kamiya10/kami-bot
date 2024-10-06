@@ -1,5 +1,5 @@
 {
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "drizzle.config.ts"],
   "compilerOptions": {
     // Enable latest features
     "lib": ["ESNext"],

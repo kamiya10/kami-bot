@@ -188,6 +188,15 @@ export class EarthquakeReport {
   }
 }
 
+export class CwaFetchError extends Error {
+  response: Response;
+
+  constructor(message: string, response: Response) {
+    super(message);
+    this.response = response;
+  }
+}
+
 export class CwaApi {
   apikey: string;
 
@@ -207,8 +216,9 @@ export class CwaApi {
     });
 
     if (!res.ok)
-      throw new Error(
+      throw new CwaFetchError(
         `Failed to get resource ${url}: The server responded with a status code of ${res.status}`,
+        res,
       );
 
     return (await res.json()) as T;

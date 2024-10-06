@@ -79,6 +79,9 @@ export class KamiClient extends Client {
         const guild = this.guilds.cache.get(devGuildId);
         if (!guild) return;
 
+        logger.debug(
+          `Updating commands in ${guild.name}. (DEV_GUILD_ID=${devGuildId})`,
+        );
         await guild.commands.set(data);
         return;
       }

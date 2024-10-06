@@ -10,7 +10,9 @@
     "build": "rollup -c rollup.config.mjs",
     "start": "node --es-module-specifier-resolution=node .",
     "lint": "prettier ./src/ --write --log-level warn && eslint \"src/**/*.ts\" --fix",
-    "toc": "i18next-resources-for-ts toc -i ./src/localization/zh-TW -o ./src/@types/resources.ts"
+    "i18n": "i18next-resources-for-ts toc -i ./src/localization/zh-TW -o ./src/@types/resources.ts",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate"
   },
   "keywords": [
     "discord.js"
@@ -42,6 +44,7 @@
     "@types/bun": "^1.1.10",
     "@types/color-convert": "^2.0.4",
     "@types/tinycolor2": "^1.4.6",
+    "better-sqlite3": "^11.3.0",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.24.2",
     "eslint": "9.11.1",

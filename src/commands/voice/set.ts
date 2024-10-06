@@ -7,12 +7,90 @@ import {
   SlashCommandSubcommandBuilder,
   VideoQualityMode,
 } from 'discord.js';
-import { videoQualityChoices, voiceRegionChoices } from '$/voice';
+import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
+import { userVoiceChannel } from '@/database/schema';
 
 import type { KamiSubCommand } from '@/class/command';
-import { userVoiceChannel } from '@/database/schema';
-import { $at } from '@/class/utils';
+
+const voiceRegionChoices = [
+  {
+    value: 'brazil',
+    name: 'Brazil',
+    name_localizations: $at('voice:region.brazil'),
+  },
+  {
+    value: 'hongkong',
+    name: 'Hong Kong',
+    name_localizations: $at('voice:region.hongkong'),
+  },
+  {
+    value: 'india',
+    name: 'India',
+    name_localizations: $at('voice:region.india'),
+  },
+  {
+    value: 'japan',
+    name: 'Japan',
+    name_localizations: $at('voice:region.japan'),
+  },
+  {
+    value: 'rotterdam',
+    name: 'Rotterdam',
+    name_localizations: $at('voice:region.rotterdam'),
+  },
+  {
+    value: 'russia',
+    name: 'Russia',
+    name_localizations: $at('voice:region.russia'),
+  },
+  {
+    value: 'singapore',
+    name: 'Singapore',
+    name_localizations: $at('voice:region.singapore'),
+  },
+  {
+    value: 'southafrica',
+    name: 'South Africa',
+    name_localizations: $at('voice:region.southafrica'),
+  },
+  {
+    value: 'sydney',
+    name: 'Sydney',
+    name_localizations: $at('voice:region.sydney'),
+  },
+  {
+    value: 'us-central',
+    name: 'US Central',
+    name_localizations: $at('voice:region.us_central'),
+  },
+  {
+    value: 'us-east',
+    name: 'US East',
+    name_localizations: $at('voice:region.us_east'),
+  },
+  {
+    value: 'us-south',
+    name: 'US South',
+    name_localizations: $at('voice:region.us_south'),
+  },
+  {
+    value: 'us-west',
+    name: 'US West',
+    name_localizations: $at('voice:region.us_west'),
+  },
+];
+
+const videoQualityChoices = [
+  {
+    value: VideoQualityMode.Auto,
+    name: 'Auto',
+  },
+  {
+    value: VideoQualityMode.Full,
+    name: 'Full',
+  },
+];
 
 export const nameOption = new SlashCommandStringOption()
   .setName('name')
@@ -85,7 +163,7 @@ export default {
     .addIntegerOption(videoQualityOption)
     .addIntegerOption(slowModeOption)
     .addBooleanOption(nsfwOption),
-  async execute(interaction, { baseEmbed }) {
+  async execute(interaction, embed) {
     const name = interaction.options.getString('name');
     const limit = interaction.options.getInteger('limit');
     const bitrate = interaction.options.getInteger('bitrate');
@@ -95,8 +173,6 @@ export default {
     ) as VideoQualityMode | null;
     const slowMode = interaction.options.getInteger('slow');
     const nsfw = interaction.options.getBoolean('nsfw');
-
-    const embed = new EmbedBuilder(baseEmbed.data);
 
     if (
       // eslint-disable-next-line no-constant-binary-expression
@@ -110,9 +186,6 @@ export default {
       && nsfw == null
     ) {
       embed.setColor(Colors.Red).setDescription('請至少提供一個選項');
-      await interaction.editReply({
-        embeds: [embed],
-      });
       return;
     }
 
@@ -186,9 +259,5 @@ export default {
           inline: true,
         },
       );
-
-    await interaction.editReply({
-      embeds: [embed],
-    });
   },
-} as KamiSubCommand<{ baseEmbed: EmbedBuilder }>;
+} as KamiSubCommand<EmbedBuilder>;

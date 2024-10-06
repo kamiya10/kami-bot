@@ -111,7 +111,7 @@ export default new KamiCommand({
             name: 'decimal',
             value: `\`\`\`js\n${
               isOpaque ? Number(`0x${hex}`) : Number(`0x${hex8}`)
-            }\`\`\`\n\`\`\`\nDecimal(${
+            }\`\`\`\n\`\`\`java\nDecimal(${
               isOpaque ? Number(`0x${hex}`) : Number(`0x${hex8}`)
             })\`\`\``,
             inline: true,

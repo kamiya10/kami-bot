@@ -3,6 +3,7 @@ import { guildVoiceChannel, userVoiceChannel } from '@/database/schema';
 import { EventHandler } from '@/class/event';
 import { eq } from 'drizzle-orm';
 import { t as $t } from 'i18next';
+import logger from 'logger';
 
 interface VoiceSettings {
   name: string | null;
@@ -38,18 +39,15 @@ const formatVoiceName = (name: string, member: GuildMember): string => {
 export default new EventHandler({
   event: 'voiceStateUpdate',
   async on(_, newState) {
-    if (!(newState.channel instanceof VoiceChannel)) {
-      return;
-    }
-
-    if (!(newState.member instanceof GuildMember)) {
-      return;
-    }
+    if (!newState.channel) return;
+    if (!newState.member) return;
 
     const guildVoiceData
       = await this.database.query.guildVoiceChannel.findFirst({
         where: eq(guildVoiceChannel.channelId, newState.channel.id),
       });
+
+    logger.trace(newState.channel.id, guildVoiceData);
 
     if (!guildVoiceData) return;
 

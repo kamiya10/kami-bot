@@ -23,9 +23,9 @@ import { guildVoiceChannel } from '@/database/schema';
 
 export const channelOption = new SlashCommandChannelOption()
   .setName('channel')
-  .setNameLocalizations($at('slash:voice.server.add.%channel.$name'))
+  .setNameLocalizations($at('slash:voice.server.set.%channel.$name'))
   .setDescription('The channel to be a temporary voice channel creator.')
-  .setDescriptionLocalizations($at('slash:voice.server.add.%channel.$desc'))
+  .setDescriptionLocalizations($at('slash:voice.server.set.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildVoice)
   .setRequired(true);
 
@@ -40,11 +40,11 @@ const categoryOption = new SlashCommandChannelOption()
 export default {
   builder: new SlashCommandSubcommandBuilder()
     .setName('set')
-    .setNameLocalizations($at('slash:voice.server.add.$name'))
+    .setNameLocalizations($at('slash:voice.server.set.$name'))
     .setDescription(
       'Add a voice channel to be a temporary voice channel creator.',
     )
-    .setDescriptionLocalizations($at('slash:voice.server.add.$desc'))
+    .setDescriptionLocalizations($at('slash:voice.server.set.$desc'))
     .addChannelOption(channelOption)
     .addChannelOption(categoryOption)
     .addStringOption(nameOption)
@@ -54,7 +54,7 @@ export default {
     .addIntegerOption(videoQualityOption)
     .addIntegerOption(slowModeOption)
     .addBooleanOption(nsfwOption),
-  async execute(interaction, { baseEmbed }) {
+  async execute(interaction, embed) {
     const channel = interaction.options.getChannel<ChannelType.GuildVoice>(
       'channel',
       true,
@@ -71,8 +71,6 @@ export default {
     const slowMode = interaction.options.getInteger('slow') ?? 0;
     const nsfw = interaction.options.getBoolean('nsfw') ?? false;
 
-    const embed = new EmbedBuilder(baseEmbed.data);
-
     if (
       // eslint-disable-next-line no-constant-binary-expression
       true
@@ -84,10 +82,9 @@ export default {
       && slowMode == null
       && nsfw == null
     ) {
-      embed.setColor(Colors.Red).setDescription('請至少提供一個選項');
-      await interaction.editReply({
-        embeds: [embed],
-      });
+      embed
+        .setColor(Colors.Red)
+        .setDescription('請至少提供一個選項');
       return;
     }
 
@@ -171,9 +168,5 @@ export default {
           inline: true,
         },
       );
-
-    await interaction.editReply({
-      embeds: [embed],
-    });
   },
-} as KamiSubCommand<{ baseEmbed: EmbedBuilder }>;
+} as KamiSubCommand<EmbedBuilder>;
