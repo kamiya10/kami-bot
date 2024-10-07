@@ -17,67 +17,67 @@ const voiceRegionChoices = [
   {
     value: 'brazil',
     name: 'Brazil',
-    name_localizations: $at('voice:region.brazil'),
+    name_localizations: $at('voice:@region.brazil'),
   },
   {
     value: 'hongkong',
     name: 'Hong Kong',
-    name_localizations: $at('voice:region.hongkong'),
+    name_localizations: $at('voice:@region.hongkong'),
   },
   {
     value: 'india',
     name: 'India',
-    name_localizations: $at('voice:region.india'),
+    name_localizations: $at('voice:@region.india'),
   },
   {
     value: 'japan',
     name: 'Japan',
-    name_localizations: $at('voice:region.japan'),
+    name_localizations: $at('voice:@region.japan'),
   },
   {
     value: 'rotterdam',
     name: 'Rotterdam',
-    name_localizations: $at('voice:region.rotterdam'),
+    name_localizations: $at('voice:@region.rotterdam'),
   },
   {
     value: 'russia',
     name: 'Russia',
-    name_localizations: $at('voice:region.russia'),
+    name_localizations: $at('voice:@region.russia'),
   },
   {
     value: 'singapore',
     name: 'Singapore',
-    name_localizations: $at('voice:region.singapore'),
+    name_localizations: $at('voice:@region.singapore'),
   },
   {
     value: 'southafrica',
     name: 'South Africa',
-    name_localizations: $at('voice:region.southafrica'),
+    name_localizations: $at('voice:@region.southafrica'),
   },
   {
     value: 'sydney',
     name: 'Sydney',
-    name_localizations: $at('voice:region.sydney'),
+    name_localizations: $at('voice:@region.sydney'),
   },
   {
     value: 'us-central',
     name: 'US Central',
-    name_localizations: $at('voice:region.us_central'),
+    name_localizations: $at('voice:@region.us_central'),
   },
   {
     value: 'us-east',
     name: 'US East',
-    name_localizations: $at('voice:region.us_east'),
+    name_localizations: $at('voice:@region.us_east'),
   },
   {
     value: 'us-south',
     name: 'US South',
-    name_localizations: $at('voice:region.us_south'),
+    name_localizations: $at('voice:@region.us_south'),
   },
   {
     value: 'us-west',
     name: 'US West',
-    name_localizations: $at('voice:region.us_west'),
+    name_localizations: $at('voice:@region.us_west'),
   },
 ];
 
@@ -215,8 +215,8 @@ export default {
       });
 
     const videoQualityString = {
-      [VideoQualityMode.Auto]: $t('voice:video_quality.auto'),
-      [VideoQualityMode.Full]: $t('voice:video_quality.full'),
+      [VideoQualityMode.Auto]: $t('voice:@video.auto'),
+      [VideoQualityMode.Full]: $t('voice:@video.full'),
     };
 
     embed

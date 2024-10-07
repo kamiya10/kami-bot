@@ -5,6 +5,7 @@ import {
   SlashCommandSubcommandBuilder,
 } from 'discord.js';
 import { $at } from '@/class/utils';
+import { t as $t } from 'i18next';
 
 import type { KamiSubCommand } from '@/class/command';
 import { guildVoiceChannel } from '@/database/schema';
@@ -25,22 +26,25 @@ export default {
         .addChannelTypes(ChannelType.GuildVoice)
         .setRequired(true),
     ),
-  async execute(interaction) {
+  async execute(interaction, embed) {
     const channel = interaction.options.getChannel<ChannelType.GuildVoice>(
       'channel',
       true,
     );
 
-    await this.database
+    const deleted = await this.database
       .delete(guildVoiceChannel)
-      .where(eq(guildVoiceChannel.channelId, channel.id));
-
-    const embed = new EmbedBuilder().setDescription(
-      `已將 ${channel} 從語音頻道中移除`,
-    );
-
-    await interaction.editReply({
-      embeds: [embed],
-    });
+      .where(eq(guildVoiceChannel.channelId, channel.id))
+      .returning();
+    if (deleted.length) {
+      embed.setDescription(
+        $t('voice:remove_success', { lng: interaction.locale, 0: channel.toString() }),
+      );
+    }
+    else {
+      embed.setDescription(
+        $t('voice:remove_fail', { lng: interaction.locale, 0: channel.toString() }),
+      );
+    }
   },
-} as KamiSubCommand;
+} as KamiSubCommand<EmbedBuilder>;

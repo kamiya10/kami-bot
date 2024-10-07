@@ -5,7 +5,7 @@ export const guildVoiceChannel = sqliteTable('guild_voiceChannel', {
   guildId: text('guildId').notNull(),
   channelId: text('channelId').primaryKey(),
   categoryId: text('categoryId'),
-  name: text('name'),
+  name: text('name').notNull(),
   limit: integer('limit').notNull().default(0),
   bitrate: integer('bitrate').notNull().default(64000),
   region: text('region'),

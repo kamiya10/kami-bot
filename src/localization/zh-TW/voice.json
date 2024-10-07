@@ -1,10 +1,27 @@
 {
   "default_channel_name": "{username} 的房間",
-  "video_quality": {
+  "name": "名稱模板",
+  "bitrate": "位元率",
+  "limit": "人數限制",
+  "@limit": {
+    "disabled": "無人數限制"
+  },
+  "region": "地區",
+  "video": "視訊品質",
+  "slow": "慢速模式",
+  "@slow": {
+    "disabled": "無限速",
+    "seconds": "{{0}} 秒",
+    "minutes": "{{0}} 分鐘",
+    "hours": "{{0}} 小時"
+  },
+  "nsfw": "限制級",
+  "@video": {
     "auto": "自動",
     "full": "720p"
   },
-  "region": {
+  "@region": {
+    "auto": "自動",
     "brazil": "巴西",
     "hongkong": "香港",
     "india": "印度",
@@ -18,5 +35,8 @@
     "us_east": "美國東部",
     "us_south": "美國南部",
     "us_west": "美國西部"
-  }
+  },
+  "update_success": "✅ 個人語音頻道設定已更新",
+  "remove_success": "✅ 已將 {{0}} 從個人語音頻道中移除",
+  "remove_fail": "❌ {{0}} 不是個人語音頻道的創建頻道"
 }

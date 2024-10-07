@@ -11,15 +11,17 @@ import {
   ChannelType,
   Colors,
   EmbedBuilder,
+  inlineCode,
   SlashCommandChannelOption,
   SlashCommandSubcommandBuilder,
   VideoQualityMode,
 } from 'discord.js';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
+import { guildVoiceChannel } from '@/database/schema';
+import { formatVoiceName } from '@/utils/voice';
 
 import type { KamiSubCommand } from '@/class/command';
-import { guildVoiceChannel } from '@/database/schema';
 
 export const channelOption = new SlashCommandChannelOption()
   .setName('channel')
@@ -61,34 +63,17 @@ export default {
     );
     const category
       = interaction.options.getChannel<ChannelType.GuildCategory>('category');
-    const name = interaction.options.getString('name');
-    const limit = interaction.options.getInteger('limit') ?? 0;
-    const bitrate = interaction.options.getInteger('bitrate') ?? 64000;
-    const region = interaction.options.getString('region');
+    const name = interaction.options.getString('name') ?? undefined;
+    const limit = interaction.options.getInteger('limit') ?? undefined;
+    const bitrate = interaction.options.getInteger('bitrate') ?? undefined;
+    const region = interaction.options.getString('region') ?? undefined;
     const videoQuality
       = (interaction.options.getInteger('video') as VideoQualityMode)
-      ?? VideoQualityMode.Auto;
-    const slowMode = interaction.options.getInteger('slow') ?? 0;
-    const nsfw = interaction.options.getBoolean('nsfw') ?? false;
+      ?? undefined;
+    const slowMode = interaction.options.getInteger('slow') ?? undefined;
+    const nsfw = interaction.options.getBoolean('nsfw') ?? undefined;
 
-    if (
-      // eslint-disable-next-line no-constant-binary-expression
-      true
-      && name == null
-      && limit == null
-      && bitrate == null
-      && region == null
-      && videoQuality == null
-      && slowMode == null
-      && nsfw == null
-    ) {
-      embed
-        .setColor(Colors.Red)
-        .setDescription('請至少提供一個選項');
-      return;
-    }
-
-    await this.database
+    const data = await this.database
       .insert(guildVoiceChannel)
       .values({
         guildId: interaction.guild.id,
@@ -96,7 +81,7 @@ export default {
         categoryId: category?.id,
         bitrate,
         limit,
-        name,
+        name: name ?? $t('voice:default_channel_name', { lng: interaction.locale }),
         nsfw,
         region,
         videoQuality,
@@ -114,59 +99,70 @@ export default {
           videoQuality,
           slowMode,
         },
-      });
+      }).returning();
+    const setting = data[0];
 
     const videoQualityString = {
-      [VideoQualityMode.Auto]: $t('voice:video_quality.auto'),
-      [VideoQualityMode.Full]: $t('voice:video_quality.full'),
-    };
+      [VideoQualityMode.Auto]: $t('voice:@video.auto', { lng: interaction.locale }),
+      [VideoQualityMode.Full]: $t('voice:@video.full', { lng: interaction.locale }),
+    } as Record<number, string>;
 
     let description = `${channel}`;
 
     if (category) {
-      description += ` ➜ ${category}`;
+      description += ` ➜ 📁${category.name}`;
     }
+
+    const voiceRegionI18nKey = `voice:@region.${setting.region ?? 'auto'}`;
 
     embed
       .setColor(Colors.Green)
-      .setTitle('✅ 已更新個人語音頻道偏好設定')
+      .setTitle($t('voice:update_success', { lng: interaction.locale }))
       .setDescription(description)
-      .addFields(
-        {
-          name: '位元率',
-          value: bitrate == null ? '`未設定`' : `${bitrate} kbps`,
-          inline: true,
-        },
-        {
-          name: '人數上限',
-          value: `${limit || '無上限'}`,
-          inline: true,
-        },
-        {
-          name: '地區',
-          value: `${region}`,
-          inline: true,
-        },
-        {
-          name: '視訊畫質',
-          value: `${videoQuality == null ? '`未設定`' : `${videoQualityString[videoQuality]}`}`,
-          inline: true,
-        },
-        {
-          name: '低速模式',
-          value:
-            slowMode == null
-              ? '`未設定`'
-              : slowMode == 0
-                ? '無限速'
-                : `${slowMode}秒`,
-          inline: true,
-        },
-        {
-          name: 'NSFW',
-          value: `${nsfw}`,
-          inline: true,
-        },
+      .addFields({
+        name: $t('voice:name', { lng: interaction.locale }),
+        value: [
+          inlineCode(setting.name),
+          formatVoiceName(setting.name, interaction.member),
+        ].join('\n'),
+        inline: true,
+      },
+      {
+        name: $t('voice:bitrate', { lng: interaction.locale }),
+        value: `${setting.bitrate} kbps`,
+        inline: true,
+      },
+      {
+        name: $t('voice:limit', { lng: interaction.locale }),
+        value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
+        inline: true,
+      },
+      {
+        name: $t('voice:region', { lng: interaction.locale }),
+        value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
+        inline: true,
+      },
+      {
+        name: $t('voice:video', { lng: interaction.locale }),
+        value: `${`${videoQualityString[setting.videoQuality]}`}`,
+        inline: true,
+      },
+      {
+        name: $t('voice:slow', { lng: interaction.locale }),
+        value: setting.slowMode == 0
+          ? $t('voice:@slow.disabled', { lng: interaction.locale })
+          : setting.slowMode < 60
+            ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
+            : setting.slowMode < 3600
+              ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
+              : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
+        inline: true,
+      },
+      {
+        name: $t('slash:voice.set.%nsfw.$name', { lng: interaction.locale }),
+        value: `${setting.nsfw}`,
+        inline: true,
+      },
       );
   },
 } as KamiSubCommand<EmbedBuilder>;

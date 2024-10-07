@@ -39,4 +39,9 @@ pe.appendStyle({
   },
 });
 
-await i18next.init({ resources: strings });
+await i18next.init({
+  resources: strings,
+  interpolation: {
+    escapeValue: false,
+  },
+});

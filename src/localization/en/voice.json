@@ -1,10 +1,30 @@
 {
-  "default_channel_name": "{username}' Voice Room'",
-  "video_quality": {
+  "default_channel_name": "{username}'s Voice Room",
+  "name": "Name Template",
+  "bitrate": "Bitrate",
+  "limit": "User Limit",
+  "@limit": {
+    "disabled": "Unlimited"
+  },
+  "region": "Region Override",
+  "video": "Video Quality",
+  "slow": "Slow Mode",
+  "@slow": {
+    "disabled": "Off",
+    "seconds_one": "{{0}} second",
+    "seconds_other": "{{0}} seconds",
+    "minutes_one": "{{0}} minute",
+    "minutes_other": "{{0}} minutes",
+    "hours_one": "{{0}} hours",
+    "hours_other": "{{0}} hours"
+  },
+  "nsfw": "NSFW",
+  "@video": {
     "auto": "Auto",
     "full": "Full HD"
   },
-  "region": {
+  "@region": {
+    "auto": "Auto",
     "brazil": "Brazil",
     "hongkong": "Hong Kong",
     "india": "India",
@@ -18,5 +38,8 @@
     "us_east": "US East",
     "us_south": "US South",
     "us_west": "US West"
-  }
+  },
+  "update_success": "✅ Settings updated",
+  "remove_success": "✅ {{0}} has been removed from temporary voice channel.",
+  "remove_fail": "❌ {{0}} is not a temporary voice channel creator."
 }

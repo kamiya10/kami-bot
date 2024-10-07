@@ -79,23 +79,23 @@
       "$desc": "Change the settings of the temporary voice channel when it is created.",
       "%name": {
         "$name": "名前",
-        "$desc": "The name template of the temporary voice channel."
+        "$desc": "作成されたのチャンネルの名前のテンプレート"
       },
       "%limit": {
-        "$name": "ユーザー上限",
-        "$desc": "The user limit of the temporary voice channel."
+        "$name": "ユーザー人数制限",
+        "$desc": "作成されたのチャンネルの人数制限"
       },
       "%bitrate": {
         "$name": "ビットレート",
-        "$desc": "The bitrate of the temporary voice channel."
+        "$desc": "作成されたのチャンネルのビットレート"
       },
       "%region": {
         "$name": "地域",
-        "$desc": "The region of the temporary voice channel."
+        "$desc": "作成されたのチャンネルの地域"
       },
       "%video": {
         "$name": "ビデオ画質",
-        "$desc": "The video quality of the temporary voice channel."
+        "$desc": "作成されたのチャンネルのビデオ画質"
       },
       "%slow": {
         "$name": "低速モード",
@@ -103,23 +103,12 @@
       },
       "%nsfw": {
         "$name": "年齢制限",
-        "$desc": "Is the channel nsfw? 👀"
+        "$desc": "年齢制限のチャンネルを作りますか 👀"
       }
     },
     "clear": {
       "$name": "リセット",
-      "$desc": "Clear temporary voice channel settings.",
-      "OPTIONS": {
-        "which": {
-          "$name": "which",
-          "$desc": "Choose which scope to clear."
-        }
-      },
-      "CHOICES": {
-        "global": "全域設定",
-        "guild": "このサーバーの設定",
-        "all": "デフォルトに戻す（全域設定とすべてのサーバーの設定）"
-      }
+      "$desc": "Clear temporary voice channel settings."
     }
   }
 }

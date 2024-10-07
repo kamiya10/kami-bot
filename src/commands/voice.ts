@@ -2,6 +2,7 @@ import {
   Colors,
   EmbedBuilder,
   GuildMember,
+  PermissionFlagsBits,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from 'discord.js';
@@ -27,6 +28,7 @@ export default new KamiCommand({
     .setNameLocalizations($at('slash:voice.$name'))
     .setDescription('Commands for temporary voice channels.')
     .setDescriptionLocalizations($at('slash:voice.$desc'))
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addSubcommandGroup(
       new SlashCommandSubcommandGroupBuilder()
         .setName('server')
@@ -88,7 +90,7 @@ export default new KamiCommand({
 
         // /voice server remove
         case 'remove':
-          await voiceServerRemove.execute.call(this, interaction);
+          await voiceServerRemove.execute.call(this, interaction, baseEmbed);
           break;
       }
     }

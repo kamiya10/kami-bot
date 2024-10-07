@@ -39,14 +39,14 @@ export default {
   warn(message: string, ...args: any[]) {
     console.warn(
       `${time()} ${chalk.yellow.bold(pad('Warn'))}`,
-      message,
+      chalk.bold(message),
       ...args,
     );
   },
   error(message: string, ...args: any[]) {
     console.error(
       `${time()} ${chalk.red.bold(pad('Error'))}`,
-      chalk.bold(message),
+      chalk.bold.underline(message),
       ...args,
     );
   },

@@ -1,10 +1,27 @@
 {
   "default_channel_name": "{username}のチャンネル",
-  "video_quality": {
+  "name": "名前テンプレート",
+  "bitrate": "ビットレート",
+  "limit": "ユーザー人数制限",
+  "@limit": {
+    "disabled": "制限なし"
+  },
+  "region": "地域",
+  "video": "ビデオ画質",
+  "slow": "低速モード",
+  "@slow": {
+    "disabled": "オフ",
+    "seconds": "{{0}} 秒",
+    "minutes": "{{0}} 分",
+    "hours": "{{0}} 時間"
+  },
+  "nsfw": "年齢制限",
+  "@video": {
     "auto": "自動",
     "full": "720p"
   },
-  "region": {
+  "@region": {
+    "auto": "自動",
     "brazil": "ブラジル",
     "hongkong": "香港",
     "india": "インド",
@@ -18,5 +35,8 @@
     "us_east": "アメリカ東部",
     "us_south": "アメリカ南部",
     "us_west": "アメリカ西部"
-  }
+  },
+  "update_success": "✅ 個人チャンネルの設定が更新されました",
+  "remove_success": "✅ {{0}} の個人チャンネル設定が削除されました",
+  "remove_fail": "❌ {{0}} は個人チャンネルの作成チャンネルではありません"
 }

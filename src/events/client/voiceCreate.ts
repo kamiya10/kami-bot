@@ -1,35 +1,8 @@
-import { ChannelType, GuildMember, VoiceChannel } from 'discord.js';
+import { ChannelType } from 'discord.js';
 import { guildVoiceChannel, userVoiceChannel } from '@/database/schema';
 import { EventHandler } from '@/class/event';
 import { eq } from 'drizzle-orm';
-import { t as $t } from 'i18next';
-import logger from 'logger';
-
-interface VoiceSettings {
-  name: string | null;
-  bitrate: number;
-  limit: number;
-  region: string | null;
-}
-
-type Nullable<T> = { [P in keyof T]: T[P] | null };
-
-const resolveSetting = <K extends keyof VoiceSettings>(
-  property: K,
-  guild: VoiceSettings,
-  user?: Nullable<VoiceSettings>,
-): VoiceSettings[K] => {
-  return user?.[property] ?? guild[property];
-};
-
-const formatVoiceName = (name: string, member: GuildMember): string => {
-  name = name.replace(/({displayName})/g, member.displayName);
-  name = name.replace(/({nickname})/g, member.nickname ?? '');
-  name = name.replace(/({username})/g, member.user.username);
-  name = name.replace(/({globalName})/g, member.user.globalName ?? '');
-  name = name.replace(/({tag})/g, member.user.tag);
-  return name;
-};
+import { formatVoiceName, resolveSetting } from '@/utils/voice';
 
 /**
  * Temporary voice channel creation event listener.
@@ -47,46 +20,44 @@ export default new EventHandler({
         where: eq(guildVoiceChannel.channelId, newState.channel.id),
       });
 
-    logger.trace(newState.channel.id, guildVoiceData);
-
     if (!guildVoiceData) return;
 
     const userVoiceData = await this.database.query.userVoiceChannel.findFirst({
       where: eq(userVoiceChannel.userId, newState.member.id),
     });
 
-    if (newState.channel.id in guildVoiceData) {
-      const channel = await newState.guild.channels.create({
-        name: formatVoiceName(
-          resolveSetting('name', guildVoiceData, userVoiceData)
-          ?? $t('voice:default_channel_name'),
-          newState.member,
-        ),
-        type: ChannelType.GuildVoice,
-        bitrate: resolveSetting('bitrate', guildVoiceData, userVoiceData),
-        userLimit: resolveSetting('limit', guildVoiceData, userVoiceData),
-        rtcRegion:
+    const channel = await newState.guild.channels.create({
+      name: formatVoiceName(
+        resolveSetting('name', guildVoiceData, userVoiceData),
+        newState.member,
+      ),
+      type: ChannelType.GuildVoice,
+      userLimit: resolveSetting('limit', guildVoiceData, userVoiceData),
+      bitrate: resolveSetting('bitrate', guildVoiceData, userVoiceData),
+      rtcRegion:
           resolveSetting('region', guildVoiceData, userVoiceData) ?? undefined,
-        parent: guildVoiceData.categoryId,
-        reason: 'Temporary Voice Channel',
-      });
+      videoQualityMode: resolveSetting('videoQuality', guildVoiceData, userVoiceData),
+      rateLimitPerUser: resolveSetting('slowMode', guildVoiceData, userVoiceData),
+      nsfw: resolveSetting('nsfw', guildVoiceData, userVoiceData),
+      parent: guildVoiceData.categoryId,
+      reason: 'Temporary Voice Channel',
+    });
 
-      this.states.voice.set(channel.id, {
-        categoryId: guildVoiceData.categoryId,
-        creatorId: newState.channel.id,
-        ownerId: newState.member.id,
-        defaultOptions: {
-          name: channel.name,
-          bitrate: channel.bitrate,
-          limit: channel.userLimit,
-          region: channel.rtcRegion,
-        },
-      });
+    this.states.voice.set(channel.id, {
+      categoryId: guildVoiceData.categoryId,
+      creatorId: newState.channel.id,
+      ownerId: newState.member.id,
+      defaultOptions: {
+        name: channel.name,
+        bitrate: channel.bitrate,
+        limit: channel.userLimit,
+        region: channel.rtcRegion,
+      },
+    });
 
-      await newState.member.voice.setChannel(
-        channel,
-        'Temporary Voice Channel',
-      );
-    }
+    await newState.member.voice.setChannel(
+      channel,
+      'Temporary Voice Channel',
+    );
   },
 });
