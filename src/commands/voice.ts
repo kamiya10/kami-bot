@@ -13,7 +13,6 @@ import { KamiCommand } from '@/class/command';
 import voiceServerSet from './voice/server/set';
 import voiceServerInfo from './voice/server/info';
 import voiceServerRemove from './voice/server/remove';
-import voiceServerSetup from './voice/server/setup';
 import voiceClear from './voice/clear';
 import voiceSet from './voice/set';
 
@@ -37,9 +36,6 @@ export default new KamiCommand({
           'Server configuration commands for temporary voice channels.',
         )
         .setDescriptionLocalizations($at('slash:voice.server.$desc'))
-
-        // /voice server setup
-        .addSubcommand(voiceServerSetup.builder)
 
         // /voice server config
         .addSubcommand(voiceServerSet.builder)
@@ -73,11 +69,6 @@ export default new KamiCommand({
     if (interaction.options.getSubcommandGroup(false) == 'server') {
       // /voice server [setup/info/set/remove]
       switch (interaction.options.getSubcommand()) {
-        // /voice server setup
-        case 'setup':
-          await voiceServerSetup.execute.call(this, interaction);
-          break;
-
         // /voice server info
         case 'info':
           await voiceServerInfo.execute.call(this, interaction);

@@ -100,4 +100,25 @@ export interface KamiSubCommand<T = undefined> {
     interaction: ChatInputCommandInteraction<'cached'>,
     ..._: T extends undefined ? [undefined?] : [data: T]
   ): void | Promise<void>;
+  onAutocomplete?: (
+    this: KamiClient,
+    interaction: AutocompleteInteraction<'cached'>
+  ) =>
+    | readonly ApplicationCommandOptionChoiceData[]
+    | Promise<readonly ApplicationCommandOptionChoiceData[]>;
+  onButton?: (
+    this: KamiClient,
+    interaction: ButtonInteraction<'cached'>,
+    buttonId: string
+  ) => void | Promise<void>;
+  onModalSubmit?: (
+    this: KamiClient,
+    interaction: ModalSubmitInteraction<'cached'>,
+    modalId: string
+  ) => void | Promise<void>;
+  onSelectMenu?: (
+    this: KamiClient,
+    interaction: AnySelectMenuInteraction<'cached'>,
+    menuId: string
+  ) => void | Promise<void>;
 }

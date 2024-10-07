@@ -2,6 +2,7 @@
 // @ts-check
 
 import {
+  codeBlock,
   EmbedBuilder,
   InteractionContextType,
   SlashCommandBuilder,
@@ -88,6 +89,75 @@ export default new KamiCommand({
     const ansi16 = convert.rgb.ansi16(rgb.r, rgb.g, rgb.b);
     const ansi256 = convert.rgb.ansi256(rgb.r, rgb.g, rgb.b);
 
+    const colorHex = isOpaque ? hex : hex8;
+    const colorAsNumber = isOpaque ? Number(`0x${hex}`) : Number(`0x${hex8}`);
+
+    const hexJs = codeBlock('js', `0x${colorHex}`);
+    const hexCss = codeBlock('css', `#${colorHex}`);
+
+    const decimalJs = codeBlock('js', `${colorAsNumber}`);
+    const decimalJava = codeBlock('java', `Decimal(${colorAsNumber})`);
+
+    // rgb(r g b / a)
+    const rgbCss = codeBlock('css', `rgb(${rgb.r} ${rgb.g} ${rgb.b}${
+      !isOpaque ? ` / ${rgb.a}` : ''
+    })`);
+
+    // hsv(h s v / a)
+    const hsvCss = codeBlock('css', `hsv(${hsv[0]}deg ${hsv[1]}% ${hsv[2]}%${
+      !isOpaque ? ` / ${rgb.a}` : ''
+    })`);
+
+    // hsl(h s l / a)
+    const hslCss = codeBlock('css', `hsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%${
+      !isOpaque ? ` / ${rgb.a}` : ''
+    })`);
+
+    // hwb(h s l / a)
+    const hwbCss = codeBlock('css', `hwb(${hwb[0]}deg ${hwb[1]}% ${hwb[2]}%${
+      !isOpaque ? ` / ${rgb.a}` : ''
+    })`);
+
+    // xyz(x, y, z)
+    const xyzCss = codeBlock('css', `${
+      isOpaque ? 'xyz' : 'xyza'
+    }(${xyz[0]}, ${xyz[1]}, ${xyz[2]}${
+      !isOpaque ? `, ${rgb.a}` : ''
+    })`);
+
+    // yiq(y, i, q)
+    const yiqCss = codeBlock('css', `${
+      isOpaque ? 'yiq' : 'yiqa'
+    }(${yiq[0]}, ${yiq[1]}, ${yiq[2]}${
+      !isOpaque ? `, ${rgb.a}` : ''
+    })`);
+
+    // Color.valueOf(4289736237)
+    const androidNumber = codeBlock(
+      'java',
+      `Color.valueOf(${Number(`0x${hex8.slice(6)}${hex}`)})`,
+    );
+
+    // Color.valueOf(0xffb02e2d)
+    const androidHex = codeBlock(
+      'java',
+      `Color.valueOf(0x${
+        hex8.slice(6)
+      }${hex})`,
+    );
+
+    // cmy(c% m% y%)
+    const cmyCss = codeBlock(
+      'css',
+      `cmy(${cmy[0]}% ${cmy[1]}% ${cmy[2]}%)`,
+    );
+
+    // cmyk(c% m% y% k%)
+    const cmykCss = codeBlock(
+      'css',
+      `cmyk(${cmyk[0]}% ${cmyk[1]}% ${cmyk[2]}% ${cmyk[3]}%)`,
+    );
+
     embed
       .setColor(Number(`0x${color.toHex()}`))
       .setThumbnail(`https://singlecolorimage.com/get/${hex}/128x128`)
@@ -102,97 +172,51 @@ export default new KamiCommand({
           },
           {
             name: 'hex',
-            value: `\`\`\`js\n0x${isOpaque ? hex : hex8}\`\`\`\n\`\`\`css\n#${
-              isOpaque ? hex.toUpperCase() : hex8.toUpperCase()
-            }\`\`\`\n\`\`\`css\n#${isOpaque ? hex : hex8}\`\`\``,
+            value: `${hexJs}${hexCss}`,
             inline: true,
           },
           {
             name: 'decimal',
-            value: `\`\`\`js\n${
-              isOpaque ? Number(`0x${hex}`) : Number(`0x${hex8}`)
-            }\`\`\`\n\`\`\`java\nDecimal(${
-              isOpaque ? Number(`0x${hex}`) : Number(`0x${hex8}`)
-            })\`\`\``,
+            value: `${decimalJs}${decimalJava}`,
             inline: true,
           },
           {
-            name: isOpaque ? 'rgb' : 'rgba',
+            name: 'rgb',
             value: `🟥 ${rgb.r} (${rgbPercentage.r})　🟩 ${rgb.g} (${
               rgbPercentage.g
-            })　🟦 ${rgb.b} (${rgbPercentage.b})\n\`\`\`css\n${
-              isOpaque ? 'rgb' : 'rgba'
-            }(${rgb.r}, ${rgb.g}, ${rgb.b}${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\`\n\`\`\`css\nrgb(${rgb.r} ${rgb.g} ${rgb.b}${
-              !isOpaque ? ` / ${rgb.a}` : ''
-            })\`\`\``,
+            })　🟦 ${rgb.b} (${rgbPercentage.b})\n${rgbCss}`,
           },
           {
             name: 'hsv',
             value: `🏳️‍🌈 ${hsv[0]}°　<:hsv_s:1184500143567945778> ${
               hsv[1]
-            }%　<:hsv_v:1184500676227764266> ${hsv[2]}%\n\`\`\`css\n${
-              isOpaque ? 'hsv' : 'hsva'
-            }(${hsv[0]}deg, ${hsv[1]}%, ${hsv[2]}%${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\`\n\`\`\`css\nhsv(${hsv[0]}deg ${hsv[1]}% ${hsv[2]}%${
-              !isOpaque ? ` / ${rgb.a}` : ''
-            })\`\`\``,
+            }%　<:hsv_v:1184500676227764266> ${hsv[2]}%\n${hsvCss}`,
             inline: true,
           },
           {
             name: 'hsl',
             value: `🏳️‍🌈 ${hsl[0]}°　<:hsl_s:1184501512999800843> ${
               hsl[1]
-            }%　<:hsl_l:1184500903764566146> ${hsl[2]}%\n\`\`\`css\n${
-              isOpaque ? 'hsl' : 'hsla'
-            }(${hsl[0]}deg, ${hsl[1]}%, ${hsl[2]}%${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\`\n\`\`\`css\nhsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%${
-              !isOpaque ? ` / ${rgb.a}` : ''
-            })\`\`\``,
+            }%　<:hsl_l:1184500903764566146> ${hsl[2]}%\n${hslCss}`,
             inline: true,
           },
           {
             name: 'hwb',
-            value: `🏳️‍🌈 ${hwb[0]}°　⬜ ${hwb[1]}%　⬛ ${
-              hwb[2]
-            }%\n\`\`\`css\n${isOpaque ? 'hwb' : 'hwba'}(${hwb[0]}deg, ${
-              hwb[1]
-            }%, ${hwb[2]}%${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\`\n\`\`\`css\nhwb(${hwb[0]}deg ${hwb[1]}% ${hwb[2]}%${
-              !isOpaque ? ` / ${rgb.a}` : ''
-            })\`\`\``,
+            value: `🏳️‍🌈 ${hwb[0]}°　⬜ ${hwb[1]}%　⬛ ${hwb[2]}%\n${hwbCss}`,
           },
           {
             name: 'xyz',
-            value: `🇽 ${xyz[0]}　🇾 ${cmyk[1]}　🇿 ${xyz[2]}\n\`\`\`css\n${
-              isOpaque ? 'xyz' : 'xyza'
-            }(${xyz[0]}, ${xyz[1]}, ${xyz[2]}${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\``,
+            value: `🇽 ${xyz[0]}　🇾 ${cmyk[1]}　🇿 ${xyz[2]}\n${xyzCss}`,
             inline: true,
           },
           {
             name: 'yiq',
-            value: `🇾 ${yiq[0]}　🇮 ${yiq[1]}　🇶 ${yiq[2]}\n\`\`\`css\n${
-              isOpaque ? 'yiq' : 'yiqa'
-            }(${yiq[0]}, ${yiq[1]}, ${yiq[2]}${
-              !isOpaque ? `, ${rgb.a}` : ''
-            })\`\`\``,
+            value: `🇾 ${yiq[0]}　🇮 ${yiq[1]}　🇶 ${yiq[2]}\n${yiqCss}`,
             inline: true,
           },
           {
             name: 'Android ARGB (android.graphics.Color)',
-            value: `\`\`\`js\n${Number(
-              `0x${hex8.slice(6)}${hex}`,
-            )}\`\`\`\n\`\`\`js\n0x${hex8
-              .slice(6)
-              .toUpperCase()}${hex.toUpperCase()}\`\`\`\n\`\`\`js\n0x${hex8.slice(
-              6,
-            )}${hex}\`\`\``,
+            value: `${androidNumber}${androidHex}`,
           },
           {
             name: 'cmy',
@@ -202,9 +226,7 @@ export default new KamiCommand({
               cmy[1] * 100,
             )}%)　🟨 ${cmy[2]} (${Math.round(
               cmy[2] * 100,
-            )}%)\n\`\`\`css\ncmy(${cmy[0]}%, ${cmy[1]}%, ${
-              cmy[2]
-            }%)\`\`\`\n\`\`\`css\ncmy(${cmy[0]}% ${cmy[1]}% ${cmy[2]}%)\`\`\``,
+            )}%)\n${cmyCss}`,
           },
           {
             name: 'cmyk',
@@ -212,17 +234,17 @@ export default new KamiCommand({
               cmyk[0]
             }%)　<:cmyk_m:1184522450306879548> ${cmyk[1] / 100} (${
               cmyk[1]
-            }%)　🟨 ${cmyk[2] * 100} (${cmyk[2]}%)　⬛ ${cmyk[3] / 100} (${
+            }%)　🟨 ${cmyk[2] / 100} (${cmyk[2]}%)　⬛ ${cmyk[3] / 100} (${
               cmyk[3]
-            }%)\n\`\`\`css\ncmyk(${cmyk[0]}%, ${cmyk[1]}%, ${cmyk[2]}%, ${
-              cmyk[3]
-            }%)\`\`\`\n\`\`\`css\ncmyk(${cmyk[0]}% ${cmyk[1]}% ${
-              cmyk[2]
-            }% ${cmyk[3]}%)\`\`\``,
+            }%)\n${cmykCss}`,
           },
           {
             name: 'ansi',
-            value: `ansi16 \`${ansi16}\`\nansi256 \`${ansi256}\``,
+            value: [
+              `ansi16 \`\\x1b[${ansi16}m\``,
+              `ansi256 fg \`\\x1b[38;5;${ansi256}m\``,
+              `ansi256 bg \`\\x1b[48;5;${ansi256}m\``,
+            ].join('\n'),
           },
         ],
       );

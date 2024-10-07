@@ -41,10 +41,6 @@
     "server": {
       "$name": "伺服器設定",
       "$desc": "Server configuration commands for temporary voice channels.",
-      "setup": {
-        "$name": "快速設定",
-        "$desc": "Setup a temporary voice channel creator."
-      },
       "set": {
         "$name": "設定",
         "$desc": "Add a voice channel or alter the settings of a temporary voice channel creator.",

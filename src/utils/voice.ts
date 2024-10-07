@@ -1,7 +1,7 @@
 import type { GuildMember } from 'discord.js';
 import type { Nullable } from './types';
 
-interface VoiceSettings {
+export interface VoiceSettings {
   name: string;
   limit: number;
   bitrate: number;
