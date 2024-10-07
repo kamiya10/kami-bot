@@ -1,5 +1,5 @@
+import { ReportMessageStyle, buildEarthquakeReportMessage } from '@/utils/report';
 import { EventHandler } from '@/class/event';
-import { buildEarthquakeReportMessage } from '@/class/utils';
 import { guildEqReportChannel } from '@/database/schema';
 import { inArray } from 'drizzle-orm';
 
@@ -22,7 +22,7 @@ export default new EventHandler({
       }
 
       void channel
-        .send(buildEarthquakeReportMessage(report, 'cwa-simple'))
+        .send(buildEarthquakeReportMessage(report, ReportMessageStyle.CwaSimple))
         .catch((e) => logger.error(`${e}`, e));
     }
 

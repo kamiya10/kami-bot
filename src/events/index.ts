@@ -1,15 +1,24 @@
 import type { EventHandler } from '@/class/event';
 
-import command from '#/client/command';
+import onCommand from '#/client/onCommand';
+import onAutocomplete from './client/onAutocomplete';
+import onButton from './client/onButton';
+import onModalSubmit from './client/onModalSubmit';
+import onSelectMenu from './client/onSelectMenu';
 import ready from '#/client/ready';
-import report from '#/client/report';
-import rts from '#/client/rts';
-import voiceCreate from '#/client/voiceCreate';
-import voiceDelete from '#/client/voiceDelete';
-import voiceRemove from '#/client/voiceRemove';
+
+import report from '#/custom/report';
+import rts from '#/custom/rts';
+import voiceCreate from '#/custom/voiceCreate';
+import voiceDelete from '#/custom/voiceDelete';
+import voiceRemove from '#/custom/voiceRemove';
 
 export default [
-  command,
+  onCommand,
+  onAutocomplete,
+  onButton,
+  onModalSubmit,
+  onSelectMenu,
   ready,
   report,
   rts,
