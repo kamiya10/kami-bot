@@ -1,12 +1,23 @@
+import { WeatherAdvisory } from './weatherAdvisory';
 import { version } from '~/package.json';
 
-interface BaseResponse {
+import type { APIWeatherAdvisoryRecordResponse } from './weatherAdvisory';
+
+interface APIResultResourceField {
+  id: string;
+  type: 'String' | 'Double' | 'Integer' | 'Timestamp';
+}
+
+export interface APIBaseResponse {
   success: 'true' | 'false';
-  result: object;
+  result: {
+    resource_id: string;
+    fields: APIResultResourceField[];
+  };
   records: object;
 }
 
-interface EarthquakeReportResponse extends BaseResponse {
+interface EarthquakeReportResponse extends APIBaseResponse {
   records: {
     datasetDescription: '地震報告';
     Earthquake: Record<string, never>[];
@@ -206,7 +217,7 @@ export class CwaApi {
     this.apikey = apikey;
   }
 
-  private async get<T = BaseResponse>(url: string): Promise<T> {
+  private async get<T = APIBaseResponse>(url: string): Promise<T> {
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -251,5 +262,21 @@ export class CwaApi {
     const data = await this.get<EarthquakeReportResponse>(url);
 
     return data.records.Earthquake.map((v) => new EarthquakeReport(v));
+  }
+
+  async getWeatherAdvisory(
+    limit?: number,
+    offset?: number,
+  ): Promise<WeatherAdvisory[]> {
+    const query = new URLSearchParams({
+      Authorization: this.apikey,
+      limit: `${limit ?? ''}`,
+      offset: `${offset ?? ''}`,
+    });
+
+    const url = `${CwaApi.baseUrl}/v1/rest/datastore/W-C0033-002?${query.toString()}`;
+    const data = await this.get<APIWeatherAdvisoryRecordResponse>(url);
+
+    return data.records.record.map((v) => new WeatherAdvisory(v));
   }
 }

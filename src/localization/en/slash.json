@@ -106,5 +106,17 @@
       "$name": "clear",
       "$desc": "Clear temporary voice channel settings."
     }
+  },
+  "weather": {
+    "$name": "weather",
+    "$desc": "Query weather information.",
+    "push": {
+      "$name": "push",
+      "$desc": "Subscribe to weather advisory push notifications.",
+      "%channel": {
+        "$name": "channel",
+        "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
+      }
+    }
   }
 }

@@ -12,6 +12,7 @@ import rts from '#/custom/rts';
 import voiceCreate from '#/custom/voiceCreate';
 import voiceDelete from '#/custom/voiceDelete';
 import voiceRemove from '#/custom/voiceRemove';
+import weatherAdvisory from '#/custom/weatherAdvisory';
 
 export default [
   onCommand,
@@ -25,4 +26,5 @@ export default [
   voiceCreate,
   voiceDelete,
   voiceRemove,
+  weatherAdvisory,
 ] as EventHandler[];

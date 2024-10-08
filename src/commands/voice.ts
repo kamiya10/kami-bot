@@ -6,15 +6,15 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from 'discord.js';
+import { KamiCommand } from '@/class/command';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
-import { KamiCommand } from '@/class/command';
 
-import voiceServerSet from './voice/server/set';
-import voiceServerInfo from './voice/server/info';
-import voiceServerRemove from './voice/server/remove';
-import voiceClear from './voice/clear';
-import voiceSet from './voice/set';
+import voiceServerSet from '$/voice/server/set';
+import voiceServerInfo from '$/voice/server/info';
+import voiceServerRemove from '$/voice/server/remove';
+import voiceClear from '$/voice/clear';
+import voiceSet from '$/voice/set';
 
 /**
  * The /voice command.

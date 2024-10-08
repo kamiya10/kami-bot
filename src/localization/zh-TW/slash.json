@@ -106,5 +106,17 @@
       "$name": "清除設定",
       "$desc": "Clear temporary voice channel settings."
     }
+  },
+  "weather": {
+    "$name": "天氣",
+    "$desc": "查詢天氣資訊",
+    "push": {
+      "$name": "推播設定",
+      "$desc": "設定天氣警特報推播頻道",
+      "%channel": {
+        "$name": "頻道",
+        "$desc": "要訂閱天氣警特報推播通知的頻道，留空來取消訂閱天氣警特報"
+      }
+    }
   }
 }

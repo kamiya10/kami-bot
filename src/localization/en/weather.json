@@ -1,0 +1,6 @@
+{
+  "channel": "Channel",
+  "style": "Message Style",
+  "remove_success": "✅ Successfully unsubscribed from weather advisory notifications",
+  "set_push_success": "✅ Settings updated"
+}

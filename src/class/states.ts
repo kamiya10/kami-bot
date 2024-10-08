@@ -12,6 +12,7 @@ import type { CwaFetchError, EarthquakeReport } from '@/api/cwa';
 import type { KamiClient } from '@/class/client';
 import type { Station } from '@exptechtw/api-wrapper';
 import logger from 'logger';
+import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
 
 const cwa = new CwaApi(process.env['CWA_TOKEN']);
 
@@ -36,6 +37,7 @@ export class KamiStates {
   public voice: Collection<string, KamiVoiceState>;
   public report: EarthquakeReport[] = [];
   public numberedReport: EarthquakeReport[] = [];
+  public weatherAdvisory: WeatherAdvisory[] = [];
   public exptech: ExpTechWebsocket | null;
   public data: {
     stations: Record<string, Station> | null;
@@ -62,7 +64,7 @@ export class KamiStates {
   }
 
   private setup() {
-    const updateReport = () => {
+    const updateCwa = () => {
       void cwa.getEarthquakeReport().then((v) => {
         if (!v.length) {
           return;
@@ -98,6 +100,37 @@ export class KamiStates {
       }).catch((e: CwaFetchError) => {
         if (e.response.status != 429) throw e;
       });
+
+      void cwa.getWeatherAdvisory().then((v) => {
+        if (!v.length) {
+          return;
+        }
+
+        if (this.weatherAdvisory.length) {
+          const updated: WeatherAdvisory[] = [];
+
+          for (const wa of v) {
+            const old = this.weatherAdvisory.find((f) =>
+              f.issueTime.getTime() == wa.issueTime.getTime()
+              && f.description == wa.description,
+            );
+
+            if (!old || wa.hash != old.hash) {
+              updated.push(wa);
+            }
+          }
+
+          if (!updated.length) {
+            return;
+          }
+
+          this.client.emit('weatherAdvisory', updated);
+        }
+
+        this.weatherAdvisory = v;
+      }).catch((e: CwaFetchError) => {
+        if (e.response.status != 429) throw e;
+      });
     };
 
     const updateRtsStation = () => {
@@ -106,8 +139,8 @@ export class KamiStates {
       });
     };
 
-    updateReport();
-    setInterval(updateReport, 10_000);
+    updateCwa();
+    setInterval(updateCwa, 15_000);
 
     updateRtsStation();
     setInterval(updateRtsStation, 600_000);

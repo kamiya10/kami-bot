@@ -4,5 +4,6 @@
   "color": "Color | {{0}}",
   "ping": "Ping | {{0}}",
   "rts": "RTS | {{0}}",
-  "voice": "Temporary Voice Channel | {{0}}"
+  "voice": "Temporary Voice Channel | {{0}}",
+  "weather": "Weather | {{0}}"
 }
