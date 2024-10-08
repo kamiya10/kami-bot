@@ -1,10 +1,15 @@
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ChannelType,
   Collection,
   Colors,
   EmbedBuilder,
+  inlineCode,
   SlashCommandChannelOption,
   SlashCommandSubcommandBuilder,
+  VideoQualityMode,
 } from 'discord.js';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
@@ -12,6 +17,7 @@ import { t as $t } from 'i18next';
 import type { KamiSubCommand } from '@/class/command';
 import { eq } from 'drizzle-orm';
 import { guildVoiceChannel } from '@/database/schema';
+import { formatVoiceName } from '@/utils/voice';
 
 const channelOption = new SlashCommandChannelOption()
   .setName('channel')
@@ -22,7 +28,7 @@ const channelOption = new SlashCommandChannelOption()
   .setDescriptionLocalizations($at('slash:voice.server.info.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildVoice);
 
-const pageCache = new Collection<string, EmbedBuilder[]>();
+const pageCache = new Collection<string, { index: number; pages: EmbedBuilder[] }>();
 
 export default {
   builder: new SlashCommandSubcommandBuilder()
@@ -33,7 +39,7 @@ export default {
     )
     .setDescriptionLocalizations($at('slash:voice.server.info.$desc'))
     .addChannelOption(channelOption),
-  async execute(interaction) {
+  async execute(interaction, embed) {
     const ch
       = interaction.options.getChannel<ChannelType.GuildVoice>('channel');
 
@@ -43,26 +49,21 @@ export default {
         : eq(guildVoiceChannel.guildId, interaction.guild.id),
     });
 
-    const embed = new EmbedBuilder().setColor(Colors.Blue).setAuthor({
-      name: $t('header:voice', {
-        lng: interaction.locale,
-        0: interaction.guild.name,
-      }),
-      iconURL: interaction.guild.iconURL() ?? '',
-    });
-
     if (!data.length) {
-      embed.setDescription('沒有已設定的語音頻道');
+      embed
+        .setColor(Colors.Grey)
+        .setDescription($t('voice:no_settings', { lng: interaction.locale }));
       await interaction.editReply({
         embeds: [embed],
       });
-      return;
+      return true;
     }
 
     const pages: EmbedBuilder[] = [];
     const failed: string[] = [];
 
-    for (const setting of data) {
+    for (let i = 0, n = data.length; i < n; i++) {
+      const setting = data[i];
       const page = new EmbedBuilder(embed.data);
       const channel = this.channels.cache.get(setting.channelId);
 
@@ -71,49 +72,124 @@ export default {
         continue;
       }
 
+      const videoQualityString = {
+        [VideoQualityMode.Auto]: $t('voice:@video.auto', { lng: interaction.locale }),
+        [VideoQualityMode.Full]: $t('voice:@video.full', { lng: interaction.locale }),
+      } as Record<number, string>;
+
       let description = `${channel}`;
 
       if (setting.categoryId) {
         const category = this.channels.cache.get(setting.categoryId);
-        description += ` ➜ ${category}`;
+        if (category?.type == ChannelType.GuildCategory) {
+          description += ` ➜ 📁${category.name}`;
+        }
       }
 
-      page.setDescription(description).addFields(
-        {
-          name: '位元率',
-          value: `${setting.bitrate} kbps`,
-          inline: true,
-        },
-        {
-          name: '人數上限',
-          value: `${setting.limit || '無上限'}`,
-          inline: true,
-        },
-        {
-          name: '地區',
-          value: `${setting.region}`,
-          inline: true,
-        },
-        {
-          name: '視訊畫質',
-          value: `${setting.videoQuality}`,
-          inline: true,
-        },
-        {
-          name: '低速模式',
-          value: `${setting.slowMode}`,
-          inline: true,
-        },
-        {
-          name: 'NSFW',
-          value: `${setting.nsfw}`,
-          inline: true,
-        },
-      );
+      const voiceRegionI18nKey = `voice:@region.${setting.region ?? 'auto'}`;
+
+      page
+        .setDescription(description)
+        .setFooter({
+          text: $t('voice:page_footer', { lng: interaction.locale, 0: i + 1, 1: data.length }),
+        })
+        .addFields(
+          {
+            name: $t('voice:name', { lng: interaction.locale }),
+            value: [
+              inlineCode(setting.name),
+              formatVoiceName(setting.name, interaction.member),
+            ].join('\n'),
+            inline: true,
+          },
+          {
+            name: $t('voice:bitrate', { lng: interaction.locale }),
+            value: `${setting.bitrate} kbps`,
+            inline: true,
+          },
+          {
+            name: $t('voice:limit', { lng: interaction.locale }),
+            value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
+            inline: true,
+          },
+          {
+            name: $t('voice:region', { lng: interaction.locale }),
+            value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
+            inline: true,
+          },
+          {
+            name: $t('voice:video', { lng: interaction.locale }),
+            value: `${`${videoQualityString[setting.videoQuality]}`}`,
+            inline: true,
+          },
+          {
+            name: $t('voice:slow', { lng: interaction.locale }),
+            value: setting.slowMode == 0
+              ? $t('voice:@slow.disabled', { lng: interaction.locale })
+              : setting.slowMode < 60
+                ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
+                : setting.slowMode < 3600
+                  ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
+                  : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
+            inline: true,
+          },
+          {
+            name: $t('slash:voice.set.%nsfw.$name', { lng: interaction.locale }),
+            value: `${setting.nsfw}`,
+            inline: true,
+          },
+        );
 
       pages.push(page);
     }
 
-    pageCache.set(interaction.guild.id, pages);
+    pageCache.set(interaction.guild.id, { index: 0, pages });
+
+    const row = new ActionRowBuilder<ButtonBuilder>()
+      .addComponents(new ButtonBuilder()
+        .setCustomId('voice:info-prev')
+        .setEmoji('◀️')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(true))
+      .addComponents(new ButtonBuilder()
+        .setCustomId('voice:info-next')
+        .setEmoji('▶️')
+        .setStyle(ButtonStyle.Secondary));
+
+    await interaction.editReply({
+      embeds: [pages[0]],
+      components: data.length > 1 ? [row] : [],
+    });
+
+    return true;
   },
-} as KamiSubCommand;
+  async onButton(interaction, buttonId) {
+    const cache = pageCache.get(interaction.guild.id);
+    if (!cache) return;
+
+    if (buttonId == 'info-prev') {
+      cache.index--;
+    }
+
+    if (buttonId == 'info-next') {
+      cache.index++;
+    }
+
+    const row = new ActionRowBuilder<ButtonBuilder>()
+      .addComponents(new ButtonBuilder()
+        .setCustomId('voice:info-prev')
+        .setEmoji('◀️')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(cache.index <= 0))
+      .addComponents(new ButtonBuilder()
+        .setCustomId('voice:info-next')
+        .setEmoji('▶️')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(cache.index >= cache.pages.length - 1));
+
+    await interaction.editReply({
+      embeds: [cache.pages[cache.index]],
+      components: [row],
+    });
+  },
+} as KamiSubCommand<EmbedBuilder>;

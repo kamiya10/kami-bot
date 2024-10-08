@@ -36,7 +36,9 @@
     "us_south": "美國南部",
     "us_west": "美國西部"
   },
+  "page_footer": "第 {{0}} 頁，共 {{1}} 頁",
   "update_success": "✅ 個人語音頻道設定已更新",
   "remove_success": "✅ 已將 {{0}} 從個人語音頻道中移除",
-  "remove_fail": "❌ {{0}} 不是個人語音頻道的創建頻道"
+  "remove_fail": "❌ {{0}} 不是個人語音頻道的創建頻道",
+  "no_settings": "沒有已設定的語音頻道"
 }

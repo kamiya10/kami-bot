@@ -9,7 +9,7 @@ const resources = {
   header,
   slash,
   voice,
-  weather,
+  weather
 } as const;
 
 export default resources;

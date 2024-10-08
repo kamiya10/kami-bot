@@ -39,7 +39,9 @@
     "us_south": "US South",
     "us_west": "US West"
   },
+  "page_footer": "Page {{0}} of {{1}}",
   "update_success": "✅ Settings updated",
   "remove_success": "✅ {{0}} has been removed from temporary voice channel.",
-  "remove_fail": "❌ {{0}} is not a temporary voice channel creator."
+  "remove_fail": "❌ {{0}} is not a temporary voice channel creator.",
+  "no_settings": "No temporary voice channel has been configured"
 }

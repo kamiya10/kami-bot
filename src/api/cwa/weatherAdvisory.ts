@@ -127,7 +127,7 @@ export class WeatherAdvisory {
 
   constructor(data: APIWeatherAdvisoryRecord) {
     this.description = data.datasetInfo.datasetDescription;
-    this.phenomena = data.datasetInfo.datasetDescription.substring(0, -2) as HazardPhenomena;
+    this.phenomena = data.datasetInfo.datasetDescription.slice(0, -2) as HazardPhenomena;
     this.startTime = new Date(data.datasetInfo.validTime.startTime);
     this.endTime = new Date(data.datasetInfo.validTime.endTime);
     this.issueTime = new Date(data.datasetInfo.issueTime);

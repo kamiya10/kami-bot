@@ -1,5 +1,6 @@
 import {
   ChannelType,
+  Colors,
   EmbedBuilder,
   SlashCommandChannelOption,
   SlashCommandSubcommandBuilder,
@@ -37,14 +38,18 @@ export default {
       .where(eq(guildVoiceChannel.channelId, channel.id))
       .returning();
     if (deleted.length) {
-      embed.setDescription(
-        $t('voice:remove_success', { lng: interaction.locale, 0: channel.toString() }),
-      );
+      embed
+        .setColor(Colors.Green)
+        .setDescription(
+          $t('voice:remove_success', { lng: interaction.locale, 0: channel.toString() }),
+        );
     }
     else {
-      embed.setDescription(
-        $t('voice:remove_fail', { lng: interaction.locale, 0: channel.toString() }),
-      );
+      embed
+        .setColor(Colors.Red)
+        .setDescription(
+          $t('voice:remove_fail', { lng: interaction.locale, 0: channel.toString() }),
+        );
     }
   },
 } as KamiSubCommand<EmbedBuilder>;

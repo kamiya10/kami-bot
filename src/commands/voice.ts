@@ -71,7 +71,7 @@ export default new KamiCommand({
       switch (interaction.options.getSubcommand()) {
         // /voice server info
         case 'info':
-          await voiceServerInfo.execute.call(this, interaction);
+          if (await voiceServerInfo.execute.call(this, interaction, baseEmbed)) return;
           break;
 
         // /voice server config
@@ -108,5 +108,14 @@ export default new KamiCommand({
     }
 
     await interaction.editReply({ embeds: [baseEmbed] });
+  },
+  async onButton(interaction, buttonId) {
+    const [subcommand] = buttonId.split('-');
+
+    switch (subcommand) {
+      case 'info':
+        await voiceServerInfo.onButton?.call(this, interaction, buttonId);
+        break;
+    }
   },
 });

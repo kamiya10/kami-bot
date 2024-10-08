@@ -99,7 +99,7 @@ export interface KamiSubCommand<T = undefined> {
     this: KamiClient,
     interaction: ChatInputCommandInteraction<'cached'>,
     ..._: T extends undefined ? [undefined?] : [data: T]
-  ): void | Promise<void>;
+  ): boolean | void | Promise<boolean | void>;
   onAutocomplete?: (
     this: KamiClient,
     interaction: AutocompleteInteraction<'cached'>

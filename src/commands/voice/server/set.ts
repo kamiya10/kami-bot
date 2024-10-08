@@ -100,6 +100,7 @@ export default {
           slowMode,
         },
       }).returning();
+
     const setting = data[0];
 
     const videoQualityString = {
@@ -119,50 +120,51 @@ export default {
       .setColor(Colors.Green)
       .setTitle($t('voice:update_success', { lng: interaction.locale }))
       .setDescription(description)
-      .addFields({
-        name: $t('voice:name', { lng: interaction.locale }),
-        value: [
-          inlineCode(setting.name),
-          formatVoiceName(setting.name, interaction.member),
-        ].join('\n'),
-        inline: true,
-      },
-      {
-        name: $t('voice:bitrate', { lng: interaction.locale }),
-        value: `${setting.bitrate} kbps`,
-        inline: true,
-      },
-      {
-        name: $t('voice:limit', { lng: interaction.locale }),
-        value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
-        inline: true,
-      },
-      {
-        name: $t('voice:region', { lng: interaction.locale }),
-        value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
-        inline: true,
-      },
-      {
-        name: $t('voice:video', { lng: interaction.locale }),
-        value: `${`${videoQualityString[setting.videoQuality]}`}`,
-        inline: true,
-      },
-      {
-        name: $t('voice:slow', { lng: interaction.locale }),
-        value: setting.slowMode == 0
-          ? $t('voice:@slow.disabled', { lng: interaction.locale })
-          : setting.slowMode < 60
-            ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
-            : setting.slowMode < 3600
-              ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
-              : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
-        inline: true,
-      },
-      {
-        name: $t('slash:voice.set.%nsfw.$name', { lng: interaction.locale }),
-        value: `${setting.nsfw}`,
-        inline: true,
-      },
+      .addFields(
+        {
+          name: $t('voice:name', { lng: interaction.locale }),
+          value: [
+            inlineCode(setting.name),
+            formatVoiceName(setting.name, interaction.member),
+          ].join('\n'),
+          inline: true,
+        },
+        {
+          name: $t('voice:bitrate', { lng: interaction.locale }),
+          value: `${setting.bitrate} kbps`,
+          inline: true,
+        },
+        {
+          name: $t('voice:limit', { lng: interaction.locale }),
+          value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
+          inline: true,
+        },
+        {
+          name: $t('voice:region', { lng: interaction.locale }),
+          value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
+          inline: true,
+        },
+        {
+          name: $t('voice:video', { lng: interaction.locale }),
+          value: `${`${videoQualityString[setting.videoQuality]}`}`,
+          inline: true,
+        },
+        {
+          name: $t('voice:slow', { lng: interaction.locale }),
+          value: setting.slowMode == 0
+            ? $t('voice:@slow.disabled', { lng: interaction.locale })
+            : setting.slowMode < 60
+              ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
+              : setting.slowMode < 3600
+                ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
+                : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
+          inline: true,
+        },
+        {
+          name: $t('slash:voice.set.%nsfw.$name', { lng: interaction.locale }),
+          value: `${setting.nsfw}`,
+          inline: true,
+        },
       );
   },
 } as KamiSubCommand<EmbedBuilder>;
