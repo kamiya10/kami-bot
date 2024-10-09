@@ -4,10 +4,10 @@ import {
   SlashCommandSubcommandBuilder,
 } from 'discord.js';
 import { $at } from '@/class/utils';
+import { eq } from 'drizzle-orm';
+import { userVoiceChannel } from '@/database/schema';
 
 import type { KamiSubCommand } from '@/class/command';
-import { userVoiceChannel } from '@/database/schema';
-import { eq } from 'drizzle-orm';
 
 export default {
   builder: new SlashCommandSubcommandBuilder()

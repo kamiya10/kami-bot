@@ -7,23 +7,29 @@ import {
 } from 'discord.js';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
+import { eq } from 'drizzle-orm';
+import { guildVoiceChannel } from '@/database/schema';
 
 import type { KamiSubCommand } from '@/class/command';
-import { guildVoiceChannel } from '@/database/schema';
-import { eq } from 'drizzle-orm';
 
 export default {
   builder: new SlashCommandSubcommandBuilder()
     .setName('remove')
     .setNameLocalizations($at('slash:voice.server.remove.$name'))
-    .setDescription('Remove a voice channel from being a temporary voice channel creator.')
+    .setDescription(
+      'Remove a voice channel from being a temporary voice channel creator.',
+    )
     .setDescriptionLocalizations($at('slash:voice.server.remove.$desc'))
     .addChannelOption(
       new SlashCommandChannelOption()
         .setName('channel')
         .setNameLocalizations($at('slash:voice.server.remove.%channel.$name'))
-        .setDescription('The channel to remove from being a temporary voice channel creator.')
-        .setDescriptionLocalizations($at('slash:voice.server.remove.%channel.$desc'))
+        .setDescription(
+          'The channel to remove from being a temporary voice channel creator.',
+        )
+        .setDescriptionLocalizations(
+          $at('slash:voice.server.remove.%channel.$desc'),
+        )
         .addChannelTypes(ChannelType.GuildVoice)
         .setRequired(true),
     ),
@@ -41,14 +47,20 @@ export default {
       embed
         .setColor(Colors.Green)
         .setDescription(
-          $t('voice:remove_success', { lng: interaction.locale, 0: channel.toString() }),
+          $t('voice:remove_success', {
+            lng: interaction.locale,
+            0: channel.toString(),
+          }),
         );
     }
     else {
       embed
         .setColor(Colors.Red)
         .setDescription(
-          $t('voice:remove_fail', { lng: interaction.locale, 0: channel.toString() }),
+          $t('voice:remove_fail', {
+            lng: interaction.locale,
+            0: channel.toString(),
+          }),
         );
     }
   },

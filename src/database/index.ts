@@ -8,15 +8,19 @@ import * as schema from './schema';
 const _databasePath = process.env['DATABASE_PATH'];
 
 if (!(typeof _databasePath == 'string')) {
-  logger.error('No database path provided. Please configure database path inside .env file.');
-  throw new Error('No database path provided. Please configure database path inside .env file.');
+  logger.error(
+    'No database path provided. Please configure database path inside .env file.',
+  );
+  throw new Error(
+    'No database path provided. Please configure database path inside .env file.',
+  );
 }
 
 const dbPath = resolve(_databasePath);
 
 const file = Bun.file(dbPath);
 
-if (!await file.exists()) {
+if (!(await file.exists())) {
   logger.info(`Database does not exists at ${dbPath} and will be created...`);
 }
 

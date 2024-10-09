@@ -10,4 +10,11 @@ const client = new KamiClient({
   intents: KamiIntents,
 });
 
-await client.login(process.env[process.env.NODE_ENV == 'production' ? 'KAMI_TOKEN' : 'DEV_TOKEN']);
+process.once('beforeExit', () => {
+  void client.states.save();
+  void client.destroy();
+});
+
+await client.login(
+  process.env[process.env.NODE_ENV == 'production' ? 'KAMI_TOKEN' : 'DEV_TOKEN'],
+);

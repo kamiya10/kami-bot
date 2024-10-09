@@ -18,8 +18,8 @@ import {
 } from 'discord.js';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
-import { guildVoiceChannel } from '@/database/schema';
 import { formatVoiceName } from '@/utils/voice';
+import { guildVoiceChannel } from '@/database/schema';
 
 import type { KamiSubCommand } from '@/class/command';
 
@@ -81,7 +81,8 @@ export default {
         categoryId: category?.id,
         bitrate,
         limit,
-        name: name ?? $t('voice:default_channel_name', { lng: interaction.locale }),
+        name:
+          name ?? $t('voice:default_channel_name', { lng: interaction.locale }),
         nsfw,
         region,
         videoQuality,
@@ -99,13 +100,18 @@ export default {
           videoQuality,
           slowMode,
         },
-      }).returning();
+      })
+      .returning();
 
     const setting = data[0];
 
     const videoQualityString = {
-      [VideoQualityMode.Auto]: $t('voice:@video.auto', { lng: interaction.locale }),
-      [VideoQualityMode.Full]: $t('voice:@video.full', { lng: interaction.locale }),
+      [VideoQualityMode.Auto]: $t('voice:@video.auto', {
+        lng: interaction.locale,
+      }),
+      [VideoQualityMode.Full]: $t('voice:@video.full', {
+        lng: interaction.locale,
+      }),
     } as Record<number, string>;
 
     let description = `${channel}`;
@@ -136,12 +142,17 @@ export default {
         },
         {
           name: $t('voice:limit', { lng: interaction.locale }),
-          value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
+          value:
+            setting.limit == 0
+              ? $t('voice:@limit.disabled', { lng: interaction.locale })
+              : `${setting.limit}`,
           inline: true,
         },
         {
           name: $t('voice:region', { lng: interaction.locale }),
-          value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
+          value: $t(voiceRegionI18nKey, voiceRegionI18nKey, {
+            lng: interaction.locale,
+          }),
           inline: true,
         },
         {
@@ -151,13 +162,23 @@ export default {
         },
         {
           name: $t('voice:slow', { lng: interaction.locale }),
-          value: setting.slowMode == 0
-            ? $t('voice:@slow.disabled', { lng: interaction.locale })
-            : setting.slowMode < 60
-              ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
-              : setting.slowMode < 3600
-                ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
-                : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
+          value:
+            setting.slowMode == 0
+              ? $t('voice:@slow.disabled', { lng: interaction.locale })
+              : setting.slowMode < 60
+                ? $t('voice:@slow.seconds', {
+                  lng: interaction.locale,
+                  0: setting.slowMode,
+                })
+                : setting.slowMode < 3600
+                  ? $t('voice:@slow.minutes', {
+                    lng: interaction.locale,
+                    0: Math.trunc(setting.slowMode / 60),
+                  })
+                  : $t('voice:@slow.hours', {
+                    lng: interaction.locale,
+                    0: Math.trunc(setting.slowMode / 3600),
+                  }),
           inline: true,
         },
         {

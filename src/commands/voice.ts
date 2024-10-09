@@ -71,7 +71,8 @@ export default new KamiCommand({
       switch (interaction.options.getSubcommand()) {
         // /voice server info
         case 'info':
-          if (await voiceServerInfo.execute.call(this, interaction, baseEmbed)) return;
+          if (await voiceServerInfo.execute.call(this, interaction, baseEmbed))
+            return;
           break;
 
         // /voice server config

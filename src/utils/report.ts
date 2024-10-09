@@ -9,10 +9,7 @@ import {
 } from 'discord.js';
 import { EarthquakeReportColor } from '@/api/cwa';
 
-import type {
-  InteractionReplyOptions,
-  MessageCreateOptions,
-} from 'discord.js';
+import type { InteractionReplyOptions, MessageCreateOptions } from 'discord.js';
 import type { EarthquakeReport } from '@/api/cwa';
 
 const reportColor = {
@@ -37,10 +34,12 @@ const intensityThumbnail = [
 
 export enum ReportMessageStyle {
   CwaText = 'cwa-text',
+  CwaTextWithButton = 'cwa-text-button',
   CwaSimple = 'cwa-simple',
   CwaSimpleLarge = 'cwa-simple-large',
   CwaDetail = 'cwa-detail',
   Simple = 'simple',
+  Detailed = 'detailed',
 }
 
 export const buildEarthquakeReportMessage = (
@@ -67,6 +66,17 @@ export const buildEarthquakeReportMessage = (
   const content = report.ReportContent.slice(11);
   const embed = new EmbedBuilder().setColor(reportColor[report.ReportColor]);
 
+  const actions = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel('地震報告')
+      .setURL(report.cwaUrl),
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setLabel('地震測報中心')
+      .setURL(report.Web),
+  );
+
   switch (style) {
     /**
      * **[小區域]** 2024年5月17日 13:30
@@ -75,6 +85,15 @@ export const buildEarthquakeReportMessage = (
     case ReportMessageStyle.CwaText:
       return {
         content: `**[${type}]** ${time}\n${content}`,
+        embeds: [],
+        components: addition.components,
+      };
+
+    case ReportMessageStyle.CwaTextWithButton:
+      return {
+        content: `**[${type}]** ${time}\n${content}`,
+        embeds: [],
+        components: [actions, ...(addition.components ?? [])],
       };
 
     /**
@@ -136,20 +155,30 @@ export const buildEarthquakeReportMessage = (
         .setThumbnail(intensityThumbnail[report.intensity]);
       break;
 
-    default:
+    case ReportMessageStyle.Detailed:
+      embed
+        .setAuthor(author)
+        .setDescription(`${time}\n${content.replace('，', '，\n')}`)
+        .setFields(
+          {
+            name: '震源位置',
+            value: content.split('發生')[0],
+            inline: true,
+          },
+          {
+            name: '規模',
+            value: `M${report.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue}`,
+            inline: true,
+          },
+          {
+            name: '深度',
+            value: `${report.EarthquakeInfo.FocalDepth}km`,
+            inline: true,
+          },
+        )
+        .setThumbnail(intensityThumbnail[report.intensity]);
       break;
   }
-
-  const actions = new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel('地震報告')
-      .setURL(report.cwaUrl),
-    new ButtonBuilder()
-      .setStyle(ButtonStyle.Link)
-      .setLabel('地震測報中心')
-      .setURL(report.Web),
-  );
 
   return {
     embeds: [embed, ...(addition.embeds ?? [])],

@@ -4,14 +4,15 @@ import {
   SupportedService,
   WebSocketEvent,
 } from '@exptechtw/api-wrapper';
+import { CwaApi, CwaFetchError } from '@/api/cwa';
 import { Collection } from 'discord.js';
-import { CwaApi } from '@/api/cwa';
 import { join } from 'path';
 
-import type { CwaFetchError, EarthquakeReport } from '@/api/cwa';
+import logger from 'logger';
+
+import type { EarthquakeReport } from '@/api/cwa';
 import type { KamiClient } from '@/class/client';
 import type { Station } from '@exptechtw/api-wrapper';
-import logger from 'logger';
 import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
 
 const cwa = new CwaApi(process.env['CWA_TOKEN']);
@@ -65,72 +66,96 @@ export class KamiStates {
 
   private setup() {
     const updateCwa = () => {
-      void cwa.getEarthquakeReport().then((v) => {
-        if (!v.length) {
-          return;
-        }
+      const onrejected = (e: Error) => {
+        if (e instanceof CwaFetchError)
+          if (e.response.status == 429) return void e;
+        logger.error(`${e}`, e);
+      };
 
-        if (
-          this.report.length
-          && this.report[0].EarthquakeInfo.OriginTime
-          != v[0].EarthquakeInfo.OriginTime
-        ) {
-          this.client.emit('report', v[0]);
-        }
-
-        this.report = v;
-      }).catch((e: CwaFetchError) => {
-        if (e.response.status != 429) throw e;
-      });
-
-      void cwa.getNumberedEarthquakeReport().then((v) => {
-        if (!v.length) {
-          return;
-        }
-
-        if (
-          this.numberedReport.length
-          && this.numberedReport[0].EarthquakeInfo.OriginTime
-          != v[0].EarthquakeInfo.OriginTime
-        ) {
-          this.client.emit('report', v[0]);
-        }
-
-        this.numberedReport = v;
-      }).catch((e: CwaFetchError) => {
-        if (e.response.status != 429) throw e;
-      });
-
-      void cwa.getWeatherAdvisory().then((v) => {
-        if (!v.length) {
-          return;
-        }
-
-        if (this.weatherAdvisory.length) {
-          const updated: WeatherAdvisory[] = [];
-
-          for (const wa of v) {
-            const old = this.weatherAdvisory.find((f) =>
-              f.issueTime.getTime() == wa.issueTime.getTime()
-              && f.description == wa.description,
-            );
-
-            if (!old || wa.hash != old.hash) {
-              updated.push(wa);
-            }
-          }
-
-          if (!updated.length) {
+      void cwa
+        .getEarthquakeReport()
+        .then((v) => {
+          if (!v.length) {
             return;
           }
 
-          this.client.emit('weatherAdvisory', updated);
-        }
+          if (
+            this.report.length
+            && this.report[0].EarthquakeInfo.OriginTime
+            != v[0].EarthquakeInfo.OriginTime
+          ) {
+            const times = this.numberedReport.map(
+              (e) => e.EarthquakeInfo.OriginTime,
+            );
+            const updated = v.filter(
+              (e) => !times.includes(e.EarthquakeInfo.OriginTime),
+            );
+            if (updated.length) {
+              this.client.emit('report', updated);
+            }
+          }
 
-        this.weatherAdvisory = v;
-      }).catch((e: CwaFetchError) => {
-        if (e.response.status != 429) throw e;
-      });
+          this.report = v;
+        })
+        .catch(onrejected);
+
+      void cwa
+        .getNumberedEarthquakeReport()
+        .then((v) => {
+          if (!v.length) {
+            return;
+          }
+
+          if (
+            this.numberedReport.length
+            && this.numberedReport[0].EarthquakeInfo.OriginTime
+            != v[0].EarthquakeInfo.OriginTime
+          ) {
+            const times = this.numberedReport.map(
+              (e) => e.EarthquakeInfo.OriginTime,
+            );
+            const updated = v.filter(
+              (e) => !times.includes(e.EarthquakeInfo.OriginTime),
+            );
+            if (updated.length) {
+              this.client.emit('report', updated);
+            }
+          }
+
+          this.numberedReport = v;
+        })
+        .catch(onrejected);
+
+      void cwa
+        .getWeatherAdvisory()
+        .then((v) => {
+          if (!v.length) {
+            return;
+          }
+
+          if (this.weatherAdvisory.length) {
+            const updated: WeatherAdvisory[] = [];
+
+            for (const wa of v) {
+              const old = this.weatherAdvisory.find(
+                (f) =>
+                  f.issueTime.getTime() == wa.issueTime.getTime()
+                  && f.description == wa.description,
+              );
+
+              if (!old || wa.hash != old.hash) {
+                updated.push(wa);
+              }
+            }
+
+            if (updated.length) {
+              this.client.emit('weatherAdvisory', updated);
+            }
+          }
+
+          this.weatherAdvisory = v;
+        })
+        .catch(onrejected);
     };
 
     const updateRtsStation = () => {
@@ -140,7 +165,7 @@ export class KamiStates {
     };
 
     updateCwa();
-    setInterval(updateCwa, 15_000);
+    setInterval(updateCwa, 30_000);
 
     updateRtsStation();
     setInterval(updateRtsStation, 600_000);

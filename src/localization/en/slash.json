@@ -31,6 +31,34 @@
       "$desc": "The color to convert. Accepts hex colors, rgb, hsl, hsv, cmyk, or named. Omit to get a random color."
     }
   },
+  "earthquake": {
+    "$name": "earthquake",
+    "$desc": "Earthquake related commands.",
+    "report": {
+      "$name": "report",
+      "$desc": "Query earthquake information.",
+      "%style": {
+        "$name": "style",
+        "$desc": "The style of the message."
+      }
+    },
+    "push": {
+      "$name": "push",
+      "$desc": "Subscribe to earthquake report push notifications.",
+      "%channel": {
+        "$name": "channel",
+        "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
+      },
+      "%numbered": {
+        "$name": "numbered",
+        "$desc": "Whether to only receive numbered earthquake reports."
+      },
+      "%style": {
+        "$name": "style",
+        "$desc": "The style of the push notification."
+      }
+    }
+  },
   "ping": {
     "$name": "ping",
     "$desc": "Check if the bot is still alive or not."
@@ -116,6 +144,10 @@
       "%channel": {
         "$name": "channel",
         "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
+      },
+      "%style": {
+        "$name": "style",
+        "$desc": "The style of the push notification."
       }
     }
   }

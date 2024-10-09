@@ -35,9 +35,17 @@ export default new EventHandler({
       userLimit: resolveSetting('limit', guildVoiceData, userVoiceData),
       bitrate: resolveSetting('bitrate', guildVoiceData, userVoiceData),
       rtcRegion:
-          resolveSetting('region', guildVoiceData, userVoiceData) ?? undefined,
-      videoQualityMode: resolveSetting('videoQuality', guildVoiceData, userVoiceData),
-      rateLimitPerUser: resolveSetting('slowMode', guildVoiceData, userVoiceData),
+        resolveSetting('region', guildVoiceData, userVoiceData) ?? undefined,
+      videoQualityMode: resolveSetting(
+        'videoQuality',
+        guildVoiceData,
+        userVoiceData,
+      ),
+      rateLimitPerUser: resolveSetting(
+        'slowMode',
+        guildVoiceData,
+        userVoiceData,
+      ),
       nsfw: resolveSetting('nsfw', guildVoiceData, userVoiceData),
       parent: guildVoiceData.categoryId,
       reason: 'Temporary Voice Channel',
@@ -55,9 +63,6 @@ export default new EventHandler({
       },
     });
 
-    await newState.member.voice.setChannel(
-      channel,
-      'Temporary Voice Channel',
-    );
+    await newState.member.voice.setChannel(channel, 'Temporary Voice Channel');
   },
 });

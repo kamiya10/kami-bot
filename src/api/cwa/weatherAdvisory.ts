@@ -107,7 +107,7 @@ export interface APIWeatherAdvisoryRecordResponse extends APIBaseResponse {
   records: {
     record: APIWeatherAdvisoryRecord[];
   };
-};
+}
 
 export class WeatherAdvisory {
   description: string;
@@ -127,7 +127,10 @@ export class WeatherAdvisory {
 
   constructor(data: APIWeatherAdvisoryRecord) {
     this.description = data.datasetInfo.datasetDescription;
-    this.phenomena = data.datasetInfo.datasetDescription.slice(0, -2) as HazardPhenomena;
+    this.phenomena = data.datasetInfo.datasetDescription.slice(
+      0,
+      -2,
+    ) as HazardPhenomena;
     this.startTime = new Date(data.datasetInfo.validTime.startTime);
     this.endTime = new Date(data.datasetInfo.validTime.endTime);
     this.issueTime = new Date(data.datasetInfo.issueTime);
@@ -136,7 +139,9 @@ export class WeatherAdvisory {
     this.hazards = data.hazardConditions.hazards.hazard.map((v) => ({
       phenomena: v.info.phenomena,
       significance: v.info.significance,
-      affectedAreas: v.info.affectedAreas.location.flatMap((l) => l.locationName),
+      affectedAreas: v.info.affectedAreas.location.flatMap(
+        (l) => l.locationName,
+      ),
     }));
     this.hash = new Bun.CryptoHasher('md5')
       .update(JSON.stringify(data))

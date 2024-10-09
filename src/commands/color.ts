@@ -99,38 +99,44 @@ export default new KamiCommand({
     const decimalJava = codeBlock('java', `Decimal(${colorAsNumber})`);
 
     // rgb(r g b / a)
-    const rgbCss = codeBlock('css', `rgb(${rgb.r} ${rgb.g} ${rgb.b}${
-      !isOpaque ? ` / ${rgb.a}` : ''
-    })`);
+    const rgbCss = codeBlock(
+      'css',
+      `rgb(${rgb.r} ${rgb.g} ${rgb.b}${!isOpaque ? ` / ${rgb.a}` : ''})`,
+    );
 
     // hsv(h s v / a)
-    const hsvCss = codeBlock('css', `hsv(${hsv[0]}deg ${hsv[1]}% ${hsv[2]}%${
-      !isOpaque ? ` / ${rgb.a}` : ''
-    })`);
+    const hsvCss = codeBlock(
+      'css',
+      `hsv(${hsv[0]}deg ${hsv[1]}% ${hsv[2]}%${!isOpaque ? ` / ${rgb.a}` : ''})`,
+    );
 
     // hsl(h s l / a)
-    const hslCss = codeBlock('css', `hsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%${
-      !isOpaque ? ` / ${rgb.a}` : ''
-    })`);
+    const hslCss = codeBlock(
+      'css',
+      `hsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%${!isOpaque ? ` / ${rgb.a}` : ''})`,
+    );
 
     // hwb(h s l / a)
-    const hwbCss = codeBlock('css', `hwb(${hwb[0]}deg ${hwb[1]}% ${hwb[2]}%${
-      !isOpaque ? ` / ${rgb.a}` : ''
-    })`);
+    const hwbCss = codeBlock(
+      'css',
+      `hwb(${hwb[0]}deg ${hwb[1]}% ${hwb[2]}%${!isOpaque ? ` / ${rgb.a}` : ''})`,
+    );
 
     // xyz(x, y, z)
-    const xyzCss = codeBlock('css', `${
-      isOpaque ? 'xyz' : 'xyza'
-    }(${xyz[0]}, ${xyz[1]}, ${xyz[2]}${
-      !isOpaque ? `, ${rgb.a}` : ''
-    })`);
+    const xyzCss = codeBlock(
+      'css',
+      `${isOpaque ? 'xyz' : 'xyza'}(${xyz[0]}, ${xyz[1]}, ${xyz[2]}${
+        !isOpaque ? `, ${rgb.a}` : ''
+      })`,
+    );
 
     // yiq(y, i, q)
-    const yiqCss = codeBlock('css', `${
-      isOpaque ? 'yiq' : 'yiqa'
-    }(${yiq[0]}, ${yiq[1]}, ${yiq[2]}${
-      !isOpaque ? `, ${rgb.a}` : ''
-    })`);
+    const yiqCss = codeBlock(
+      'css',
+      `${isOpaque ? 'yiq' : 'yiqa'}(${yiq[0]}, ${yiq[1]}, ${yiq[2]}${
+        !isOpaque ? `, ${rgb.a}` : ''
+      })`,
+    );
 
     // Color.valueOf(4289736237)
     const androidNumber = codeBlock(
@@ -141,16 +147,11 @@ export default new KamiCommand({
     // Color.valueOf(0xffb02e2d)
     const androidHex = codeBlock(
       'java',
-      `Color.valueOf(0x${
-        hex8.slice(6)
-      }${hex})`,
+      `Color.valueOf(0x${hex8.slice(6)}${hex})`,
     );
 
     // cmy(c% m% y%)
-    const cmyCss = codeBlock(
-      'css',
-      `cmy(${cmy[0]}% ${cmy[1]}% ${cmy[2]}%)`,
-    );
+    const cmyCss = codeBlock('css', `cmy(${cmy[0]}% ${cmy[1]}% ${cmy[2]}%)`);
 
     // cmyk(c% m% y% k%)
     const cmykCss = codeBlock(
@@ -224,9 +225,7 @@ export default new KamiCommand({
               cmy[0] * 100,
             )}%)　<:cmyk_m:1184522450306879548> ${cmy[1]} (${Math.round(
               cmy[1] * 100,
-            )}%)　🟨 ${cmy[2]} (${Math.round(
-              cmy[2] * 100,
-            )}%)\n${cmyCss}`,
+            )}%)　🟨 ${cmy[2]} (${Math.round(cmy[2] * 100)}%)\n${cmyCss}`,
           },
           {
             name: 'cmyk',

@@ -1,4 +1,13 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, TimestampStyles, blockQuote, time } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Colors,
+  EmbedBuilder,
+  TimestampStyles,
+  blockQuote,
+  time,
+} from 'discord.js';
 import { HazardPhenomena, HazardSignificance } from '@/api/cwa/weatherAdvisory';
 
 import type { MessageCreateOptions, MessageEditOptions } from 'discord.js';
@@ -11,9 +20,31 @@ export enum WeatherAdvisoryMessageStyle {
 }
 
 export const getAdvisoryColor = (wa: WeatherAdvisory) => {
+  switch (wa.phenomena) {
+    case HazardPhenomena.DenseFog:
+      return 0xa1ccef;
+
+    case HazardPhenomena.HeavyRain:
+    case HazardPhenomena.ExtremelyHeavyRain:
+      return Colors.Blue;
+
+    case HazardPhenomena.TorrentialRain:
+    case HazardPhenomena.ExtremelyTorrentialRain:
+      return Colors.Purple;
+
+    case HazardPhenomena.Swell:
+      return Colors.Blurple;
+
+    case HazardPhenomena.LandStrongWind:
+    case HazardPhenomena.SeaStrongWind:
+      return Colors.Green;
+  }
+
   switch (wa.description.slice(-2) as HazardSignificance) {
-    case HazardSignificance.Warning: return Colors.Yellow;
-    case HazardSignificance.Advisory: return Colors.Red;
+    case HazardSignificance.Warning:
+      return Colors.Yellow;
+    case HazardSignificance.Advisory:
+      return Colors.Red;
   }
 
   return Colors.Blue;
@@ -66,45 +97,42 @@ export const buildWeatherAdvisoryMessage = (
 
   switch (style) {
     case WeatherAdvisoryMessageStyle.Simple:
-      embed
-        .setDescription(wa.content)
-        .addFields(
-          {
-            name: '生效時間',
-            value: `${start}\n(${startRelative})`,
-            inline: true,
-          },
-          {
-            name: '失效時間',
-            value: `${end}\n(${endRelative})`,
-            inline: true,
-          },
-        );
+      embed.setDescription(wa.content).addFields(
+        {
+          name: '生效時間',
+          value: `${start}\n(${startRelative})`,
+          inline: true,
+        },
+        {
+          name: '失效時間',
+          value: `${end}\n(${endRelative})`,
+          inline: true,
+        },
+      );
       break;
 
     case WeatherAdvisoryMessageStyle.Detailed:
-      embed
-        .setDescription(wa.content)
-        .addFields(
-          {
-            name: '生效時間',
-            value: `${start}\n(${startRelative})`,
-            inline: true,
-          },
-          {
-            name: '失效時間',
-            value: `${end}\n(${endRelative})`,
-            inline: true,
-          },
-        ); ;
+      embed.setDescription(wa.content).addFields(
+        {
+          name: '生效時間',
+          value: `${start}\n(${startRelative})`,
+          inline: true,
+        },
+        {
+          name: '失效時間',
+          value: `${end}\n(${endRelative})`,
+          inline: true,
+        },
+      );
       break;
   }
 
-  row.addComponents(new ButtonBuilder()
-    .setStyle(ButtonStyle.Link)
-    .setURL(getAdvisoryUrl(wa))
-    .setEmoji('🔗')
-    .setLabel('警特報連結'),
+  row.addComponents(
+    new ButtonBuilder()
+      .setStyle(ButtonStyle.Link)
+      .setURL(getAdvisoryUrl(wa))
+      .setEmoji('🔗')
+      .setLabel('警特報連結'),
   );
 
   return {

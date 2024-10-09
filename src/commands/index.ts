@@ -4,7 +4,7 @@ import avatar from '$/avatar';
 import banner from '$/banner';
 import color from '$/color';
 import ping from '$/ping';
-import report from '$/report';
+import report from '$/earthquake';
 import rts from '$/rts';
 import voice from '$/voice';
 import weather from '$/weather';

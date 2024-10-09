@@ -13,11 +13,11 @@ import {
 } from 'discord.js';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
+import { eq } from 'drizzle-orm';
+import { formatVoiceName } from '@/utils/voice';
+import { guildVoiceChannel } from '@/database/schema';
 
 import type { KamiSubCommand } from '@/class/command';
-import { eq } from 'drizzle-orm';
-import { guildVoiceChannel } from '@/database/schema';
-import { formatVoiceName } from '@/utils/voice';
 
 const channelOption = new SlashCommandChannelOption()
   .setName('channel')
@@ -28,7 +28,10 @@ const channelOption = new SlashCommandChannelOption()
   .setDescriptionLocalizations($at('slash:voice.server.info.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildVoice);
 
-const pageCache = new Collection<string, { index: number; pages: EmbedBuilder[] }>();
+const pageCache = new Collection<
+  string,
+  { index: number; pages: EmbedBuilder[] }
+>();
 
 export default {
   builder: new SlashCommandSubcommandBuilder()
@@ -73,8 +76,12 @@ export default {
       }
 
       const videoQualityString = {
-        [VideoQualityMode.Auto]: $t('voice:@video.auto', { lng: interaction.locale }),
-        [VideoQualityMode.Full]: $t('voice:@video.full', { lng: interaction.locale }),
+        [VideoQualityMode.Auto]: $t('voice:@video.auto', {
+          lng: interaction.locale,
+        }),
+        [VideoQualityMode.Full]: $t('voice:@video.full', {
+          lng: interaction.locale,
+        }),
       } as Record<number, string>;
 
       let description = `${channel}`;
@@ -91,7 +98,11 @@ export default {
       page
         .setDescription(description)
         .setFooter({
-          text: $t('voice:page_footer', { lng: interaction.locale, 0: i + 1, 1: data.length }),
+          text: $t('voice:page_footer', {
+            lng: interaction.locale,
+            0: i + 1,
+            1: data.length,
+          }),
         })
         .addFields(
           {
@@ -109,12 +120,17 @@ export default {
           },
           {
             name: $t('voice:limit', { lng: interaction.locale }),
-            value: setting.limit == 0 ? $t('voice:@limit.disabled', { lng: interaction.locale }) : `${setting.limit}`,
+            value:
+              setting.limit == 0
+                ? $t('voice:@limit.disabled', { lng: interaction.locale })
+                : `${setting.limit}`,
             inline: true,
           },
           {
             name: $t('voice:region', { lng: interaction.locale }),
-            value: $t(voiceRegionI18nKey, voiceRegionI18nKey, { lng: interaction.locale }),
+            value: $t(voiceRegionI18nKey, voiceRegionI18nKey, {
+              lng: interaction.locale,
+            }),
             inline: true,
           },
           {
@@ -124,17 +140,29 @@ export default {
           },
           {
             name: $t('voice:slow', { lng: interaction.locale }),
-            value: setting.slowMode == 0
-              ? $t('voice:@slow.disabled', { lng: interaction.locale })
-              : setting.slowMode < 60
-                ? $t('voice:@slow.seconds', { lng: interaction.locale, 0: setting.slowMode })
-                : setting.slowMode < 3600
-                  ? $t('voice:@slow.minutes', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 60) })
-                  : $t('voice:@slow.hours', { lng: interaction.locale, 0: Math.trunc(setting.slowMode / 3600) }),
+            value:
+              setting.slowMode == 0
+                ? $t('voice:@slow.disabled', { lng: interaction.locale })
+                : setting.slowMode < 60
+                  ? $t('voice:@slow.seconds', {
+                    lng: interaction.locale,
+                    0: setting.slowMode,
+                  })
+                  : setting.slowMode < 3600
+                    ? $t('voice:@slow.minutes', {
+                      lng: interaction.locale,
+                      0: Math.trunc(setting.slowMode / 60),
+                    })
+                    : $t('voice:@slow.hours', {
+                      lng: interaction.locale,
+                      0: Math.trunc(setting.slowMode / 3600),
+                    }),
             inline: true,
           },
           {
-            name: $t('slash:voice.set.%nsfw.$name', { lng: interaction.locale }),
+            name: $t('slash:voice.set.%nsfw.$name', {
+              lng: interaction.locale,
+            }),
             value: `${setting.nsfw}`,
             inline: true,
           },
@@ -146,15 +174,19 @@ export default {
     pageCache.set(interaction.guild.id, { index: 0, pages });
 
     const row = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents(new ButtonBuilder()
-        .setCustomId('voice:info-prev')
-        .setEmoji('◀️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(true))
-      .addComponents(new ButtonBuilder()
-        .setCustomId('voice:info-next')
-        .setEmoji('▶️')
-        .setStyle(ButtonStyle.Secondary));
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('voice:info-prev')
+          .setEmoji('◀️')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(true),
+      )
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('voice:info-next')
+          .setEmoji('▶️')
+          .setStyle(ButtonStyle.Secondary),
+      );
 
     await interaction.editReply({
       embeds: [pages[0]],
@@ -176,16 +208,20 @@ export default {
     }
 
     const row = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents(new ButtonBuilder()
-        .setCustomId('voice:info-prev')
-        .setEmoji('◀️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(cache.index <= 0))
-      .addComponents(new ButtonBuilder()
-        .setCustomId('voice:info-next')
-        .setEmoji('▶️')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(cache.index >= cache.pages.length - 1));
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('voice:info-prev')
+          .setEmoji('◀️')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(cache.index <= 0),
+      )
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('voice:info-next')
+          .setEmoji('▶️')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(cache.index >= cache.pages.length - 1),
+      );
 
     await interaction.editReply({
       embeds: [cache.pages[cache.index]],

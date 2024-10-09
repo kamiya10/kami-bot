@@ -6,7 +6,7 @@ import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
 
 export interface KamiClientEvents extends ClientEvents {
   rts: [rts: Rts];
-  report: [report: EarthquakeReport];
+  report: [report: EarthquakeReport[]];
   weatherAdvisory: [updated: WeatherAdvisory[]];
 }
 

@@ -1,4 +1,9 @@
-import { ChannelType, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from 'discord.js';
+import {
+  ChannelType,
+  SlashCommandChannelOption,
+  SlashCommandStringOption,
+  SlashCommandSubcommandBuilder,
+} from 'discord.js';
 import { WeatherAdvisoryMessageStyle } from '@/utils/weatherAdvisory';
 import { eq } from 'drizzle-orm';
 import { guildWeatherAdvisoryChannel } from '@/database/schema';
@@ -11,13 +16,17 @@ import type { KamiSubCommand } from '@/class/command';
 const channelOption = new SlashCommandChannelOption()
   .setName('channel')
   .setNameLocalizations($at('slash:weather.push.%channel.$name'))
-  .setDescription('The channel push notification should send to.')
+  .setDescription(
+    'The channel push notification should send to, leave this field empty to unsubscribe.',
+  )
   .setDescriptionLocalizations($at('slash:weather.push.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildText);
 
 const styleOption = new SlashCommandStringOption()
   .setName('style')
+  .setNameLocalizations($at('slash:weather.push.%style.$name'))
   .setDescription('The style of the push notification')
+  .setDescriptionLocalizations($at('slash:weather.push.%style.$desc'))
   .addChoices(
     {
       name: WeatherAdvisoryMessageStyle.Text,
@@ -42,7 +51,8 @@ export default {
     .addChannelOption(channelOption)
     .addStringOption(styleOption),
   async execute(interaction, embed) {
-    const channel = interaction.options.getChannel<ChannelType.GuildText>('channel');
+    const channel
+      = interaction.options.getChannel<ChannelType.GuildText>('channel');
     const style = interaction.options.getString('style') ?? undefined;
 
     if (!channel) {
@@ -50,7 +60,9 @@ export default {
         .delete(guildWeatherAdvisoryChannel)
         .where(eq(guildWeatherAdvisoryChannel.guildId, interaction.guild.id));
 
-      embed.setDescription($t('weather:remove_success', { lng: interaction.locale }));
+      embed.setDescription(
+        $t('weather:remove_success', { lng: interaction.locale }),
+      );
 
       return;
     }
@@ -74,7 +86,9 @@ export default {
     const setting = data[0];
 
     embed
-      .setDescription($t('weather:set_push_success', { lng: interaction.locale }))
+      .setDescription(
+        $t('weather:set_push_success', { lng: interaction.locale }),
+      )
       .addFields(
         {
           name: $t('weather:channel', { lng: interaction.locale }),
