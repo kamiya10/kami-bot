@@ -13,7 +13,7 @@ import logger from 'logger';
 import type { EarthquakeReport } from '@/api/cwa';
 import type { KamiClient } from '@/class/client';
 import type { Station } from '@exptechtw/api-wrapper';
-import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
+import type { Advisory, AdvisoryRecord } from '@/api/cwa/advisory';
 
 const cwa = new CwaApi(process.env['CWA_TOKEN']);
 
@@ -38,7 +38,7 @@ export class KamiStates {
   public voice: Collection<string, KamiVoiceState>;
   public report: EarthquakeReport[] = [];
   public numberedReport: EarthquakeReport[] = [];
-  public weatherAdvisory: WeatherAdvisory[] = [];
+  public weatherAdvisory: Partial<AdvisoryRecord> = {};
   public exptech: ExpTechWebsocket | null;
   public data: {
     stations: Record<string, Station> | null;
@@ -127,30 +127,24 @@ export class KamiStates {
         .catch(onrejected);
 
       void cwa
-        .getWeatherAdvisory()
+        .getAdvisory()
         .then((v) => {
-          if (!v.length) {
-            return;
+          const keys = Object.keys(v) as (keyof AdvisoryRecord)[];
+          const updated: Advisory[] = [];
+
+          for (const key of keys) {
+            const data = v[key];
+            if (!data) continue;
+
+            const old = this.weatherAdvisory[key];
+
+            if (!old || data.hash != old.hash) {
+              updated.push(data);
+            }
           }
 
-          if (this.weatherAdvisory.length) {
-            const updated: WeatherAdvisory[] = [];
-
-            for (const wa of v) {
-              const old = this.weatherAdvisory.find(
-                (f) =>
-                  f.issueTime.getTime() == wa.issueTime.getTime()
-                  && f.description == wa.description,
-              );
-
-              if (!old || wa.hash != old.hash) {
-                updated.push(wa);
-              }
-            }
-
-            if (updated.length) {
-              this.client.emit('weatherAdvisory', updated);
-            }
+          if (updated.length) {
+            this.client.emit('weatherAdvisory', updated);
           }
 
           this.weatherAdvisory = v;
@@ -165,7 +159,7 @@ export class KamiStates {
     };
 
     updateCwa();
-    setInterval(updateCwa, 30_000);
+    setInterval(updateCwa, 15_000);
 
     updateRtsStation();
     setInterval(updateRtsStation, 600_000);

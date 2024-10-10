@@ -1,0 +1,17 @@
+{
+  "earthquake": {
+    "header": "Earthquake | {{0}}",
+    "channel": "Channel",
+    "numbered": "Numbered",
+    "style": "Message Style",
+    "remove_success": "✅ Successfully unsubscribed from weather advisory notifications",
+    "set_push_success": "✅ Settings updated"
+  },
+  "weather": {
+    "header": "Weather | {{0}}",
+    "channel": "Channel",
+    "style": "Message Style",
+    "remove_success": "✅ Successfully unsubscribed from weather advisory notifications",
+    "set_push_success": "✅ Settings updated"
+  }
+}

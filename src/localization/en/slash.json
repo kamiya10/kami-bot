@@ -33,35 +33,51 @@
   },
   "earthquake": {
     "$name": "earthquake",
-    "$desc": "Earthquake related commands.",
-    "report": {
-      "$name": "report",
-      "$desc": "Query earthquake information.",
-      "%style": {
-        "$name": "style",
-        "$desc": "The style of the message."
+    "$desc": "Query earthquake information.",
+    "%style": {
+      "$name": "style",
+      "$desc": "The style of the message."
+    }
+  },
+  "ping": {
+    "$name": "ping",
+    "$desc": "Check if the bot is still alive or not."
+  },
+  "push": {
+    "$name": "push",
+    "$desc": "Push notification configuration.",
+    "earthquake": {
+      "$name": "earthquake",
+      "$desc": "Earthquake push notification configuration.",
+      "report": {
+        "$name": "report",
+        "$desc": "Subscribe to earthquake report push notifications.",
+        "%channel": {
+          "$name": "channel",
+          "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
+        },
+        "%numbered": {
+          "$name": "numbered",
+          "$desc": "Whether to only receive numbered earthquake reports."
+        },
+        "%style": {
+          "$name": "style",
+          "$desc": "The style of the push notification."
+        }
       }
     },
-    "push": {
-      "$name": "push",
-      "$desc": "Subscribe to earthquake report push notifications.",
+    "weather": {
+      "$name": "weather",
+      "$desc": "Subscribe to weather advisory push notifications.",
       "%channel": {
         "$name": "channel",
         "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
-      },
-      "%numbered": {
-        "$name": "numbered",
-        "$desc": "Whether to only receive numbered earthquake reports."
       },
       "%style": {
         "$name": "style",
         "$desc": "The style of the push notification."
       }
     }
-  },
-  "ping": {
-    "$name": "ping",
-    "$desc": "Check if the bot is still alive or not."
   },
   "voice": {
     "$name": "voice",
@@ -137,18 +153,6 @@
   },
   "weather": {
     "$name": "weather",
-    "$desc": "Query weather information.",
-    "push": {
-      "$name": "push",
-      "$desc": "Subscribe to weather advisory push notifications.",
-      "%channel": {
-        "$name": "channel",
-        "$desc": "The channel push notification should send to, leave this field empty to unsubscribe."
-      },
-      "%style": {
-        "$name": "style",
-        "$desc": "The style of the push notification."
-      }
-    }
+    "$desc": "Query weather information."
   }
 }

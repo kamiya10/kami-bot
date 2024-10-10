@@ -2,16 +2,13 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Colors,
   EmbedBuilder,
   TimestampStyles,
   blockQuote,
   time,
 } from 'discord.js';
-import { HazardPhenomena, HazardSignificance } from '@/api/cwa/weatherAdvisory';
-
 import type { MessageCreateOptions, MessageEditOptions } from 'discord.js';
-import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
+import type { Advisory } from '@/api/cwa/advisory';
 
 export enum WeatherAdvisoryMessageStyle {
   Text = 'text',
@@ -19,85 +16,51 @@ export enum WeatherAdvisoryMessageStyle {
   Detailed = 'detail',
 }
 
-export const getAdvisoryColor = (wa: WeatherAdvisory) => {
-  switch (wa.phenomena) {
-    case HazardPhenomena.DenseFog:
-      return 0xa1ccef;
+export const getAdvisoryUrl = (advisory: Advisory) => {
+  switch (advisory.type) {
+    case 'TY_NEWS':
+    case 'TY_WARN':
+    case 'TY_WIND':
+      return `https://www.cwa.gov.tw/V8/C/P/Typhoon/${advisory.type}.html`;
 
-    case HazardPhenomena.HeavyRain:
-    case HazardPhenomena.ExtremelyHeavyRain:
-      return Colors.Blue;
+    case 'PWS':
+      return `https://www.cwa.gov.tw/V8/C/P/PWS/PWS.html`;
 
-    case HazardPhenomena.TorrentialRain:
-    case HazardPhenomena.ExtremelyTorrentialRain:
-      return Colors.Purple;
+    case 'EQ':
+      return `https://www.cwa.gov.tw/V8/C/E/index.html`;
 
-    case HazardPhenomena.Swell:
-      return Colors.Blurple;
-
-    case HazardPhenomena.LandStrongWind:
-    case HazardPhenomena.SeaStrongWind:
-      return Colors.Green;
+    default:
+      return `https://www.cwa.gov.tw/V8/C/P/Warning/${advisory.type}.html`;
   }
-
-  switch (wa.description.slice(-2) as HazardSignificance) {
-    case HazardSignificance.Warning:
-      return Colors.Yellow;
-    case HazardSignificance.Advisory:
-      return Colors.Red;
-  }
-
-  return Colors.Blue;
-};
-
-export const getAdvisoryUrl = (wa: WeatherAdvisory) => {
-  switch (wa.phenomena) {
-    case HazardPhenomena.Typhoon:
-      return 'https://www.cwa.gov.tw/V8/C/P/Typhoon/TY_NEWS.html';
-
-    case HazardPhenomena.HeavyRain:
-    case HazardPhenomena.ExtremelyHeavyRain:
-    case HazardPhenomena.TorrentialRain:
-    case HazardPhenomena.ExtremelyTorrentialRain:
-      return 'https://www.cwa.gov.tw/V8/C/P/Warning/W26.html';
-
-    case HazardPhenomena.DenseFog:
-      return 'https://www.cwa.gov.tw/V8/C/P/Warning/W27.html';
-
-    case HazardPhenomena.Swell:
-      return 'https://www.cwa.gov.tw/V8/C/P/Warning/W37.html';
-  }
-
-  return 'https://www.cwa.gov.tw/V8/C/P/Warning/FIFOWS.html';
 };
 
 export const buildWeatherAdvisoryMessage = (
-  wa: WeatherAdvisory,
+  advisory: Advisory,
   style: WeatherAdvisoryMessageStyle = WeatherAdvisoryMessageStyle.Simple,
 ): MessageCreateOptions & MessageEditOptions => {
   const embed = new EmbedBuilder()
-    .setColor(getAdvisoryColor(wa))
-    .setAuthor({ name: wa.description });
+    .setColor(advisory.color)
+    .setAuthor({ name: advisory.name });
 
   const row = new ActionRowBuilder();
 
-  const start = time(wa.startTime, TimestampStyles.LongDateTime);
-  const startRelative = time(wa.startTime, TimestampStyles.RelativeTime);
-  const end = time(wa.endTime, TimestampStyles.LongDateTime);
-  const endRelative = time(wa.endTime, TimestampStyles.RelativeTime);
+  const start = time(advisory.from, TimestampStyles.LongDateTime);
+  const startRelative = time(advisory.from, TimestampStyles.RelativeTime);
+  const end = time(advisory.to, TimestampStyles.LongDateTime);
+  const endRelative = time(advisory.to, TimestampStyles.RelativeTime);
 
   if (style == WeatherAdvisoryMessageStyle.Text) {
     return {
       content: [
-        `[${start} ➜ ${end}] **${wa.description}**`,
-        blockQuote(wa.content),
+        `[${start} ➜ ${end}] **${advisory.content}**`,
+        blockQuote(advisory.content),
       ].join('\n'),
     };
   }
 
   switch (style) {
     case WeatherAdvisoryMessageStyle.Simple:
-      embed.setDescription(wa.content).addFields(
+      embed.setDescription(advisory.content).addFields(
         {
           name: '生效時間',
           value: `${start}\n(${startRelative})`,
@@ -112,7 +75,7 @@ export const buildWeatherAdvisoryMessage = (
       break;
 
     case WeatherAdvisoryMessageStyle.Detailed:
-      embed.setDescription(wa.content).addFields(
+      embed.setDescription(advisory.content).addFields(
         {
           name: '生效時間',
           value: `${start}\n(${startRelative})`,
@@ -130,7 +93,7 @@ export const buildWeatherAdvisoryMessage = (
   row.addComponents(
     new ButtonBuilder()
       .setStyle(ButtonStyle.Link)
-      .setURL(getAdvisoryUrl(wa))
+      .setURL(getAdvisoryUrl(advisory))
       .setEmoji('🔗')
       .setLabel('警特報連結'),
   );

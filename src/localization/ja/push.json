@@ -1,0 +1,17 @@
+{
+  "earthquake": {
+    "header": "地震 | {{0}}",
+    "channel": "チャンネル",
+    "numbered": "番号付き",
+    "style": "通知スタイル",
+    "remove_success": "✅ 地震情報プッシュ通知の登録が解除されました",
+    "set_push_success": "✅ 地震情報プッシュ通知の設定が更新されました"
+  },
+  "weather": {
+    "header": "気象 | {{0}}",
+    "channel": "チャンネル",
+    "style": "通知スタイル",
+    "remove_success": "✅ 気象警報プッシュ通知の登録が解除されました",
+    "set_push_success": "✅ 気象警報プッシュ通知の設定が更新されました"
+  }
+}

@@ -2,12 +2,12 @@ import type { ClientEvents } from 'discord.js';
 import type { KamiClient } from '@/class/client';
 import type { Rts } from '@exptechtw/api-wrapper';
 import type { EarthquakeReport } from '@/api/cwa';
-import type { WeatherAdvisory } from '@/api/cwa/weatherAdvisory';
+import type { Advisory } from '@/api/cwa/advisory';
 
 export interface KamiClientEvents extends ClientEvents {
   rts: [rts: Rts];
   report: [report: EarthquakeReport[]];
-  weatherAdvisory: [updated: WeatherAdvisory[]];
+  weatherAdvisory: [updated: Advisory[]];
 }
 
 type Events = keyof KamiClientEvents;

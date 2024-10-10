@@ -1,5 +1,7 @@
 import {
   ChannelType,
+  Colors,
+  EmbedBuilder,
   SlashCommandBooleanOption,
   SlashCommandChannelOption,
   SlashCommandStringOption,
@@ -11,29 +13,28 @@ import { t as $t } from 'i18next';
 import { eq } from 'drizzle-orm';
 import { guildEqReportChannel } from '@/database/schema';
 
-import type { EmbedBuilder } from 'discord.js';
 import type { KamiSubCommand } from '@/class/command';
 
 const channelOption = new SlashCommandChannelOption()
   .setName('channel')
-  .setNameLocalizations($at('slash:earthquake.push.%channel.$name'))
+  .setNameLocalizations($at('slash:push.earthquake.report.%channel.$name'))
   .setDescription(
     'The channel push notification should send to, leave this field empty to unsubscribe.',
   )
-  .setDescriptionLocalizations($at('slash:earthquake.push.%channel.$desc'))
+  .setDescriptionLocalizations($at('slash:push.earthquake.report.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildText);
 
 const numberedOption = new SlashCommandBooleanOption()
   .setName('numbered')
-  .setNameLocalizations($at('slash:earthquake.push.%numbered.$name'))
+  .setNameLocalizations($at('slash:push.earthquake.report.%numbered.$name'))
   .setDescription('Whether to only receive numbered earthquake reports.')
-  .setDescriptionLocalizations($at('slash:earthquake.push.%numbered.$desc'));
+  .setDescriptionLocalizations($at('slash:push.earthquake.report.%numbered.$desc'));
 
 const styleOption = new SlashCommandStringOption()
   .setName('style')
-  .setNameLocalizations($at('slash:earthquake.push.%style.$name'))
+  .setNameLocalizations($at('slash:push.earthquake.report.%style.$name'))
   .setDescription('The style of the push notification.')
-  .setDescriptionLocalizations($at('slash:earthquake.push.%style.$desc'))
+  .setDescriptionLocalizations($at('slash:push.earthquake.report.%style.$desc'))
   .addChoices(
     {
       name: ReportMessageStyle.CwaText,
@@ -63,18 +64,28 @@ const styleOption = new SlashCommandStringOption()
 
 export default {
   builder: new SlashCommandSubcommandBuilder()
-    .setName('push')
-    .setNameLocalizations($at('slash:weather.push.$name'))
+    .setName('report')
+    .setNameLocalizations($at('slash:push.earthquake.report.$name'))
     .setDescription('Subscribe to weather advisory push notifications.')
-    .setDescriptionLocalizations($at('slash:weather.push.$desc'))
+    .setDescriptionLocalizations($at('slash:push.earthquake.report.$desc'))
     .addChannelOption(channelOption)
     .addBooleanOption(numberedOption)
     .addStringOption(styleOption),
-  async execute(interaction, embed) {
-    const channel
-      = interaction.options.getChannel<ChannelType.GuildText>('channel');
+  async execute(interaction) {
+    const channel = interaction.options.getChannel<ChannelType.GuildText>('channel');
     const numbered = interaction.options.getBoolean('numbered') ?? undefined;
     const style = interaction.options.getString('style') ?? undefined;
+
+    const embed = new EmbedBuilder()
+      .setAuthor({
+        name: $t('push:earthquake.header', {
+          lng: interaction.locale,
+          0: interaction.guild.name,
+        }),
+        iconURL: interaction.guild.iconURL() ?? '',
+      })
+      .setColor(Colors.Blue)
+      .setDescription('✅');
 
     if (!channel) {
       await this.database
@@ -82,8 +93,9 @@ export default {
         .where(eq(guildEqReportChannel.guildId, interaction.guild.id));
 
       embed.setDescription(
-        $t('earthquake:remove_success', { lng: interaction.locale }),
+        $t('push:earthquake.remove_success', { lng: interaction.locale }),
       );
+
       return;
     }
 
@@ -109,24 +121,26 @@ export default {
 
     embed
       .setDescription(
-        $t('earthquake:set_push_success', { lng: interaction.locale }),
+        $t('push:earthquake.set_push_success', { lng: interaction.locale }),
       )
       .addFields(
         {
-          name: $t('earthquake:channel', { lng: interaction.locale }),
+          name: $t('push:earthquake.channel', { lng: interaction.locale }),
           value: channel.toString(),
           inline: true,
         },
         {
-          name: $t('earthquake:numbered', { lng: interaction.locale }),
+          name: $t('push:earthquake.numbered', { lng: interaction.locale }),
           value: `${setting.numbered}`,
           inline: true,
         },
         {
-          name: $t('earthquake:style', { lng: interaction.locale }),
+          name: $t('push:earthquake.style', { lng: interaction.locale }),
           value: setting.style,
           inline: true,
         },
       );
+
+    await interaction.editReply({ embeds: [embed] });
   },
-} as KamiSubCommand<EmbedBuilder>;
+} as KamiSubCommand;

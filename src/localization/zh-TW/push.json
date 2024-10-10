@@ -1,0 +1,17 @@
+{
+  "earthquake": {
+    "header": "地震 | {{0}}",
+    "channel": "推播頻道",
+    "numbered": "編號報告",
+    "style": "推播訊息樣式",
+    "remove_success": "✅ 已成功清除地震報告推播通知設定",
+    "set_push_success": "✅ 地震報告推播通知設定已更新"
+  },
+  "weather": {
+    "header": "天氣 | {{0}}",
+    "channel": "推播頻道",
+    "style": "推播訊息樣式",
+    "remove_success": "✅ 已成功清除天氣警特報推播通知設定",
+    "set_push_success": "✅ 天氣警特報推播通知設定已更新"
+  }
+}

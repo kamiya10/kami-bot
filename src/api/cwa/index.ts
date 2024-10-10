@@ -1,7 +1,8 @@
-import { WeatherAdvisory } from './weatherAdvisory';
+import { Advisory } from './advisory';
+import { load } from 'cheerio';
 import { version } from '~/package.json';
 
-import type { APIWeatherAdvisoryRecordResponse } from './weatherAdvisory';
+import type { AdvisoryRecord, APIAdvisoryRecord } from './advisory';
 
 interface APIResultResourceField {
   id: string;
@@ -264,19 +265,36 @@ export class CwaApi {
     return data.records.Earthquake.map((v) => new EarthquakeReport(v));
   }
 
-  async getWeatherAdvisory(
-    limit?: number,
-    offset?: number,
-  ): Promise<WeatherAdvisory[]> {
-    const query = new URLSearchParams({
-      Authorization: this.apikey,
-      limit: `${limit ?? ''}`,
-      offset: `${offset ?? ''}`,
-    });
+  async getAdvisory(): Promise<Partial<AdvisoryRecord>> {
+    const response = await fetch('https://www.cwa.gov.tw/Data/js/warn/Warning_Content.js');
+    const code = await response.text();
 
-    const url = `${CwaApi.baseUrl}/v1/rest/datastore/W-C0033-002?${query.toString()}`;
-    const data = await this.get<APIWeatherAdvisoryRecordResponse>(url);
+    const warnContentCode = /var WarnContent\s*=\s*(\{[\s\S]*?\});/.exec(code)?.[1];
 
-    return data.records.record.map((v) => new WeatherAdvisory(v));
+    if (!warnContentCode) {
+      throw new Error('Advisory data not found');
+    }
+
+    const warnContent = eval(`(${warnContentCode})`) as Partial<APIAdvisoryRecord>;
+
+    const data: Partial<AdvisoryRecord> = {};
+    const keys = Object.keys(warnContent) as (keyof AdvisoryRecord)[];
+
+    for (const key of keys) {
+      if (warnContent[key]) {
+        data[key] = new Advisory(warnContent[key].C, key);
+      }
+    }
+
+    return data;
+  }
+
+  async getImageUrl(): Promise<string> {
+    const html = await (await fetch('https://www.cwa.gov.tw/V8/C/ajax/_home_news.html')).text();
+
+    const $ = load(html);
+    const path = $('.item > .AD-item > a > img').first().attr('src');
+
+    return `https://www.cwa.gov.tw${path}`;
   }
 }

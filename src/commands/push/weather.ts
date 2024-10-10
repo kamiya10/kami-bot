@@ -1,5 +1,7 @@
 import {
   ChannelType,
+  Colors,
+  EmbedBuilder,
   SlashCommandChannelOption,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
@@ -10,23 +12,22 @@ import { guildWeatherAdvisoryChannel } from '@/database/schema';
 import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
 
-import type { EmbedBuilder } from 'discord.js';
 import type { KamiSubCommand } from '@/class/command';
 
 const channelOption = new SlashCommandChannelOption()
   .setName('channel')
-  .setNameLocalizations($at('slash:weather.push.%channel.$name'))
+  .setNameLocalizations($at('slash:push.weather.%channel.$name'))
   .setDescription(
     'The channel push notification should send to, leave this field empty to unsubscribe.',
   )
-  .setDescriptionLocalizations($at('slash:weather.push.%channel.$desc'))
+  .setDescriptionLocalizations($at('slash:push.weather.%channel.$desc'))
   .addChannelTypes(ChannelType.GuildText);
 
 const styleOption = new SlashCommandStringOption()
   .setName('style')
-  .setNameLocalizations($at('slash:weather.push.%style.$name'))
+  .setNameLocalizations($at('slash:push.weather.%style.$name'))
   .setDescription('The style of the push notification')
-  .setDescriptionLocalizations($at('slash:weather.push.%style.$desc'))
+  .setDescriptionLocalizations($at('slash:push.weather.%style.$desc'))
   .addChoices(
     {
       name: WeatherAdvisoryMessageStyle.Text,
@@ -44,16 +45,27 @@ const styleOption = new SlashCommandStringOption()
 
 export default {
   builder: new SlashCommandSubcommandBuilder()
-    .setName('push')
-    .setNameLocalizations($at('slash:weather.push.$name'))
+    .setName('weather')
+    .setNameLocalizations($at('slash:push.weather.$name'))
     .setDescription('Subscribe to weather advisory push notifications.')
-    .setDescriptionLocalizations($at('slash:weather.push.$desc'))
+    .setDescriptionLocalizations($at('slash:push.weather.$desc'))
     .addChannelOption(channelOption)
     .addStringOption(styleOption),
-  async execute(interaction, embed) {
+  async execute(interaction) {
     const channel
       = interaction.options.getChannel<ChannelType.GuildText>('channel');
     const style = interaction.options.getString('style') ?? undefined;
+
+    const embed = new EmbedBuilder()
+      .setAuthor({
+        name: $t('push:weather.header', {
+          lng: interaction.locale,
+          0: interaction.guild.name,
+        }),
+        iconURL: interaction.guild.iconURL() ?? '',
+      })
+      .setColor(Colors.Blue)
+      .setDescription('✅');
 
     if (!channel) {
       await this.database
@@ -61,7 +73,7 @@ export default {
         .where(eq(guildWeatherAdvisoryChannel.guildId, interaction.guild.id));
 
       embed.setDescription(
-        $t('weather:remove_success', { lng: interaction.locale }),
+        $t('push:weather.remove_success', { lng: interaction.locale }),
       );
 
       return;
@@ -87,19 +99,19 @@ export default {
 
     embed
       .setDescription(
-        $t('weather:set_push_success', { lng: interaction.locale }),
+        $t('push:weather.set_push_success', { lng: interaction.locale }),
       )
       .addFields(
         {
-          name: $t('weather:channel', { lng: interaction.locale }),
+          name: $t('push:weather.channel', { lng: interaction.locale }),
           value: channel.toString(),
           inline: true,
         },
         {
-          name: $t('weather:style', { lng: interaction.locale }),
+          name: $t('push:weather.style', { lng: interaction.locale }),
           value: setting.style,
           inline: true,
         },
       );
   },
-} as KamiSubCommand<EmbedBuilder>;
+} as KamiSubCommand;
