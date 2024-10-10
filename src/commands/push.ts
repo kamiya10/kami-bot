@@ -23,9 +23,13 @@ export default new KamiCommand({
   defer: true,
   execute(interaction) {
     switch (interaction.options.getSubcommandGroup(false)) {
-      case 'report':
-        pushEarthquakeReport.execute.call(this, interaction);
-        break;
+      case 'earthquake':{
+        switch (interaction.options.getSubcommand()) {
+          case 'report':
+            pushEarthquakeReport.execute.call(this, interaction);
+            break;
+        }
+      }
     }
 
     switch (interaction.options.getSubcommand()) {

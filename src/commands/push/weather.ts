@@ -76,6 +76,7 @@ export default {
         $t('push:weather.remove_success', { lng: interaction.locale }),
       );
 
+      await interaction.editReply({ embeds: [embed] });
       return;
     }
 
@@ -113,5 +114,7 @@ export default {
           inline: true,
         },
       );
+
+    await interaction.editReply({ embeds: [embed] });
   },
 } as KamiSubCommand;

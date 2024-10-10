@@ -96,6 +96,7 @@ export default {
         $t('push:earthquake.remove_success', { lng: interaction.locale }),
       );
 
+      await interaction.editReply({ embeds: [embed] });
       return;
     }
 
