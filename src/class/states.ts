@@ -44,6 +44,8 @@ export class KamiStates {
     stations: Record<string, Station> | null;
   } = { stations: null };
 
+  private _advisoryInited = false;
+
   constructor(client: KamiClient, data?: KamiStatesOptions) {
     this.client = client;
     this.voice = new Collection(data?.voice);
@@ -75,9 +77,7 @@ export class KamiStates {
       void cwa
         .getEarthquakeReport()
         .then((v) => {
-          if (!v.length) {
-            return;
-          }
+          if (!v.length) return;
 
           if (
             this.report.length
@@ -102,9 +102,7 @@ export class KamiStates {
       void cwa
         .getNumberedEarthquakeReport()
         .then((v) => {
-          if (!v.length) {
-            return;
-          }
+          if (!v.length) return;
 
           if (
             this.numberedReport.length
@@ -143,11 +141,12 @@ export class KamiStates {
             }
           }
 
-          if (updated.length) {
+          if (this._advisoryInited && updated.length) {
             this.client.emit('weatherAdvisory', updated);
           }
 
           this.weatherAdvisory = v;
+          this._advisoryInited = true;
         })
         .catch(onrejected);
     };
