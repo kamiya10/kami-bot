@@ -3,17 +3,24 @@ import { EventHandler } from '@/class/event';
 import { canSend } from '@/utils/permission';
 
 import type { MessageCreateOptions, MessagePayload } from 'discord.js';
+import { eq } from 'drizzle-orm';
+import { user } from '@/database/schema';
 
 export default new EventHandler({
   event: 'voiceStateUpdate',
-  on(oldState, newState) {
+  async on(oldState, newState) {
     const me = newState.guild.members.me;
     const member = newState.member;
 
     if (!member || member.user.bot || !me) return;
 
-    const embed = new EmbedBuilder()
-      .setTimestamp();
+    const trackVoiceActivity = (await this.database.query.user.findFirst({
+      where: eq(user.id, member.id),
+    }))?.trackVoiceActivity ?? true;
+
+    if (!trackVoiceActivity) return;
+
+    const embed = new EmbedBuilder().setTimestamp();
 
     const payload = {
       embeds: [embed],

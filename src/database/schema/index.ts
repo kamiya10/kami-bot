@@ -1,3 +1,4 @@
+export * from './user/user';
 export * from './user/voiceChannel';
 
 export * from './guild/eqReportChannel';
