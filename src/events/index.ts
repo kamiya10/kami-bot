@@ -11,6 +11,7 @@ import report from '#/custom/report';
 import rts from '#/custom/rts';
 import voiceCreate from '#/custom/voiceCreate';
 import voiceDelete from '#/custom/voiceDelete';
+import voiceJoinLeave from './custom/voiceJoinLeave';
 import voiceRemove from '#/custom/voiceRemove';
 import weatherAdvisory from '#/custom/weatherAdvisory';
 
@@ -25,6 +26,7 @@ export default [
   rts,
   voiceCreate,
   voiceDelete,
+  voiceJoinLeave,
   voiceRemove,
   weatherAdvisory,
 ] as EventHandler[];
