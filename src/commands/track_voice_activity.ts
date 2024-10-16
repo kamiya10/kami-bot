@@ -39,12 +39,13 @@ export default new KamiCommand({
           lng: interaction.locale,
           0: interaction.user.displayName,
         }),
-        iconURL: interaction.guild.iconURL() ?? '',
+        iconURL: interaction.user.displayAvatarURL(),
       })
       .setDescription($t('preference:update_success', { lng: interaction.locale }))
       .setFields({
         name: $t('preference:voice_activity_tracking', { lng: interaction.locale }),
         value: `${trackVoiceActivity}`,
+        inline: true,
       });
 
     await interaction.editReply({

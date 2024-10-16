@@ -7,6 +7,7 @@ import ping from '$/ping';
 import push from '$/push';
 import report from '$/earthquake';
 import rts from '$/rts';
+import track_voice_activity from '$/track_voice_activity';
 import voice from '$/voice';
 import weather from '$/weather';
 
@@ -18,6 +19,7 @@ export default [
   push,
   report,
   rts,
+  track_voice_activity,
   voice,
   weather,
 ] as KamiCommand[];
