@@ -84,7 +84,7 @@ export class KamiStates {
             && this.report[0].EarthquakeInfo.OriginTime
             != v[0].EarthquakeInfo.OriginTime
           ) {
-            const times = this.numberedReport.map(
+            const times = this.report.map(
               (e) => e.EarthquakeInfo.OriginTime,
             );
             const updated = v.filter(
