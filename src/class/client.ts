@@ -16,7 +16,7 @@ export class KamiClient extends Client {
   states: KamiStates;
   commands = new Collection<string, KamiCommand>();
   database = db;
-  cacheDirectory = resolve('.cache');
+  cacheFolderPath = resolve('.cache');
 
   constructor(clientOptions: ClientOptions) {
     super(clientOptions);

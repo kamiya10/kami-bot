@@ -7,6 +7,7 @@ import {
 import { CwaApi, CwaFetchError } from '@/api/cwa';
 import { Collection } from 'discord.js';
 import { join } from 'path';
+import { writeFileSync } from 'fs';
 
 import logger from 'logger';
 
@@ -184,13 +185,13 @@ export class KamiStates {
     }
   }
 
-  async save() {
+  save() {
     logger.info('Saving states...');
 
-    const file = Bun.file(join(this.client.cacheDirectory, 'states.json'));
+    const file = join(this.client.cacheFolderPath, 'states.json');
 
     try {
-      await Bun.write(file, JSON.stringify(this.toJSON()));
+      writeFileSync(file, JSON.stringify(this.toJSON()));
     }
     catch (error) {
       logger.error(`Error while saving states:`, error);
