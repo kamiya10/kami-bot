@@ -1,7 +1,9 @@
 import { Client, Collection } from 'discord.js';
 import { existsSync, readFileSync } from 'fs';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import { KamiStates } from '@/class/states';
+import { createHash } from 'crypto';
+import { safeWriteFileSync } from '@/utils/fs';
 
 import type { ClientOptions } from 'discord.js';
 import type { KamiCommand } from '@/class/command';
@@ -56,39 +58,38 @@ export class KamiClient extends Client {
       logger.error('Client isn\'t ready for command updates yet');
       return;
     }
-    const lockfile = Bun.file(join(this.cacheDirectory, 'commands.lock'));
 
     try {
-      const data = this.commands.map((v) => v.builder.toJSON());
+      const data = this.commands.map((command) => command.builder.toJSON());
+      const hash = createHash('md5').update(JSON.stringify(data)).digest('hex');
 
-      const hash = new Bun.CryptoHasher('sha256')
-        .update(JSON.stringify(data))
-        .digest('hex');
-
-      if (!force && (await lockfile.text().catch((e) => void e)) == hash) {
-        logger.debug(
-          'Command Version is the same. Skipping command registration.',
-        );
-        return;
-      }
+      const filePath = resolve(this.cacheFolderPath, 'commands.cache');
 
       if (process.env.NODE_ENV == 'development') {
-        const devGuildId = process.env['DEV_GUILD_ID'];
-        if (!devGuildId) return;
+        const devGuildId = process.env['DEV_GUILD_ID']?.split(',');
+        if (!devGuildId?.length) return;
 
-        const guild = this.guilds.cache.get(devGuildId);
-        if (!guild) return;
+        for (const id of devGuildId) {
+          const guild = this.guilds.cache.get(id);
+          if (!guild) return;
 
-        logger.debug(
-          `Updating commands in ${guild.name}. (DEV_GUILD_ID=${devGuildId})`,
-        );
-        await guild.commands.set(data);
+          logger.debug(
+            `Updating commands in ${guild.name} (${id}). (DEV_GUILD_ID=${devGuildId})`,
+          );
+          await guild.commands.set(data);
+        }
         return;
       }
+
+      if (existsSync(filePath)) {
+        if (!force && readFileSync(filePath, { encoding: 'utf8' }) == hash) return;
+      }
+
+      logger.info('Updating global slash commands...');
 
       await this.application.commands.set(data);
 
-      await Bun.write(lockfile, hash);
+      safeWriteFileSync(filePath, hash, { encoding: 'utf8' });
 
       logger.info('Command updated successfully');
     }
