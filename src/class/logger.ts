@@ -22,32 +22,46 @@ const time = () => {
 
 const pad = (label: string) => label.padEnd(5, ' ');
 
-export default {
+export default new class {
+  trace(this: void, message: string, ...args: any[]): void;
+  trace(this: void, message: unknown): void;
   trace(...args: any[]) {
     console.trace(`${time()} ${chalk.gray.italic(pad('Trace'))}`, ...args);
-  },
+  }
+
+  debug(this: void, message: string, ...args: any[]): void;
+  debug(this: void, message: unknown): void;
   debug(message: string, ...args: any[]) {
     console.debug(
       `${time()} ${chalk.cyan.italic(pad('Debug'))}`,
       chalk.gray.italic(message),
       ...args,
     );
-  },
+  }
+
+  info(this: void, message: string, ...args: any[]): void;
+  info(this: void, message: unknown): void;
   info(message: string, ...args: any[]) {
     console.info(chalk.blue(`${time()} ${pad('Info')}`), message, ...args);
-  },
+  }
+
+  warn(this: void, message: string, ...args: any[]): void;
+  warn(this: void, message: unknown): void;
   warn(message: string, ...args: any[]) {
     console.warn(
       `${time()} ${chalk.yellow.bold(pad('Warn'))}`,
       chalk.bold(message),
       ...args,
     );
-  },
-  error(message: string, ...args: any[]) {
+  }
+
+  error(this: void, message: string, ...args: any[]): void;
+  error(this: void, message: unknown): void;
+  error(message: string, ...args: any[]): void {
     console.error(
       `${time()} ${chalk.red.bold(pad('Error'))}`,
       chalk.bold.underline(message),
       ...args,
     );
-  },
-};
+  }
+}();
