@@ -168,9 +168,7 @@ export default {
     const limit = interaction.options.getInteger('limit');
     const bitrate = interaction.options.getInteger('bitrate');
     const region = interaction.options.getString('region');
-    const videoQuality = interaction.options.getInteger(
-      'video',
-    ) as VideoQualityMode | null;
+    const videoQuality = interaction.options.getInteger('video') as VideoQualityMode | null;
     const slowMode = interaction.options.getInteger('slow');
     const nsfw = interaction.options.getBoolean('nsfw');
 
