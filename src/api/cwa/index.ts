@@ -176,11 +176,11 @@ export class EarthquakeReport {
       + (this.EarthquakeNo % 1000 == 0
         ? this.timecode
         : this.timecode.slice(4, this.timecode.length - 2))
-        + this.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10
-        + (this.EarthquakeNo % 1000 == 0
-          ? ''
-          : this.EarthquakeNo.toString().substring(3))
-          + '_H.png'
+      + this.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue * 10
+      + (this.EarthquakeNo % 1000 == 0
+        ? ''
+        : this.EarthquakeNo.toString().substring(3))
+      + '_H.png'
     );
   }
 

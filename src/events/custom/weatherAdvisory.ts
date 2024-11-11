@@ -13,8 +13,10 @@ export default new EventHandler({
   async on(updated) {
     logger.info('weatherAdvisory', updated);
 
-    const settings
-      = await this.database.query.guildWeatherAdvisoryChannel.findMany();
+    const settings = await this.database
+      .query.guildWeatherAdvisoryChannel
+      .findMany();
+
     const failed: string[] = [];
 
     for (const setting of settings) {
@@ -28,7 +30,10 @@ export default new EventHandler({
       for (const wa of updated.reverse()) {
         void channel
           .send(
-            buildWeatherAdvisoryMessage(wa, WeatherAdvisoryMessageStyle.Simple),
+            buildWeatherAdvisoryMessage(
+              wa,
+              WeatherAdvisoryMessageStyle.Simple,
+            ),
           )
           .catch((e) => logger.error(`${e}`, e));
       }
