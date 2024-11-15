@@ -10,7 +10,7 @@ import { $at } from '@/class/utils';
 import { t as $t } from 'i18next';
 
 /**
- * The /ping command.
+ * The /weather command.
  */
 export default new KamiCommand({
   builder: new SlashCommandBuilder()
