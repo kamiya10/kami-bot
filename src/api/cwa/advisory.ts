@@ -36,12 +36,18 @@ export interface APIAdvisoryRecord {
   TY_NEWS: APIAdvisoryRecordEntry;
   /** 天氣警特報 */
   FIFOWS: APIAdvisoryRecordEntry;
+  /** 海上陸上颱風警報 */
+  W21: APIAdvisoryRecordEntry;
   /** 熱帶性低氣壓特報 */
   W23: APIAdvisoryRecordEntry;
   /** 大規模或劇烈豪雨 */
   W24: APIAdvisoryRecordEntry;
+  /** 陸上強風特報 */
+  W25: APIAdvisoryRecordEntry;
   /** 降雨資訊 */
   W26: APIAdvisoryRecordEntry;
+  /** 濃霧特報 */
+  W27: APIAdvisoryRecordEntry;
   /** 低溫資訊 */
   W28: APIAdvisoryRecordEntry;
   /** 高溫資訊 */
@@ -67,12 +73,18 @@ export interface AdvisoryRecord {
   TY_NEWS: Advisory;
   /** 天氣警特報 */
   FIFOWS: Advisory;
+  /** 海上陸上颱風警報 */
+  W21: Advisory;
   /** 熱帶性低氣壓特報 */
   W23: Advisory;
   /** 大規模或劇烈豪雨 */
   W24: Advisory;
+  /** 陸上強風特報 */
+  W25: Advisory;
   /** 降雨資訊 */
   W26: Advisory;
+  /** 濃霧特報 */
+  W27: Advisory;
   /** 低溫資訊 */
   W28: Advisory;
   /** 高溫資訊 */
@@ -92,8 +104,10 @@ export const AdvisoryName = {
   TY_WARN: '颱風警報',
   TY_NEWS: '颱風消息',
   FIFOWS: '天氣警特報',
+  W21: '海上陸上颱風警報',
   W23: '熱帶性低氣壓特報',
   W24: '大規模或劇烈豪雨',
+  W25: '陸上強風特報',
   W26: '降雨資訊',
   W27: '濃霧特報',
   W28: '低溫資訊',
@@ -110,8 +124,10 @@ export const AdvisoryColor = {
   TY_WARN: 0x9370DB,
   TY_NEWS: 0xD8BFD8,
   FIFOWS: 0xFFD700,
+  W21: 0x9370DB,
   W23: 0x00008B,
   W24: 0x0000FF,
+  W25: 0x800080,
   W26: 0xADD8E6,
   W27: 0xc3c6e3,
   W28: 0x87CEEB,
