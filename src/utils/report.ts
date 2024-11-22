@@ -52,8 +52,7 @@ export const buildEarthquakeReportMessage = (
     TimestampStyles.LongDateTime,
   );
   // const relative = timestamp(new Date(report.EarthquakeInfo.OriginTime), TimestampStyles.RelativeTime);
-  const type
-    = report.EarthquakeNo % 1000 ? 'Earthquake.EarthquakeNo' : '小區域';
+  const type = report.EarthquakeNo % 1000 ? report.EarthquakeNo : '小區域';
   const author = {
     name: '地震報告',
     iconURL: 'https://i.imgur.com/qIxk1H1.png',
