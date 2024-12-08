@@ -5,5 +5,5 @@ module.exports = {
   env: {
     PATH: `${process.env.HOME}/.bun/bin:${process.env.PATH}`,
     NODE_ENV: 'production',
-  }
+  },
 };
